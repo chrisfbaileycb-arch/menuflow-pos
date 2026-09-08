@@ -2,7 +2,14 @@ export type PosProvider =
   | "heartland"
   | "toast"
   | "square"
-  | "clover";
+  | "clover"
+  | "aloha"
+  | "spoton"
+  | "touchbistro"
+  | "lightspeed"
+  | "skytab"
+  | "micros"
+  | "revel";
 
 export type PosWorkflowAction =
   | "staff_sync_import"

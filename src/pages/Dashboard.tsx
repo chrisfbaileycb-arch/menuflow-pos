@@ -180,10 +180,20 @@ export default function Dashboard() {
       setError("Toast menu imports need to be a .csv file.");
       return;
     }
-
-    const result = parseMenuRows(await file.text());
-    setRows(result.rows);
-    setError(result.error ?? null);
+    if (file.size > 10 * 1024 * 1024) {
+      setRows([]);
+      setError("File exceeds 10 MB. Please split large menus into smaller CSVs.");
+      return;
+    }
+    try {
+      const text = await file.text();
+      const result = parseMenuRows(text);
+      setRows(result.rows);
+      setError(result.error ?? null);
+    } catch {
+      setRows([]);
+      setError("Could not read this CSV. Please re-export and try again.");
+    }
   };
 
   const handleFileChange = async (event: ChangeEvent<HTMLInputElement>) => {
