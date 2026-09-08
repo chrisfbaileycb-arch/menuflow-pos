@@ -1,8 +1,6 @@
-import { motion } from "framer-motion";
 import {
   ArrowRight,
   Check,
-  ChevronDown,
   CircleAlert,
   FileSpreadsheet,
   FileUp,
@@ -42,39 +40,6 @@ const EXPECTED_COLUMNS = [
   "modifier_name",
   "modifier_price",
   "modifier_required",
-];
-
-const SAMPLE_ROWS: MenuPreviewRow[] = [
-  {
-    id: 1,
-    itemName: "Charred lemon chicken",
-    description: "Herbs, preserved lemon, pan jus",
-    category: "Dinner",
-    price: 24,
-    modifierName: "Add roasted mushrooms",
-    modifierPrice: 3,
-    modifierRequired: false,
-  },
-  {
-    id: 2,
-    itemName: "Charred lemon chicken",
-    description: "Herbs, preserved lemon, pan jus",
-    category: "Dinner",
-    price: 24,
-    modifierName: "Substitute crispy potatoes",
-    modifierPrice: 2,
-    modifierRequired: false,
-  },
-  {
-    id: 3,
-    itemName: "Garden grain bowl",
-    description: "Ancient grains, greens, tahini",
-    category: "Lunch",
-    price: 18,
-    modifierName: "Add grilled salmon",
-    modifierPrice: 8,
-    modifierRequired: false,
-  },
 ];
 
 function normalizeHeader(value: string) {
