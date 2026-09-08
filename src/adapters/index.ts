@@ -6,5 +6,7 @@ export * as square from "./square";
 export * as aloha from "./aloha";
 export * as spoton from "./spoton";
 export * as staff from "./staff";
+export * as heartland from "./heartland";
+export { createHeartlandWorkflowExecutor } from "./heartland/impl";
 
 
