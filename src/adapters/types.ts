@@ -52,6 +52,7 @@ export interface CsvImportResult<T> {
   records: T[];
 }
 
+
 export type CredentialType = "bearer_token" | "api_key_secret" | "oauth2" | "session_cookie";
 
 export interface PosSkillParameter {
