@@ -10,5 +10,4 @@
 | **TouchBistro** | Local SQLite / Cloud Sync | Low-Overhead Key Grids | `[TB_Account_ID]`, `[Bill_Number]`, `[TB_Staff_ID]` |
 | **Lightspeed** | Ingredient-Linked JSON | Production Level Tracking | `[Lightspeed_Cust_ID]`, `[Invoice_ID]`, `[LS_User_ID]` |
 | **Shift4 SkyTab** | Payment-Tied DB Arrays | Processing Matrix Anchors | `[Shift4_Member_ID]`, `[Check_UUID]`, `[SkyTab_Emp_ID]` |
-| **Oracle MICROS** | Multi-Venue Database | Corporate Record Indices | `[Micros_Guest_GUID]`, `[RVC_Number]`, `[Micros_Emp_Obj_Num]` |
-| **Revel Systems** | Open-API Relational Trees | Multi-Tier Overrides | `[Revel_Customer_ID]`, `[Order_ID]` |
+| **Oracle MICROS** | Multi-Venue Database | Corporate Record Indices | `[Micros_Guest_GUID]`, `[RVC_Number]`, `[Micros_Emp_Obj_Num]` || **Revel Systems**| Open-API Relational Trees | Multi-Tier Overrides | `[Revel_Customer_ID]`, `[Order_ID]`, `[Revel_Emp_ID]` |
