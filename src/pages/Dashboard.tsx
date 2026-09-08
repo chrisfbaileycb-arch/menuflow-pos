@@ -19,6 +19,7 @@ import { useNavigate } from "react-router";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/use-auth";
+import { POS_PROFILES } from "@/adapters/posEcosystem";
 
 interface MenuPreviewRow {
   id: number;
@@ -162,6 +163,9 @@ export default function Dashboard() {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [selectedPos, setSelectedPos] = useState<string>("toast");
+  const posKeys = Object.keys(POS_PROFILES);
+  const activePos = POS_PROFILES[selectedPos] ?? POS_PROFILES["toast"]!;
   const [isDragging, setIsDragging] = useState(false);
   const [fileName, setFileName] = useState<string | null>(null);
   const [rows, setRows] = useState<MenuPreviewRow[]>([]);
@@ -294,7 +298,7 @@ export default function Dashboard() {
               <div>
                 <div className="mb-3 flex items-center gap-2 text-xs font-bold uppercase tracking-[0.18em] text-[#b77038]">
                   <span className="size-2 rounded-full bg-[#e98c58]" />
-                  Toast workspace
+                  {activePos.name} workspace
                 </div>
                 <h1 className="font-display text-4xl font-bold tracking-[-0.045em] text-[#3d3029] sm:text-5xl">
                   Make your menu edits<br className="hidden sm:block" /> <span className="text-[#b77038]">upload-ready.</span>
@@ -302,6 +306,19 @@ export default function Dashboard() {
                 <p className="mt-4 max-w-xl text-base leading-7 text-muted-foreground">
                   Drop in a CSV, review every item and individual modifier, and leave the tedious formatting behind.
                 </p>
+                <div className="mt-4 flex flex-wrap gap-2">
+                  {posKeys.map((k) => (
+                    <button
+                      key={k}
+                      type="button"
+                      onClick={() => setSelectedPos(k)}
+                      className={`rounded-full px-3 py-1 text-xs font-semibold transition ${selectedPos === k ? "bg-[#49372e] text-white" : "bg-white/70 text-[#765139] hover:bg-white"}`}
+                    >
+                      {POS_PROFILES[k]!.name.replace(" POS", "").replace(" Restaurant", "")}
+                    </button>
+                  ))}
+                </div>
+                <p className="mt-2 text-xs text-muted-foreground">{activePos.architecture}</p>
               </div>
               <button
                 type="button"
@@ -333,7 +350,7 @@ export default function Dashboard() {
                         <h2 className="font-display text-xl font-bold text-[#46352c]">Import your menu CSV</h2>
                       </div>
                       <p className="mt-3 max-w-lg text-sm leading-6 text-muted-foreground">
-                        Use the Toast-ready columns below. We will flag missing values before anything gets sent to your team.
+                        Using <span className="font-semibold text-[#3d3029]">{activePos.name}</span> columns: {activePos.schemas.rewardExport.slice(0, 3).join(", ")} … We flag missing values before handoff.
                       </p>
                     </div>
                     <Badge className="hidden rounded-full bg-[#dcefe2] px-3 py-1 text-[#47715a] shadow-none sm:inline-flex">

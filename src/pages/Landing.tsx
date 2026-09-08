@@ -5,9 +5,11 @@ import {
   FileSpreadsheet,
   Layers3,
   Sparkles,
+  Store,
   Utensils,
 } from "lucide-react";
 import { Link } from "react-router";
+import { POS_PROFILES } from "@/adapters/posEcosystem";
 
 const features = [
   {
@@ -19,7 +21,7 @@ const features = [
   {
     icon: Layers3,
     title: "Modifiers stay individual",
-    description: "Every option gets its own row, so Toast edits stay precise instead of disappearing into groupings.",
+    description: "Every option gets its own row, so edits stay precise instead of disappearing into groupings.",
     color: "bg-[#dcefe2] text-[#47715a]",
   },
   {
@@ -29,6 +31,8 @@ const features = [
     color: "bg-[#f8e6bc] text-[#a66a38]",
   },
 ];
+
+const posEntries = Object.entries(POS_PROFILES);
 
 export default function Landing() {
   return (
@@ -106,6 +110,30 @@ export default function Landing() {
               </motion.div>
             ))}
           </div>
+        </section>
+
+        <section className="mx-auto max-w-[1180px] py-10">
+          <div className="mb-6 flex items-baseline justify-between gap-4">
+            <h2 className="font-display text-2xl font-bold tracking-tight text-[#3d3029]">All 11 POS pipelines</h2>
+            <span className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">{posEntries.length} platforms · CSV universal bus</span>
+          </div>
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {posEntries.map(([key, pos]) => (
+              <div key={key} className="clay-surface rounded-[22px] p-5">
+                <div className="mb-3 flex items-center gap-2.5">
+                  <span className="flex size-9 items-center justify-center rounded-xl bg-[#f5b46f]/60 text-[#503b2b]"><Store className="size-4" /></span>
+                  <span className="font-display text-sm font-bold leading-tight text-[#3d3029]">{pos.name}</span>
+                </div>
+                <p className="line-clamp-3 text-xs leading-5 text-muted-foreground">{pos.architecture}</p>
+                <p className="mt-2 line-clamp-2 text-[11px] font-medium leading-4 text-[#b77038]">{pos.systemRules}</p>
+                <div className="mt-3 flex flex-wrap gap-1.5">
+                  <span className="rounded-full bg-white/70 px-2 py-1 text-[10px] font-semibold text-muted-foreground">{pos.schemas.rewardExport[0]}</span>
+                  <span className="rounded-full bg-white/70 px-2 py-1 text-[10px] font-semibold text-muted-foreground">{pos.schemas.couponExport[0]}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+          <p className="mt-4 text-center text-xs text-muted-foreground">Browser runner (`automation/browser_agent.py`) is the bridge when APIs are gated. CSV is the universal bus.</p>
         </section>
 
         <section className="mx-auto flex max-w-[1180px] flex-col items-start justify-between gap-7 rounded-[30px] bg-[#f5d8ca] px-6 py-8 text-[#65483d] shadow-[8px_8px_0_rgba(141,87,65,.08),inset_0_1px_0_rgba(255,255,255,.6)] sm:px-10 md:flex-row md:items-center">
