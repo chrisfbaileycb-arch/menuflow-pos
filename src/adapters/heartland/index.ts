@@ -1,5 +1,4 @@
-import type { PosSkillSetDefinition, PosProvider } from "../types";
-import type { CsvImportResult, StaffRecord, RewardsMemberRecord } from "../types";
+import type { PosSkillSetDefinition, PosProvider, CsvImportResult, StaffRecord, RewardsMemberRecord } from "../types";
 
 export interface HeartlandSkillParameters {
   csvContent: string;

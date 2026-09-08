@@ -1,4 +1,13 @@
-import type { PosProvider, PosWorkflowAction, CsvImportResult } from "./types";
+import type { PosProvider, PosWorkflowAction, CsvImportResult, StaffRecord, RewardsMemberRecord, PosSkillSetDefinition } from "./types";
+
+export interface IPosWorkflowExecutor {
+  manifest: PosSkillSetDefinition;
+  executeStaffImport(csvData: string): Promise<CsvImportResult<StaffRecord>>;
+  executeStaffExport(): Promise<string>;
+  executeRewardsImport(csvData: string): Promise<CsvImportResult<RewardsMemberRecord>>;
+  executeRewardsExport(): Promise<string>;
+  executeTimecardPull(startDate: string, endDate: string): Promise<string>;
+}
 
 export interface PosTransformationContract {
   provider: PosProvider;
