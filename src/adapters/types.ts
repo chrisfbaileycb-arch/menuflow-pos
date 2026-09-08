@@ -12,21 +12,21 @@ export type PosWorkflowAction =
   | "menu_audit_scan"
   | "timecard_pull";
 
-export type Role = "server" | "bartender" | "cook" | "shift_lead" | "manager";
+export type StaffRole = "server" | "bartender" | "cook" | "shift_lead" | "manager";
+
+export type RewardTier = "bronze" | "silver" | "gold" | "platinum";
 
 export interface StaffRecord {
   employeeId: string;
   firstName: string;
   lastName: string;
-  role: Role;
+  role: StaffRole;
   email: string;
   phone: string;
   hourlyRate: number;
   pinCode?: string;
   active: boolean;
 }
-
-export type RewardTier = "bronze" | "silver" | "gold" | "platinum";
 
 export interface RewardsMemberRecord {
   memberId: string;
@@ -40,15 +40,17 @@ export interface RewardsMemberRecord {
   totalLifetimeSpend: number;
 }
 
+export interface CsvImportFailure {
+  row: number;
+  raw: Record<string, string>;
+  error: string;
+}
+
 export interface CsvImportResult<T> {
   success: boolean;
   inserted: number;
   updated: number;
-  failedRecords: Array<{
-    row: number;
-    raw: Record<string, string>;
-    error: string;
-  }>;
+  failedRecords: CsvImportFailure[];
   records: T[];
 }
 
