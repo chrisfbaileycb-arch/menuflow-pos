@@ -16,9 +16,10 @@ import {
   UploadCloud,
   Utensils,
   X,
+  Zap,
 } from "lucide-react";
 import { useMemo, useRef, useState, type ChangeEvent, type DragEvent } from "react";
-import { useNavigate } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/use-auth";
@@ -270,6 +271,13 @@ export default function Dashboard() {
               <FileUp className="size-4" />
               Import menu
             </div>
+            <Link
+              to="/connectors"
+              className="flex items-center gap-3 rounded-2xl px-3 py-3 text-sm text-muted-foreground transition hover:bg-white/50"
+            >
+              <Zap className="size-4" />
+              API connectors
+            </Link>
             <div className="flex items-center gap-3 rounded-2xl px-3 py-3 text-sm text-muted-foreground">
               <MenuIcon className="size-4" />
               Menu library

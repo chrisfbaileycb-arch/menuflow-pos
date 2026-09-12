@@ -34,6 +34,19 @@ const schema = defineSchema(
 
     // add other tables here
 
+    // API connector registry for the universal trigger platform
+    connectors: defineTable({
+      userId: v.id("users"),
+      publicId: v.string(), // human-friendly id like conn_ab12cd34
+      name: v.string(),
+      targetUrl: v.string(),
+      apiKey: v.optional(v.string()),
+      description: v.optional(v.string()),
+      createdAt: v.number(),
+    })
+      .index("by_user", ["userId"])
+      .index("by_publicId", ["publicId"]),
+
     // tableName: defineTable({
     //   ...
     //   // table fields
