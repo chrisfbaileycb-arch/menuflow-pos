@@ -4,10 +4,14 @@
 #   GH_TOKEN=ghp_xxx ./scripts/push-to-github.sh                 # creates repo if missing, then pushes
 #   GH_TOKEN=ghp_xxx REPO=me/menuflow-pos ./scripts/push-to-github.sh
 #   ./scripts/push-to-github.sh git@github.com:me/menuflow-pos.git   # push only, using your ssh key
+#   RUN_TESTS=1 GH_TOKEN=... ./scripts/push-to-github.sh          # also gate on npm test
+#
+# Works from a git checkout *and* from a freshly unzipped delivery (no .git): in that
+# case the tree is initialized as a repo first. Set INIT=0 to refuse instead.
 #
 # Token needs only: "Administration: read & write" + "Contents: read & write"
 # (fine-grained, scoped to the single repository). It is used for one request and
-# never written to .git/config or a credential helper.
+# never written into .git/config or a credential helper.
 
 set -euo pipefail
 
@@ -15,7 +19,22 @@ API="https://api.github.com"
 cd "$(dirname "$0")/.."          # run from the repo root before resolving anything
 ROOT="$(pwd)"
 REPO="${REPO:-chrisfbaileycb-arch/menuflow-pos}"
-BRANCH="${BRANCH:-$(git rev-parse --abbrev-ref HEAD)}"
+
+# --- a git repo is required to push; a zip delivery doesn't have one, so make one ---
+if git rev-parse --git-dir >/dev/null 2>&1; then
+  BRANCH="${BRANCH:-$(git symbolic-ref --short -q HEAD || echo main)}"
+else
+  if [ "${INIT:-1}" = "0" ]; then
+    echo "!! $ROOT is not a git repository and INIT=0 was set."
+    echo "   run: git init && git add -A && git commit -m 'MenuFlow POS' && $0"
+    exit 3
+  fi
+  echo "==> no .git here (unzipped delivery?) — initializing a repository"
+  BRANCH="${BRANCH:-main}"
+  git init -q
+  git symbolic-ref HEAD "refs/heads/$BRANCH"    # version-safe way to name the first branch
+  GIT_JUST_INITIALIZED=1
+fi
 
 echo "==> repo     : $REPO"
 echo "==> branch   : $BRANCH"
@@ -43,17 +62,20 @@ if [ -n "$(git status --porcelain)" ]; then
   # identity supplied inline so the script never has to mutate your git config
   git -c user.name="${GIT_AUTHOR_NAME:-MenuFlow POS}" \
       -c user.email="${GIT_AUTHOR_EMAIL:-menuflow@signalf.dev}" \
-      commit -qm "MenuFlow POS — pre-push snapshot $(date -u +%Y-%m-%dT%H:%MZ)"
+      commit -qm "${GIT_COMMIT_MESSAGE:-MenuFlow POS — pre-push snapshot $(date -u +%Y-%m-%dT%H:%MZ)}"
 else
   echo "==> working tree clean ($(git rev-parse --short HEAD))"
 fi
+
+SHA="$(git rev-parse HEAD)"
+echo "==> shipping $SHA"
 
 # --- resolve the remote ---
 if [ $# -ge 1 ]; then
   URL="$1"
 elif [ -n "${GH_TOKEN:-}${GITHUB_TOKEN:-}" ]; then
   TOKEN="${GH_TOKEN:-$GITHUB_TOKEN}"
-  OWNER="${REPO%%/*}"; NAME="${REPO##*/}"
+  NAME="${REPO##*/}"
   CODE=$(curl -s -o /dev/null -w '%{http_code}' -H "Authorization: Bearer $TOKEN" "$API/repos/$REPO")
   if [ "$CODE" = "404" ]; then
     echo "==> repo $REPO not found — creating it"
@@ -75,19 +97,18 @@ else
   exit 2
 fi
 
-# push straight to the URL — the token never lands in .git/config, so there is
-# nothing to scrub even if the push is interrupted
-echo "==> pushing $BRANCH -> $REPO"
+# push the resolved SHA straight to the URL — the token never lands in .git/config,
+# so there is nothing to scrub even if the push is interrupted
+echo "==> pushing $BRANCH ($SHA) -> $REPO"
 git remote remove origin >/dev/null 2>&1 || true
-if ! git push --force "$URL" "refs/heads/$BRANCH":refs/heads/$BRANCH; then
-  echo "!! push failed. If the repo is private and empty you can also just run:"
-  echo "     git push --force https://github.com/$REPO.git main   (GitHub will prompt for auth)"
+if ! git push --force "$URL" "$SHA":refs/heads/"$BRANCH"; then
+  echo "!! push failed. From an interactive shell you can also just run:"
+  echo "     git push --force https://github.com/$REPO.git $BRANCH   (GitHub will prompt for auth)"
   exit 1
 fi
 # leave a credential-free origin behind so later pushes are a plain `git push`
 git remote add origin "https://github.com/$REPO.git" 2>/dev/null || true
-git fetch -q origin "$BRANCH" 2>/dev/null || true
-git update-ref "refs/remotes/origin/$BRANCH" "$(git rev-parse HEAD)" 2>/dev/null || true
+git update-ref "refs/remotes/origin/$BRANCH" "$SHA" 2>/dev/null || true
 git config "branch.$BRANCH.remote" origin 2>/dev/null || true
 git config "branch.$BRANCH.merge" "refs/heads/$BRANCH" 2>/dev/null || true
 

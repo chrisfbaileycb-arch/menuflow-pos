@@ -12,11 +12,17 @@ hand-typing git commands, and the docs no longer overstate what the code does.
   certification (`node server/verify-cli.js`) and **refuses to commit or push unless it
   prints `RESULT: PASS`**; optionally gates on `npm test` with `RUN_TESTS=1`. Creates
   `chrisfbaileycb-arch/menuflow-pos` via the GitHub API when it does not exist yet,
-  accepts an explicit remote as `$1` (https or ssh), and derives the branch from
-  `git rev-parse --abbrev-ref HEAD` instead of hardcoding it.
+  accepts an explicit remote as `$1` (https or ssh), resolves the branch with
+  `git symbolic-ref --short -q HEAD` (falling back to `main`) rather than hardcoding it,
+  and pushes the resolved commit SHA.
 - `npm run push` — same script invoked through `bash`, so it still runs on copies that
   lose the executable bit (zip extraction, Windows checkout).
-- This file.
+- `.github/workflows/verify.yml` — CI re-runs `npm run verify` and `npm test` on node
+  18/20/22 for every push and PR, re-asserts `RESULT: PASS` from the verifier's own
+  output, and guards two invariants that are invisible in a diff: no `data/`, `.env`, key
+  or credential path may be tracked, and the 7-entry platform catalog behind the dropdown
+  must still be present. Every step was executed locally before the file was committed.
+- `CHANGELOG.md`.
 
 ### Fixed
 - The repository was on `master`, not `main`: `git push -u origin main` failed with
@@ -28,6 +34,14 @@ hand-typing git commands, and the docs no longer overstate what the code does.
   plain `git push` works.
 - `scripts/push-to-github.sh` lost its `0755` mode across a workspace snapshot; restored,
   and the mode is verified inside the shipped zip.
+
+- `scripts/push-to-github.sh` died with `fatal: not a git repository` (exit 128) when run
+  from an unzipped delivery, because `git rev-parse --abbrev-ref HEAD` executes under
+  `set -e` before any friendly message could print — i.e. the documented one-command
+  publish failed for exactly the client who received the zip. The script now detects the
+  absence of `.git`, initializes a repository (opt out with `INIT=0`, which then exits 3
+  with the manual commands), and pushes the resolved commit SHA so an unborn or detached
+  HEAD cannot produce a `src refspec ... does not match any` error.
 
 ### Changed
 - README "Safety model / scope" corrected: **five of seven** platforms declare a live-API
