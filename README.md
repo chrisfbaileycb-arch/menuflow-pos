@@ -83,11 +83,25 @@ cli/menuflow.js              headless engine
 tests/                        47 tests incl. python-parity (tests/parity/ holds the vendored scripts)
 fixtures/                     seed menus (dirty showcase + clean control), CSV samples, generators
 docs/                         ARCHITECTURE.md · SOURCES.md
+scripts/push-to-github.sh     preflight-verified publish to GitHub (see "Pushing to GitHub")
 ```
 
 ## Safety model / scope
 
-Sandbox mode is default and executes against the local workbench store. Each platform entry declares an API adapter id; **live-API mode requires per-platform credentials** and the portal-side `manual` steps remain operator-executed task cards with verified citations — the console verifies them with workbench checks and explicit ACKs. Audit, remediation, import/export, isolation, midnight-split, shadow-build and publish flows are all genuinely automated here; the actual write to a vendor's hosted menu is deliberately human-gated by design doctrine ("clients control their own cutover").
+Sandbox mode is default and executes against the local workbench store. Five of the seven platform entries declare a live-API adapter id (`pocketsuite-rest`, `toast-live-api`, `square-catalog-api`, `clover-menu-api`, `lightspeed-urban-api`); TouchBistro and Aloha deliberately ship `apiAdapter: null` because their menu writes are iPad-local / ADM-back-office driven, so the console stays portal-gated there. Either way **live-API mode requires per-platform credentials** and the portal-side `manual` steps remain operator-executed task cards with verified citations — the console verifies them with workbench checks and explicit ACKs. Audit, remediation, import/export, isolation, midnight-split, shadow-build and publish flows are all genuinely automated here; the actual write to a vendor's hosted menu is deliberately human-gated by design doctrine ("clients control their own cutover").
+
+## Pushing to GitHub
+
+`scripts/push-to-github.sh` is the one-shot path, and it refuses to ship anything that isn't green:
+
+```bash
+GH_TOKEN=<fine-grained PAT> ./scripts/push-to-github.sh     # creates chrisfbaileycb-arch/menuflow-pos if absent, then pushes main
+RUN_TESTS=1 GH_TOKEN=... ./scripts/push-to-github.sh         # also gate on the 47-test suite
+./scripts/push-to-github.sh git@github.com:chrisfbaileycb-arch/menuflow-pos.git   # ssh, no token
+./scripts/push-to-github.sh https://github.com/chrisfbaileycb-arch/menuflow-pos.git # will prompt for auth
+```
+
+Preflight runs `node server/verify-cli.js` and requires `RESULT: PASS` (schema-valid workflows, resolvable citations, clean dry-runs) before anything is committed or pushed; `data/` is gitignored so no run state leaves the machine. The token is passed straight to `git push` as a URL and is never written into `.git/config`, a credential helper, or the commit — the origin left behind is credential-free. Needs only *Administration* + *Contents* read/write on the single repo (fine-grained). The branch is `main`.
 
 ## Maintained by
 
