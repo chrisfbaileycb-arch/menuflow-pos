@@ -1,6 +1,6 @@
 {
   "name": "menuflow-pos",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "MenuFlow POS — multi-platform restaurant POS operations console. Executable, owner's-manual-verified workflows, menu audit/normalization, import/export. Zero runtime dependencies.",
   "main": "server/server.js",
   "type": "commonjs",

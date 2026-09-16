@@ -65,6 +65,21 @@ Step `args` support `{inputName}` templates (whole-value or interpolated; arrays
 
 `npm test` additionally executes all 49 workflows in **apply mode** with real checks and asserts state transitions (isolation, midnight-split, cutover lifecycle, CSV import idempotence), python parity of the ported audit scripts, IO round-trips, and HTTP API behaviors (pause/resume, publish blocker, staging isolation).
 
+## Delivery & certification path
+
+`scripts/push-to-github.sh` (also `npm run push`) is the only sanctioned way the tree leaves a
+machine. Order matters and is enforced by the script, not by convention: `npm run verify` must
+print `RESULT: PASS` → optionally `npm test` (`RUN_TESTS=1`) → local commit of any dirty tree →
+create the remote repository if absent (fine-grained PAT) → `git push` **to a URL rather than to a
+configured remote**, so a token can never persist in `.git/config` if the push is interrupted; a
+credential-free `origin` is written only after success. Branch names are resolved from the repo,
+never assumed.
+
+`.github/workflows/verify.yml` re-runs the same two gates on node 18/20/22 for every push and PR,
+re-asserts `RESULT: PASS` from the verifier's own output, and guards the two invariants that would
+be invisible in a diff: no `data/`, `.env`, key or credential path may be tracked, and the platform
+catalog must still expose the dropdown's entries.
+
 ## Extension points
 
 - New skill: export a handler from `server/engine/skills/*.js` (auto-registered; `params` drive validation).

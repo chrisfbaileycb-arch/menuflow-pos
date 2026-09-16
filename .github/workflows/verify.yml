@@ -1,0 +1,57 @@
+name: verify
+
+# The repo's own contract: nothing merges unless every workflow is certified and
+# every suite passes. Zero dependencies, so there is nothing to install and nothing to cache.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  certify:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node: ['18', '20', '22']
+    name: certify workflows + suites (node ${{ matrix.node }})
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+
+      - name: Certification — every workflow schema-valid, citations resolve, dry-runs execute
+        run: npm run verify
+
+      - name: Suites — engine, audit parity (vs the vendored python scripts), workflows, io, api
+        run: npm test
+
+      - name: Fail if the verifier did not report PASS
+        if: always()
+        run: |
+          npm run verify --silent > verify.log 2>&1 || true
+          grep -q "RESULT: PASS" verify.log || { echo "::error::verifier did not print RESULT: PASS"; tail -40 verify.log; exit 1; }
+          echo "certified: $(grep -E 'Workflows found' verify.log | tr -s ' ')"
+
+      - name: Guard — no run state or credentials may be committed
+        run: |
+          set -e
+          if git ls-files | grep -E '(^|/)data/|\.env$|credentials|\.pem$|\.key$'; then
+            echo "::error::run state or credentials are tracked in git"; exit 1
+          fi
+          echo "clean: no data/, .env, key or credential files are tracked"
+          git check-ignore -q data || { echo "::error::data/ is not gitignored — run state could be committed"; exit 1; }
+          echo "clean: data/ is gitignored"
+          node -e "
+            const {ALL}=require('./server/platforms');
+            const ids=Object.keys(ALL);
+            if (ids.length !== 7) { console.error('expected 7 platforms for the dropdown, got '+ids.length); process.exit(1); }
+            console.log('dropdown catalog intact:', ids.join(', '));
+          "

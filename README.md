@@ -83,7 +83,9 @@ cli/menuflow.js              headless engine
 tests/                        47 tests incl. python-parity (tests/parity/ holds the vendored scripts)
 fixtures/                     seed menus (dirty showcase + clean control), CSV samples, generators
 docs/                         ARCHITECTURE.md · SOURCES.md
+CHANGELOG.md                  what shipped in each version, incl. delivery-tooling fixes
 scripts/push-to-github.sh     preflight-verified publish to GitHub (see "Pushing to GitHub")
+.github/workflows/            CI: verify + suites on node 18/20/22, state/credential guards
 ```
 
 ## Safety model / scope
@@ -104,6 +106,8 @@ RUN_TESTS=1 GH_TOKEN=... ./scripts/push-to-github.sh         # also gate on the 
 `npm run push` is the same script via `bash`, so it still works if the executable bit is lost in a zip copy or a Windows checkout.
 
 Preflight runs `node server/verify-cli.js` and requires `RESULT: PASS` (schema-valid workflows, resolvable citations, clean dry-runs) before anything is committed or pushed; `data/` is gitignored so no run state leaves the machine. The token is passed straight to `git push` as a URL and is never written into `.git/config`, a credential helper, or the commit — the origin left behind is credential-free. Needs only *Administration* + *Contents* read/write on the single repo (fine-grained). The branch is `main`.
+
+`.github/workflows/verify.yml` re-runs both gates on node 18/20/22 for every push and PR, and additionally fails if any `data/`, `.env`, key or credential path is tracked or the 7-platform dropdown catalog drifts.
 
 ## Maintained by
 
