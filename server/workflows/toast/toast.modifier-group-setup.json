@@ -1,0 +1,107 @@
+{
+  "platform": "toast",
+  "id": "toast.modifier-group-setup",
+  "category": "modifiers",
+  "risk": "medium",
+  "title": "Create a modifier group + options with the right Required/Optional behavior",
+  "summary": "Replicates Toast Web modifier-group creation including the behavior matrix (Required blocks sends; Optional can force a POS prompt) and the empty-group trap.",
+  "inputs": [
+    {
+      "name": "groupName",
+      "type": "string",
+      "required": true,
+      "example": "Wing Sauces"
+    },
+    {
+      "name": "optionName",
+      "type": "string",
+      "required": true,
+      "example": "Ghost Chili"
+    },
+    {
+      "name": "priceDelta",
+      "type": "money",
+      "required": false,
+      "example": "1.00"
+    },
+    {
+      "name": "maxChoices",
+      "type": "number",
+      "required": false,
+      "example": "2"
+    }
+  ],
+  "steps": [
+    {
+      "id": "s-grp",
+      "kind": "auto",
+      "title": "Create the group (min 1 when required behavior is intended)",
+      "skill": "menu.modifier.group.ensure",
+      "args": {
+        "name": "{groupName}",
+        "maxChoices": "{maxChoices}",
+        "shared": false
+      },
+      "citations": [
+        {
+          "doc": "toast.modifier-groups",
+          "section": "create"
+        }
+      ]
+    },
+    {
+      "id": "s-opt",
+      "kind": "auto",
+      "title": "Add the option with price delta",
+      "skill": "menu.modifier.option.upsert",
+      "args": {
+        "group": "{groupName}",
+        "name": "{optionName}",
+        "priceDelta": "{priceDelta}"
+      }
+    },
+    {
+      "id": "s-behavior",
+      "kind": "manual",
+      "title": "Set Required vs Optional + Include a POS prompt",
+      "instructions": "On the group: Required forces a selection before the item can be sent; Optional shows the group only if \"Include a POS prompt\" is enabled — choose deliberately per service flow.",
+      "citations": [
+        {
+          "doc": "toast.modifier-groups",
+          "section": "behavior"
+        }
+      ]
+    },
+    {
+      "id": "s-order",
+      "kind": "manual",
+      "title": "Control display order if staff complain about prompt sequence",
+      "instructions": "Group Properties > Display Ordering Priority (1 = first), then Front of house > Order screen setup > UI options > Modifier Ordering Priority = Yes. Save and publish.",
+      "citations": [
+        {
+          "doc": "toast.modifier-display",
+          "section": "priority"
+        }
+      ],
+      "fatal": false
+    },
+    {
+      "id": "s-empty",
+      "kind": "auto",
+      "title": "Empty groups break online-ordering syncs — block them",
+      "skill": "audit.empty-groups",
+      "args": {},
+      "citations": [
+        {
+          "doc": "toast.modifier-groups",
+          "section": "empty-group"
+        }
+      ],
+      "checks": [
+        {
+          "check": "no-empty-modifier-groups"
+        }
+      ]
+    }
+  ]
+}

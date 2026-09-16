@@ -1,0 +1,72 @@
+{
+  "platform": "square",
+  "id": "square.csv-import",
+  "category": "import",
+  "risk": "medium",
+  "title": "Import the item library from CSV (Modify mode) with review gate",
+  "summary": "Dashboard > Items > Actions > Import Library > Modify Item Library. The engine parses the real Square export shape, then a mandatory review gate mirrors \"Review your changes and click Confirm\". Undo Catalogue documented as the escape hatch.",
+  "inputs": [
+    {
+      "name": "file",
+      "type": "string",
+      "required": true,
+      "example": "square-export.csv (place under data/imports/)"
+    }
+  ],
+  "steps": [
+    {
+      "id": "s-backup",
+      "kind": "manual",
+      "title": "Export the current library first",
+      "instructions": "Items page > Export > CSV. This file is the rollback reference and the exact column template the importer expects.",
+      "citations": [
+        {
+          "doc": "square.library-import-export",
+          "section": "export"
+        }
+      ]
+    },
+    {
+      "id": "s-import",
+      "kind": "auto",
+      "title": "Parse + normalize the CSV into the staging workbench",
+      "skill": "io.import.menu",
+      "args": {
+        "file": "{file}",
+        "format": "square-csv",
+        "mode": "modify"
+      },
+      "citations": [
+        {
+          "doc": "square.library-import-export",
+          "section": "import-modify"
+        }
+      ]
+    },
+    {
+      "id": "s-audit",
+      "kind": "auto",
+      "title": "Audit the imported workbench before it can be confirmed",
+      "skill": "audit.full",
+      "args": {}
+    },
+    {
+      "id": "s-confirm",
+      "kind": "gate",
+      "title": "Review diff and confirm import (this is Square’s Confirm step)",
+      "instructions": "Compare the summary counts + audit findings against the exported backup. Only then does the change proceed; Square keeps Actions > Undo Catalogue available for a full revert."
+    },
+    {
+      "id": "s-undo",
+      "kind": "manual",
+      "title": "Know the undo path",
+      "instructions": "If anything looks wrong after Confirm: Items page > Actions > Undo Catalogue to roll back to the previous library version.",
+      "citations": [
+        {
+          "doc": "square.library-import-export",
+          "section": "undo"
+        }
+      ]
+    }
+  ]
+}

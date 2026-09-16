@@ -1,0 +1,205 @@
+{
+  "platform": "heartland",
+  "id": "hl.menu-rebuild-normalized",
+  "category": "rebuild",
+  "risk": "high",
+  "title": "Full menu normalization rebuild (the five-step Signal F workflow)",
+  "summary": "Audit → scope approval → shadow build → normalization + isolation + pricing/temporal repair → verified cutover. The complete pipeline from the heartland-pos README, executable.",
+  "inputs": [
+    {
+      "name": "approvalRef",
+      "type": "string",
+      "required": true,
+      "example": "signed scope agreement id"
+    },
+    {
+      "name": "fixModifier",
+      "type": "string",
+      "required": false,
+      "example": "Pepperoni — the modifier to isolate first"
+    }
+  ],
+  "steps": [
+    {
+      "id": "s-audit",
+      "kind": "auto",
+      "title": "Run the full menu audit and write the client report",
+      "skill": "audit.full",
+      "args": {},
+      "citations": [
+        {
+          "doc": "heartland.kb.audit-protocol",
+          "section": "protocol"
+        }
+      ]
+    },
+    {
+      "id": "s-gate",
+      "kind": "gate",
+      "title": "Client approval of audit findings + scope",
+      "instructions": "Present the audit report (HIGH/MEDIUM findings, 86-cascade exposure). Obtain WRITTEN approval for the scope: targeted fix vs full normalization. Never touch the live system before this gate."
+    },
+    {
+      "id": "s-normalize",
+      "kind": "auto",
+      "title": "Normalize names, casing, prices, duplicate options",
+      "skill": "menu.normalize",
+      "args": {}
+    },
+    {
+      "id": "s-dedup",
+      "kind": "auto",
+      "title": "Consolidate duplicate item names (keep canonical config)",
+      "skill": "menu.item.consolidate_duplicates",
+      "args": {},
+      "citations": [
+        {
+          "doc": "heartland.kb.modifier-architecture",
+          "section": "pepperoni-problem"
+        }
+      ]
+    },
+    {
+      "id": "s-isolate",
+      "kind": "auto",
+      "title": "Isolate the flagged shared modifier (if named)",
+      "skill": "menu.modifier.isolate",
+      "args": {
+        "modifier": "{fixModifier}"
+      },
+      "fatal": false
+    },
+    {
+      "id": "s-rush",
+      "kind": "auto",
+      "title": "Resolve Rush+Hold contradictions found by coursing audit",
+      "skill": "menu.item.set_course",
+      "args": {
+        "item": "Buffalo Wings (10pc)",
+        "course": 1,
+        "rush": false,
+        "hold": false
+      },
+      "citations": [
+        {
+          "doc": "heartland.kb.coursing",
+          "section": "basics"
+        }
+      ]
+    },
+    {
+      "id": "s-isoall",
+      "kind": "auto",
+      "title": "Enforce the isolation standard menu-wide (split any remaining cross-category records)",
+      "skill": "menu.modifier.isolate_all_shared",
+      "args": {},
+      "citations": [
+        {
+          "doc": "heartland.kb.modifier-architecture",
+          "section": "isolation"
+        }
+      ]
+    },
+    {
+      "id": "s-empty",
+      "kind": "auto",
+      "title": "Clear empty modifier groups (sync-blockers)",
+      "skill": "menu.modifier.remove_empty",
+      "args": {},
+      "citations": [
+        {
+          "doc": "signalF.shared-rules",
+          "section": "empty-groups"
+        }
+      ]
+    },
+    {
+      "id": "s-mid",
+      "kind": "auto",
+      "title": "Auto-split all midnight-crossing windows",
+      "skill": "menu.schedule.auto_split_all",
+      "args": {},
+      "citations": [
+        {
+          "doc": "heartland.kb.midnight-rule",
+          "section": "rule"
+        }
+      ]
+    },
+    {
+      "id": "s-dead",
+      "kind": "auto",
+      "title": "Disable dead force-price rules",
+      "skill": "menu.pricing.disable_dead_force_rules",
+      "args": {}
+    },
+    {
+      "id": "s-shadow",
+      "kind": "auto",
+      "title": "Build all v2 channels",
+      "skill": "channel.shadow_create",
+      "args": {}
+    },
+    {
+      "id": "s-verify",
+      "kind": "auto",
+      "title": "Verify shadow structure",
+      "skill": "channel.shadow_verify",
+      "args": {},
+      "checks": [
+        {
+          "check": "no-empty-modifier-groups"
+        },
+        {
+          "check": "shadow-verified"
+        },
+        {
+          "check": "no-midnight-violations"
+        }
+      ]
+    },
+    {
+      "id": "s-final",
+      "kind": "gate",
+      "title": "Client approves cutover of the rebuilt menu",
+      "instructions": "Walk v2 channels with the owner. Record the written approval reference before promotion."
+    },
+    {
+      "id": "s-cutover",
+      "kind": "auto",
+      "title": "Cutover with fallback retained",
+      "skill": "channel.cutover",
+      "args": {
+        "clientApprovalRef": "{approvalRef}"
+      }
+    },
+    {
+      "id": "s-pub",
+      "kind": "auto",
+      "title": "Publish to live through the validation gate",
+      "skill": "publish.apply",
+      "args": {}
+    },
+    {
+      "id": "s-check",
+      "kind": "auto",
+      "title": "Final safety checks",
+      "skill": "menu.channel.list",
+      "args": {},
+      "checks": [
+        {
+          "check": "item-count-min",
+          "args": {
+            "min": 10
+          }
+        },
+        {
+          "check": "no-midnight-violations"
+        },
+        {
+          "check": "cutover-complete"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,87 @@
+{
+  "platform": "lightspeed",
+  "id": "lightspeed.price-list-daypart",
+  "category": "pricing",
+  "risk": "medium",
+  "title": "Happy hour via price list + period (the K-Series way)",
+  "summary": "Day-parted pricing uses price lists with periods attached to menus — model the rule on the workbench, then mirror in Back Office.",
+  "inputs": [
+    {
+      "name": "name",
+      "type": "string",
+      "required": true,
+      "example": "Happy Hour 4-6"
+    },
+    {
+      "name": "price",
+      "type": "money",
+      "required": true,
+      "example": "3.00"
+    },
+    {
+      "name": "item",
+      "type": "string",
+      "required": true,
+      "example": "Draft Beer"
+    },
+    {
+      "name": "start",
+      "type": "string",
+      "required": true,
+      "example": "2:00 PM"
+    },
+    {
+      "name": "end",
+      "type": "string",
+      "required": true,
+      "example": "3:00 PM"
+    }
+  ],
+  "steps": [
+    {
+      "id": "s-rule",
+      "kind": "auto",
+      "title": "Create the force-price rule (engine keeps the stack sorted)",
+      "skill": "menu.pricing.rule.add",
+      "args": {
+        "name": "{name}",
+        "type": "force",
+        "value": "{price}",
+        "items": "{item}",
+        "start": "{start}",
+        "end": "{end}",
+        "postTax": false
+      },
+      "citations": [
+        {
+          "doc": "lightspeed.menus",
+          "section": "price-lists"
+        }
+      ]
+    },
+    {
+      "id": "s-bo",
+      "kind": "manual",
+      "title": "Build the price list + period",
+      "instructions": "Back Office > Menu > Price lists: create \"Happy Hour 4-6\", add the period (days + start/end), attach to the menu that serves that day part. Items not in the price list keep base prices.",
+      "citations": [
+        {
+          "doc": "lightspeed.menus",
+          "section": "price-lists"
+        }
+      ]
+    },
+    {
+      "id": "s-verify",
+      "kind": "auto",
+      "title": "No dead force rules",
+      "skill": "audit.pricing",
+      "args": {},
+      "checks": [
+        {
+          "check": "no-dead-force-price"
+        }
+      ]
+    }
+  ]
+}

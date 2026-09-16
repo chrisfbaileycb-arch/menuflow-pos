@@ -1,0 +1,45 @@
+{
+  "platform": "heartland",
+  "id": "hl.backup-export",
+  "category": "export",
+  "risk": "low",
+  "title": "Export everything: menu JSON, platform CSV, audit report, workflow bundle, project backup",
+  "summary": "Built-in export run used before/after any change: canonical JSON + Heartland-flat JSON + workflow bundle + full project backup.",
+  "inputs": [],
+  "steps": [
+    {
+      "id": "s-menu",
+      "kind": "auto",
+      "title": "Canonical live-menu JSON export",
+      "skill": "io.export.menu",
+      "args": {
+        "format": "canonical-json",
+        "scope": "live"
+      }
+    },
+    {
+      "id": "s-hl",
+      "kind": "auto",
+      "title": "Heartland flat export (consumed by heartland-pos python audit scripts)",
+      "skill": "io.export.menu",
+      "args": {
+        "format": "heartland-json",
+        "scope": "live"
+      }
+    },
+    {
+      "id": "s-wf",
+      "kind": "auto",
+      "title": "Verified workflow bundle for this platform",
+      "skill": "io.export.workflows",
+      "args": {}
+    },
+    {
+      "id": "s-proj",
+      "kind": "auto",
+      "title": "Full project backup (credentials stripped)",
+      "skill": "io.export.project",
+      "args": {}
+    }
+  ]
+}

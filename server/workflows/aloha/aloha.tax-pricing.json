@@ -1,0 +1,59 @@
+{
+  "platform": "aloha",
+  "id": "aloha.tax-pricing",
+  "category": "pricing",
+  "risk": "medium",
+  "title": "Tax rate definitions + per-item assignment",
+  "summary": "Rates live centrally in ADM and attach per item/section (food vs alcohol vs merchandise). Misassigned tax is a common migration bug; set and verify both sides.",
+  "inputs": [
+    {
+      "name": "taxName",
+      "type": "string",
+      "required": true,
+      "example": "Alcohol"
+    },
+    {
+      "name": "ratePct",
+      "type": "number",
+      "required": true,
+      "example": "12.0"
+    },
+    {
+      "name": "items",
+      "type": "string[]",
+      "required": false,
+      "example": "Draft Beer"
+    }
+  ],
+  "steps": [
+    {
+      "id": "s-set",
+      "kind": "auto",
+      "title": "Define/assign on the workbench",
+      "skill": "menu.tax.ensure",
+      "args": {
+        "name": "{taxName}",
+        "ratePct": "{ratePct}",
+        "items": "{items}"
+      },
+      "citations": [
+        {
+          "doc": "aloha.adm-menu",
+          "section": "tax"
+        }
+      ]
+    },
+    {
+      "id": "s-adm",
+      "kind": "manual",
+      "title": "Mirror in ADM",
+      "instructions": "ADM: tax rates > define; assign the rate to the matching item/section records. Then ring one of each on a test ticket and read the tax lines before service.",
+      "citations": [
+        {
+          "doc": "aloha.adm-menu",
+          "section": "tax"
+        }
+      ]
+    }
+  ]
+}

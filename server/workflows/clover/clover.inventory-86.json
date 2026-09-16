@@ -1,0 +1,81 @@
+{
+  "platform": "clover",
+  "id": "clover.inventory-86",
+  "category": "operations",
+  "risk": "medium",
+  "title": "Run-out via inventory counts / availability (never delete)",
+  "summary": "Zero the inventory count or mark the item unavailable — dependent items grey out instead of vanishing; deleting menu records is irreversible for reporting.",
+  "inputs": [
+    {
+      "name": "item",
+      "type": "string",
+      "required": true,
+      "example": "Buffalo Wings"
+    },
+    {
+      "name": "reason",
+      "type": "string",
+      "required": true,
+      "example": "wing supplier miss"
+    }
+  ],
+  "steps": [
+    {
+      "id": "s-cascade",
+      "kind": "auto",
+      "title": "Cascade exposure report",
+      "skill": "audit.86-risk",
+      "args": {},
+      "citations": [
+        {
+          "doc": "heartland.kb.audit-protocol",
+          "section": "never-86"
+        }
+      ]
+    },
+    {
+      "id": "s-count",
+      "kind": "manual",
+      "title": "Set inventory to zero (or mark group unavailable)",
+      "instructions": "Inventory app > item > count 0 with the auto-unavailable behavior; or Menu management > set the item/group unavailable. Reversible and keeps history.",
+      "citations": [
+        {
+          "doc": "clover.inventory",
+          "section": "count"
+        },
+        {
+          "doc": "clover.inventory",
+          "section": "86"
+        }
+      ]
+    },
+    {
+      "id": "s-mirror",
+      "kind": "auto",
+      "title": "Mirror on the workbench",
+      "skill": "menu.item.86",
+      "args": {
+        "item": "{item}",
+        "reason": "{reason}"
+      },
+      "fatal": false
+    },
+    {
+      "id": "s-verify",
+      "kind": "auto",
+      "title": "Verify state",
+      "skill": "menu.channel.list",
+      "args": {},
+      "checks": [
+        {
+          "check": "item-unavailable",
+          "args": {
+            "item": "{item}"
+          },
+          "fatal": false
+        }
+      ],
+      "fatal": false
+    }
+  ]
+}

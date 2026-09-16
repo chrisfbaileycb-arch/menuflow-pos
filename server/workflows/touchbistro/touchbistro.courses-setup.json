@@ -1,0 +1,55 @@
+{
+  "platform": "touchbistro",
+  "id": "touchbistro.courses-setup",
+  "category": "kitchen",
+  "risk": "low",
+  "title": "Course assignment + kitchen fire consistency",
+  "summary": "Assign categories/items to courses (apps 1 / entrees 2 / desserts 3) and kill Rush+Hold contradictions that scramble the kitchen queue.",
+  "inputs": [],
+  "steps": [
+    {
+      "id": "s-scan",
+      "kind": "auto",
+      "title": "Find course-0 full-service items and flag conflicts",
+      "skill": "audit.coursing",
+      "args": {},
+      "citations": [
+        {
+          "doc": "heartland.kb.coursing",
+          "section": "audit"
+        }
+      ]
+    },
+    {
+      "id": "s-fix",
+      "kind": "auto",
+      "title": "Resolve a Rush+Hold conflict on the workbench",
+      "skill": "menu.item.set_course",
+      "args": {
+        "item": "Buffalo Wings (10pc)",
+        "course": 1,
+        "rush": false,
+        "hold": false
+      },
+      "citations": [
+        {
+          "doc": "touchbistro.owner-guide",
+          "section": "courses"
+        }
+      ],
+      "fatal": false
+    },
+    {
+      "id": "s-verify",
+      "kind": "auto",
+      "title": "Verify no conflicts remain",
+      "skill": "audit.coursing",
+      "args": {},
+      "checks": [
+        {
+          "check": "no-rush-hold-conflict"
+        }
+      ]
+    }
+  ]
+}

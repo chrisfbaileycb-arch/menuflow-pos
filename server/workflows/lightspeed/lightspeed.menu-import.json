@@ -1,0 +1,77 @@
+{
+  "platform": "lightspeed",
+  "id": "lightspeed.menu-import",
+  "category": "import",
+  "risk": "medium",
+  "title": "Bulk menu import (CSV) with audit + publish gate",
+  "summary": "Load menu structure via the Back Office import utilities; the workbench parses the same CSV shape this console exports for Lightspeed, audits it, and gates publication.",
+  "inputs": [
+    {
+      "name": "file",
+      "type": "string",
+      "required": true,
+      "example": "lightspeed-menu.csv in data/imports/"
+    }
+  ],
+  "steps": [
+    {
+      "id": "s-prepare",
+      "kind": "manual",
+      "title": "Prepare the CSV from an exported template",
+      "instructions": "Customize the Item list table (Edit table), export a shape to copy, fill rows: type (category/item), name, category, price, modifier groups, available yes/no.",
+      "citations": [
+        {
+          "doc": "lightspeed.menus",
+          "section": "import"
+        },
+        {
+          "doc": "lightspeed.item-list",
+          "section": "table"
+        }
+      ]
+    },
+    {
+      "id": "s-import",
+      "kind": "auto",
+      "title": "Import into the workbench (normalize on the way in)",
+      "skill": "io.import.menu",
+      "args": {
+        "file": "{file}",
+        "format": "lightspeed-csv"
+      }
+    },
+    {
+      "id": "s-clean",
+      "kind": "auto",
+      "title": "CSVs carry group names without options — fold the artifacts (empty referenced groups are sync-breakers)",
+      "skill": "menu.modifier.remove_empty",
+      "args": {},
+      "citations": [
+        {
+          "doc": "signalF.shared-rules",
+          "section": "empty-groups"
+        }
+      ]
+    },
+    {
+      "id": "s-audit",
+      "kind": "auto",
+      "title": "Full audit of the imported structure",
+      "skill": "audit.full",
+      "args": {}
+    },
+    {
+      "id": "s-confirm",
+      "kind": "gate",
+      "title": "Review + confirm (Back Office shows its own import preview — reconcile counts first)",
+      "instructions": "Import counts here must match the preview counts in the portal before confirming."
+    },
+    {
+      "id": "s-publish",
+      "kind": "auto",
+      "title": "Publish workbench in this console",
+      "skill": "publish.apply",
+      "args": {}
+    }
+  ]
+}

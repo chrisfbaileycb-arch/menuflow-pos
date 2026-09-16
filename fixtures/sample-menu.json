@@ -1,0 +1,4064 @@
+{
+  "organization": {
+    "id": "org_signal_f",
+    "name": "Signal F Holdings — Client: Mario’s Pizzeria"
+  },
+  "locations": [
+    {
+      "id": "loc_marios",
+      "name": "Mario’s Pizzeria (Main)",
+      "platform": "heartland",
+      "timezone": "America/Denver",
+      "menu": {
+        "name": "Mario’s Pizzeria — Full Menu",
+        "version": 1,
+        "updatedAt": "2026-09-15T00:00:00.000Z",
+        "categories": [
+          {
+            "id": "cat_pizza",
+            "name": "Pizza"
+          },
+          {
+            "id": "cat_calzone",
+            "name": "Calzone"
+          },
+          {
+            "id": "cat_stromboli",
+            "name": "Stromboli"
+          },
+          {
+            "id": "cat_pasta",
+            "name": "Pasta"
+          },
+          {
+            "id": "cat_salads",
+            "name": "Salads"
+          },
+          {
+            "id": "cat_apps",
+            "name": "Appetizers"
+          },
+          {
+            "id": "cat_desserts",
+            "name": "Desserts"
+          },
+          {
+            "id": "cat_bev",
+            "name": "Beverages"
+          }
+        ],
+        "channels": [
+          {
+            "name": "Dine-In",
+            "status": "live"
+          },
+          {
+            "name": "Carry-Out",
+            "status": "live"
+          },
+          {
+            "name": "Pick-Up",
+            "status": "live"
+          },
+          {
+            "name": "Online",
+            "status": "live"
+          },
+          {
+            "name": "Bar",
+            "status": "live"
+          }
+        ],
+        "taxRates": [
+          {
+            "id": "tx_food",
+            "name": "Food",
+            "ratePct": 3.9
+          },
+          {
+            "id": "tx_alc",
+            "name": "Alcohol",
+            "ratePct": 12
+          }
+        ],
+        "modifierGroups": [
+          {
+            "id": "mg_toppings",
+            "name": "Toppings",
+            "minChoices": 0,
+            "maxChoices": 8,
+            "included": 0,
+            "shared": true,
+            "halfAndHalfAllowed": true,
+            "availableOnline": true,
+            "showNameOn": [
+              "pos",
+              "kds",
+              "printers"
+            ],
+            "options": [
+              {
+                "id": "mo_pep",
+                "name": "Pepperoni",
+                "priceDelta": 250,
+                "default": false
+              },
+              {
+                "id": "mo_cheese",
+                "name": "Extra Cheese",
+                "priceDelta": 200,
+                "default": false
+              },
+              {
+                "id": "mo_sausage",
+                "name": "Italian Sausage",
+                "priceDelta": 250,
+                "default": false
+              },
+              {
+                "id": "mo_mush",
+                "name": "Mushrooms",
+                "priceDelta": 150,
+                "default": false
+              },
+              {
+                "id": "mo_pep2",
+                "name": "pepperoni",
+                "priceDelta": 250,
+                "default": false
+              },
+              {
+                "id": "mo_ham",
+                "name": "Ham",
+                "priceDelta": 200,
+                "default": false
+              },
+              {
+                "id": "mo_olives",
+                "name": "Olives",
+                "priceDelta": 100,
+                "default": false
+              },
+              {
+                "id": "mo_jalapeno",
+                "name": "Jalapeños",
+                "priceDelta": 100,
+                "default": false
+              }
+            ],
+            "itemScope": null
+          },
+          {
+            "id": "mg_sides",
+            "name": "Sides",
+            "minChoices": 0,
+            "maxChoices": 3,
+            "included": 1,
+            "shared": true,
+            "halfAndHalfAllowed": false,
+            "availableOnline": true,
+            "options": [
+              {
+                "id": "mo_garlic",
+                "name": "Garlic Knots",
+                "priceDelta": 300,
+                "default": false
+              },
+              {
+                "id": "mo_wings",
+                "name": "Wings (6ct)",
+                "priceDelta": 600,
+                "default": false
+              }
+            ],
+            "itemScope": null
+          },
+          {
+            "id": "mg_sauce",
+            "name": "Dipping Sauce",
+            "minChoices": 0,
+            "maxChoices": 2,
+            "included": 1,
+            "shared": true,
+            "halfAndHalfAllowed": false,
+            "availableOnline": true,
+            "options": [
+              {
+                "id": "mo_marinara",
+                "name": "Marinara",
+                "priceDelta": 0,
+                "default": true
+              },
+              {
+                "id": "mo_ranch",
+                "name": "Ranch",
+                "priceDelta": 0,
+                "default": false
+              },
+              {
+                "id": "mo_alfredo",
+                "name": "Alfredo",
+                "priceDelta": 100,
+                "default": false
+              }
+            ],
+            "itemScope": null
+          },
+          {
+            "id": "mg_protein",
+            "name": "Protein Add-ons",
+            "minChoices": 0,
+            "maxChoices": 2,
+            "included": 0,
+            "shared": true,
+            "halfAndHalfAllowed": false,
+            "availableOnline": true,
+            "options": [
+              {
+                "id": "mp_pep",
+                "name": "Pepperoni",
+                "priceDelta": 200,
+                "default": false
+              },
+              {
+                "id": "mp_chicken",
+                "name": "Grilled Chicken",
+                "priceDelta": 350,
+                "default": false
+              }
+            ],
+            "itemScope": null
+          },
+          {
+            "id": "mg_kiosk",
+            "name": "Kiosk Extras",
+            "minChoices": 0,
+            "maxChoices": 0,
+            "included": 0,
+            "shared": false,
+            "halfAndHalfAllowed": false,
+            "availableOnline": false,
+            "options": [],
+            "itemScope": []
+          },
+          {
+            "id": "mg_size",
+            "name": "Size",
+            "minChoices": 1,
+            "maxChoices": 1,
+            "included": 1,
+            "shared": true,
+            "halfAndHalfAllowed": false,
+            "availableOnline": true,
+            "options": [
+              {
+                "id": "sz_s",
+                "name": "Small",
+                "priceDelta": -300,
+                "default": false
+              },
+              {
+                "id": "sz_m",
+                "name": "Medium",
+                "priceDelta": 0,
+                "default": true
+              },
+              {
+                "id": "sz_l",
+                "name": "Large",
+                "priceDelta": 300,
+                "default": false
+              },
+              {
+                "id": "sz_xl",
+                "name": "X-Large",
+                "priceDelta": 600,
+                "default": false
+              }
+            ],
+            "itemScope": null
+          }
+        ],
+        "items": [
+          {
+            "id": "it_pz_margherita",
+            "name": "Margherita Pizza",
+            "category": "Pizza",
+            "price": 1200,
+            "description": "House-made dough, San Marzano tomatoes, fresh mozzarella.",
+            "modifierGroups": [
+              "mg_toppings",
+              "mg_size"
+            ],
+            "channels": [
+              "Dine-In",
+              "Carry-Out",
+              "Pick-Up",
+              "Online"
+            ],
+            "course": 0,
+            "rush": false,
+            "hold": false,
+            "halfAndHalf": true,
+            "misc": false,
+            "unavailable": null,
+            "stock": null,
+            "taxRateId": "tx_food",
+            "archived": false
+          },
+          {
+            "id": "it_pz_pepperoni",
+            "name": "Pepperoni Pizza",
+            "category": "Pizza",
+            "price": 1450,
+            "description": "House-made dough, San Marzano tomatoes, fresh mozzarella.",
+            "modifierGroups": [
+              "mg_toppings",
+              "mg_size"
+            ],
+            "channels": [
+              "Dine-In",
+              "Carry-Out",
+              "Pick-Up",
+              "Online"
+            ],
+            "course": 2,
+            "rush": false,
+            "hold": false,
+            "halfAndHalf": true,
+            "misc": false,
+            "unavailable": null,
+            "stock": null,
+            "taxRateId": "tx_food",
+            "archived": false
+          },
+          {
+            "id": "it_pz_meat_lovers",
+            "name": "Meat Lovers Pizza",
+            "category": "Pizza",
+            "price": 1650,
+            "description": "House-made dough, San Marzano tomatoes, fresh mozzarella.",
+            "modifierGroups": [
+              "mg_toppings",
+              "mg_size"
+            ],
+            "channels": [
+              "Dine-In",
+              "Carry-Out",
+              "Pick-Up",
+              "Online"
+            ],
+            "course": 2,
+            "rush": false,
+            "hold": false,
+            "halfAndHalf": true,
+            "misc": false,
+            "unavailable": null,
+            "stock": null,
+            "taxRateId": "tx_food",
+            "archived": false
+          },
+          {
+            "id": "it_pz_veggie",
+            "name": "Veggie Pizza",
+            "category": "Pizza",
+            "price": 1500,
+            "description": "House-made dough, San Marzano tomatoes, fresh mozzarella.",
+            "modifierGroups": [
+              "mg_toppings",
+              "mg_size"
+            ],
+            "channels": [
+              "Dine-In",
+              "Carry-Out",
+              "Pick-Up",
+              "Online"
+            ],
+            "course": 2,
+            "rush": false,
+            "hold": false,
+            "halfAndHalf": true,
+            "misc": false,
+            "unavailable": null,
+            "stock": null,
+            "taxRateId": "tx_food",
+            "archived": false
+          },
+          {
+            "id": "it_pz_bbq_chicken",
+            "name": "BBQ Chicken Pizza",
+            "category": "Pizza",
+            "price": 1600,
+            "description": "House-made dough, San Marzano tomatoes, fresh mozzarella.",
+            "modifierGroups": [
+              "mg_toppings",
+              "mg_size"
+            ],
+            "channels": [
+              "Dine-In",
+              "Carry-Out",
+              "Pick-Up",
+              "Online"
+            ],
+            "course": 2,
+            "rush": false,
+            "hold": false,
+            "halfAndHalf": true,
+            "misc": false,
+            "unavailable": null,
+            "stock": null,
+            "taxRateId": "tx_food",
+            "archived": false
+          },
+          {
+            "id": "it_pz_hawaiian",
+            "name": "Hawaiian Pizza",
+            "category": "Pizza",
+            "price": 1500,
+            "description": "House-made dough, San Marzano tomatoes, fresh mozzarella.",
+            "modifierGroups": [
+              "mg_toppings",
+              "mg_size"
+            ],
+            "channels": [
+              "Dine-In",
+              "Carry-Out",
+              "Pick-Up",
+              "Online"
+            ],
+            "course": 2,
+            "rush": false,
+            "hold": false,
+            "halfAndHalf": true,
+            "misc": false,
+            "unavailable": null,
+            "stock": null,
+            "taxRateId": "tx_food",
+            "archived": false
+          },
+          {
+            "id": "it_pz_white_pie",
+            "name": "White Pie Pizza",
+            "category": "Pizza",
+            "price": 1350,
+            "description": "House-made dough, San Marzano tomatoes, fresh mozzarella.",
+            "modifierGroups": [
+              "mg_toppings",
+              "mg_size"
+            ],
+            "channels": [
+              "Dine-In",
+              "Carry-Out",
+              "Pick-Up",
+              "Online"
+            ],
+            "course": 2,
+            "rush": false,
+            "hold": false,
+            "halfAndHalf": true,
+            "misc": false,
+            "unavailable": null,
+            "stock": null,
+            "taxRateId": "tx_food",
+            "archived": false
+          },
+          {
+            "id": "it_pz_sicilian_pepperoni",
+            "name": "Sicilian Pepperoni Pizza",
+            "category": "Pizza",
+            "price": 1700,
+            "description": "House-made dough, San Marzano tomatoes, fresh mozzarella.",
+            "modifierGroups": [
+              "mg_toppings",
+              "mg_size"
+            ],
+            "channels": [
+              "Dine-In",
+              "Carry-Out",
+              "Pick-Up",
+              "Online"
+            ],
+            "course": 2,
+            "rush": false,
+            "hold": false,
+            "halfAndHalf": true,
+            "misc": false,
+            "unavailable": null,
+            "stock": null,
+            "taxRateId": "tx_food",
+            "archived": false
+          },
+          {
+            "id": "it_pz_buffalo_chicken",
+            "name": "Buffalo Chicken Pizza",
+            "category": "Pizza",
+            "price": 1600,
+            "description": "House-made dough, San Marzano tomatoes, fresh mozzarella.",
+            "modifierGroups": [
+              "mg_toppings",
+              "mg_size"
+            ],
+            "channels": [
+              "Dine-In",
+              "Carry-Out",
+              "Pick-Up",
+              "Online"
+            ],
+            "course": 2,
+            "rush": false,
+            "hold": false,
+            "halfAndHalf": true,
+            "misc": false,
+            "unavailable": null,
+            "stock": null,
+            "taxRateId": "tx_food",
+            "archived": false
+          },
+          {
+            "id": "it_pz_supreme",
+            "name": "Supreme Pizza",
+            "category": "Pizza",
+            "price": 1700,
+            "description": "House-made dough, San Marzano tomatoes, fresh mozzarella.",
+            "modifierGroups": [
+              "mg_toppings",
+              "mg_size"
+            ],
+            "channels": [
+              "Dine-In",
+              "Carry-Out",
+              "Pick-Up",
+              "Online"
+            ],
+            "course": 2,
+            "rush": false,
+            "hold": false,
+            "halfAndHalf": true,
+            "misc": false,
+            "unavailable": null,
+            "stock": null,
+            "taxRateId": "tx_food",
+            "archived": false
+          },
+          {
+            "id": "it_Calzone_classic_calzone",
+            "name": "Classic Calzone",
+            "category": "Calzone",
+            "price": 1100,
+            "description": "",
+            "modifierGroups": [
+              "mg_toppings",
+              "mg_sauce"
+            ],
+            "channels": [
+              "Dine-In",
+              "Carry-Out",
+              "Pick-Up",
+              "Online"
+            ],
+            "course": 0,
+            "rush": false,
+            "hold": false,
+            "halfAndHalf": true,
+            "misc": false,
+            "unavailable": null,
+            "stock": null,
+            "taxRateId": "tx_food",
+            "archived": false
+          },
+          {
+            "id": "it_Calzone_pepperoni_calzone",
+            "name": "Pepperoni Calzone",
+            "category": "Calzone",
+            "price": 1250,
+            "description": "",
+            "modifierGroups": [
+              "mg_toppings",
+              "mg_sauce"
+            ],
+            "channels": [
+              "Dine-In",
+              "Carry-Out",
+              "Pick-Up",
+              "Online"
+            ],
+            "course": 0,
+            "rush": false,
+            "hold": false,
+            "halfAndHalf": true,
+            "misc": false,
+            "unavailable": null,
+            "stock": null,
+            "taxRateId": "tx_food",
+            "archived": false
+          },
+          {
+            "id": "it_Stromboli_ham_provolone_stromboli",
+            "name": "Ham & Provolone Stromboli",
+            "category": "Stromboli",
+            "price": 1050,
+            "description": "",
+            "modifierGroups": [
+              "mg_toppings",
+              "mg_sauce"
+            ],
+            "channels": [
+              "Dine-In",
+              "Carry-Out",
+              "Pick-Up",
+              "Online"
+            ],
+            "course": 0,
+            "rush": false,
+            "hold": false,
+            "halfAndHalf": true,
+            "misc": false,
+            "unavailable": null,
+            "stock": null,
+            "taxRateId": "tx_food",
+            "archived": false
+          },
+          {
+            "id": "it_Stromboli_pepperoni_stromboli",
+            "name": "Pepperoni Stromboli",
+            "category": "Stromboli",
+            "price": 1150,
+            "description": "",
+            "modifierGroups": [
+              "mg_toppings",
+              "mg_sauce"
+            ],
+            "channels": [
+              "Dine-In",
+              "Carry-Out",
+              "Pick-Up",
+              "Online"
+            ],
+            "course": 0,
+            "rush": false,
+            "hold": false,
+            "halfAndHalf": true,
+            "misc": false,
+            "unavailable": null,
+            "stock": null,
+            "taxRateId": "tx_food",
+            "archived": false
+          },
+          {
+            "id": "it_Pasta_baked_ziti",
+            "name": "Baked Ziti",
+            "category": "Pasta",
+            "price": 1000,
+            "description": "",
+            "modifierGroups": [
+              "mg_toppings",
+              "mg_sauce",
+              "mg_protein"
+            ],
+            "channels": [
+              "Dine-In",
+              "Carry-Out",
+              "Pick-Up",
+              "Online"
+            ],
+            "course": 0,
+            "rush": false,
+            "hold": false,
+            "halfAndHalf": false,
+            "misc": false,
+            "unavailable": null,
+            "stock": null,
+            "taxRateId": "tx_food",
+            "archived": false
+          },
+          {
+            "id": "it_Pasta_fettuccine_alfredo",
+            "name": "Fettuccine Alfredo",
+            "category": "Pasta",
+            "price": 1200,
+            "description": "",
+            "modifierGroups": [
+              "mg_toppings",
+              "mg_sauce",
+              "mg_protein"
+            ],
+            "channels": [
+              "Dine-In",
+              "Carry-Out",
+              "Pick-Up",
+              "Online"
+            ],
+            "course": 0,
+            "rush": false,
+            "hold": false,
+            "halfAndHalf": false,
+            "misc": false,
+            "unavailable": null,
+            "stock": null,
+            "taxRateId": "tx_food",
+            "archived": false
+          },
+          {
+            "id": "it_Pasta_penne_arrivata",
+            "name": "Penne Arrivata",
+            "category": "Pasta",
+            "price": 1250,
+            "description": "",
+            "modifierGroups": [
+              "mg_toppings",
+              "mg_sauce",
+              "mg_protein"
+            ],
+            "channels": [
+              "Dine-In",
+              "Carry-Out",
+              "Pick-Up",
+              "Online"
+            ],
+            "course": 0,
+            "rush": false,
+            "hold": false,
+            "halfAndHalf": false,
+            "misc": false,
+            "unavailable": null,
+            "stock": null,
+            "taxRateId": "tx_food",
+            "archived": false
+          },
+          {
+            "id": "it_Pasta_spaghetti_meatballs",
+            "name": "Spaghetti & Meatballs",
+            "category": "Pasta",
+            "price": 1200,
+            "description": "",
+            "modifierGroups": [
+              "mg_toppings",
+              "mg_sauce",
+              "mg_protein"
+            ],
+            "channels": [
+              "Dine-In",
+              "Carry-Out",
+              "Pick-Up",
+              "Online"
+            ],
+            "course": 0,
+            "rush": false,
+            "hold": false,
+            "halfAndHalf": false,
+            "misc": false,
+            "unavailable": null,
+            "stock": null,
+            "taxRateId": "tx_food",
+            "archived": false
+          },
+          {
+            "id": "it_Salads_house_salad",
+            "name": "House Salad",
+            "category": "Salads",
+            "price": 650,
+            "description": "",
+            "modifierGroups": [
+              "mg_protein"
+            ],
+            "channels": [
+              "Dine-In",
+              "Carry-Out",
+              "Pick-Up",
+              "Online"
+            ],
+            "course": 0,
+            "rush": false,
+            "hold": false,
+            "halfAndHalf": false,
+            "misc": false,
+            "unavailable": null,
+            "stock": null,
+            "taxRateId": "tx_food",
+            "archived": false
+          },
+          {
+            "id": "it_Salads_caesar",
+            "name": "Caesar",
+            "category": "Salads",
+            "price": 900,
+            "description": "",
+            "modifierGroups": [
+              "mg_protein"
+            ],
+            "channels": [
+              "Dine-In",
+              "Carry-Out",
+              "Pick-Up",
+              "Online"
+            ],
+            "course": 0,
+            "rush": false,
+            "hold": false,
+            "halfAndHalf": false,
+            "misc": false,
+            "unavailable": null,
+            "stock": null,
+            "taxRateId": "tx_food",
+            "archived": false
+          },
+          {
+            "id": "it_Salads_greek",
+            "name": "Greek",
+            "category": "Salads",
+            "price": 950,
+            "description": "",
+            "modifierGroups": [
+              "mg_protein"
+            ],
+            "channels": [
+              "Dine-In",
+              "Carry-Out",
+              "Pick-Up",
+              "Online"
+            ],
+            "course": 0,
+            "rush": false,
+            "hold": false,
+            "halfAndHalf": false,
+            "misc": false,
+            "unavailable": null,
+            "stock": null,
+            "taxRateId": "tx_food",
+            "archived": false
+          },
+          {
+            "id": "it_wings",
+            "name": "Buffalo Wings (10pc)",
+            "category": "Appetizers",
+            "price": 1150,
+            "description": "",
+            "modifierGroups": [
+              "mg_sauce",
+              "mg_sides"
+            ],
+            "channels": [
+              "Dine-In",
+              "Carry-Out",
+              "Pick-Up",
+              "Online"
+            ],
+            "course": 1,
+            "rush": true,
+            "hold": true,
+            "halfAndHalf": false,
+            "misc": false,
+            "unavailable": null,
+            "stock": null,
+            "taxRateId": "tx_food",
+            "archived": false,
+            "time_ranges": [
+              {
+                "start": "10:00 PM",
+                "end": "2:00 AM"
+              }
+            ]
+          },
+          {
+            "id": "it_loaded_fries",
+            "name": "Loaded Fries",
+            "category": "Appetizers",
+            "price": 800,
+            "description": "",
+            "modifierGroups": [
+              "mg_toppings"
+            ],
+            "channels": [
+              "Dine-In",
+              "Carry-Out",
+              "Online"
+            ],
+            "course": 1,
+            "rush": false,
+            "hold": false,
+            "halfAndHalf": false,
+            "misc": false,
+            "unavailable": null,
+            "stock": null,
+            "taxRateId": "tx_food",
+            "archived": false
+          },
+          {
+            "id": "it_house_salad_dup",
+            "name": "House Salad",
+            "category": "Appetizers",
+            "price": 650,
+            "description": "Side portion — typed a second time instead of reusing the Salads entry.",
+            "modifierGroups": [],
+            "channels": [
+              "Dine-In"
+            ],
+            "course": 1,
+            "rush": false,
+            "hold": false,
+            "halfAndHalf": false,
+            "misc": false,
+            "unavailable": null,
+            "stock": null,
+            "taxRateId": "tx_food",
+            "archived": false
+          },
+          {
+            "id": "it_tiramisu",
+            "name": "Tiramisu",
+            "category": "Desserts",
+            "price": 650,
+            "description": "",
+            "modifierGroups": [],
+            "channels": [
+              "Dine-In",
+              "Carry-Out",
+              "Online"
+            ],
+            "course": 3,
+            "rush": false,
+            "hold": false,
+            "halfAndHalf": false,
+            "misc": false,
+            "unavailable": null,
+            "stock": null,
+            "taxRateId": "tx_food",
+            "archived": false
+          },
+          {
+            "id": "it_lava",
+            "name": "Chocolate Lava Cake",
+            "category": "Desserts",
+            "price": 700,
+            "description": "",
+            "modifierGroups": [],
+            "channels": [
+              "Dine-In",
+              "Carry-Out",
+              "Online"
+            ],
+            "course": 0,
+            "rush": false,
+            "hold": false,
+            "halfAndHalf": false,
+            "misc": false,
+            "unavailable": null,
+            "stock": null,
+            "taxRateId": "tx_food",
+            "archived": false
+          },
+          {
+            "id": "it_draft",
+            "name": "Draft Beer",
+            "category": "Beverages",
+            "price": 600,
+            "description": "",
+            "modifierGroups": [],
+            "channels": [
+              "Dine-In",
+              "Bar"
+            ],
+            "course": 0,
+            "rush": false,
+            "hold": false,
+            "halfAndHalf": false,
+            "misc": false,
+            "unavailable": null,
+            "stock": null,
+            "taxRateId": "tx_alc",
+            "archived": false
+          },
+          {
+            "id": "it_soda",
+            "name": "Fountain Soda",
+            "category": "Beverages",
+            "price": 275,
+            "description": "",
+            "modifierGroups": [
+              "mg_size"
+            ],
+            "channels": [
+              "Dine-In",
+              "Carry-Out",
+              "Pick-Up",
+              "Online"
+            ],
+            "course": 0,
+            "rush": false,
+            "hold": false,
+            "halfAndHalf": false,
+            "misc": true,
+            "unavailable": null,
+            "stock": null,
+            "taxRateId": "tx_food",
+            "archived": false
+          },
+          {
+            "id": "it_pz_philly_steak",
+            "name": "Philly Steak Pizza",
+            "category": "Pizza",
+            "price": 1750,
+            "description": "",
+            "modifierGroups": [
+              "mg_toppings",
+              "mg_size"
+            ],
+            "channels": [
+              "Dine-In",
+              "Carry-Out",
+              "Pick-Up",
+              "Online"
+            ],
+            "course": 2,
+            "rush": false,
+            "hold": false,
+            "halfAndHalf": true,
+            "misc": false,
+            "unavailable": null,
+            "stock": null,
+            "taxRateId": "tx_food",
+            "archived": false
+          },
+          {
+            "id": "it_pz_pesto_chicken",
+            "name": "Pesto Chicken Pizza",
+            "category": "Pizza",
+            "price": 1650,
+            "description": "",
+            "modifierGroups": [
+              "mg_toppings",
+              "mg_size"
+            ],
+            "channels": [
+              "Dine-In",
+              "Carry-Out",
+              "Pick-Up",
+              "Online"
+            ],
+            "course": 2,
+            "rush": false,
+            "hold": false,
+            "halfAndHalf": true,
+            "misc": false,
+            "unavailable": null,
+            "stock": null,
+            "taxRateId": "tx_food",
+            "archived": false
+          },
+          {
+            "id": "it_pz_four_cheese",
+            "name": "Four Cheese Pizza",
+            "category": "Pizza",
+            "price": 1400,
+            "description": "",
+            "modifierGroups": [
+              "mg_toppings",
+              "mg_size"
+            ],
+            "channels": [
+              "Dine-In",
+              "Carry-Out",
+              "Pick-Up",
+              "Online"
+            ],
+            "course": 2,
+            "rush": false,
+            "hold": false,
+            "halfAndHalf": true,
+            "misc": false,
+            "unavailable": null,
+            "stock": null,
+            "taxRateId": "tx_food",
+            "archived": false
+          }
+        ],
+        "pricingRules": [
+          {
+            "id": "pr_hh_draft",
+            "name": "Happy Hour Draft (Bar)",
+            "type": "force",
+            "value": 300,
+            "appliesTo": {
+              "items": [
+                "it_draft"
+              ]
+            },
+            "scope": {
+              "days": [
+                1,
+                2,
+                3,
+                4,
+                5
+              ],
+              "timeRanges": [
+                {
+                  "startMin": 960,
+                  "endMin": 1080
+                }
+              ],
+              "channel": null,
+              "room": "Bar"
+            },
+            "postTax": false,
+            "priority": 1,
+            "enabled": true
+          },
+          {
+            "id": "pr_hh_draft_old",
+            "name": "Happy Hour Draft (STALE)",
+            "type": "force",
+            "value": 350,
+            "appliesTo": {
+              "items": [
+                "it_draft"
+              ]
+            },
+            "scope": {
+              "days": [
+                1,
+                2,
+                3,
+                4,
+                5
+              ],
+              "timeRanges": [
+                {
+                  "startMin": 960,
+                  "endMin": 1080
+                }
+              ],
+              "channel": null,
+              "room": null
+            },
+            "postTax": false,
+            "priority": 2,
+            "enabled": true
+          },
+          {
+            "id": "pr_emp",
+            "name": "Employee Discount",
+            "type": "percent",
+            "value": -20,
+            "appliesTo": {
+              "all": true
+            },
+            "scope": {
+              "days": null,
+              "timeRanges": null,
+              "channel": null,
+              "room": null
+            },
+            "postTax": false,
+            "priority": 3,
+            "enabled": true
+          },
+          {
+            "id": "pr_latenight",
+            "name": "Late Night Surcharge",
+            "type": "dollar",
+            "value": 100,
+            "appliesTo": {
+              "all": true
+            },
+            "scope": {
+              "days": null,
+              "timeRanges": [
+                {
+                  "startMin": 1320,
+                  "endMin": 120
+                }
+              ],
+              "channel": "Online",
+              "room": null
+            },
+            "postTax": true,
+            "priority": 4,
+            "enabled": true
+          }
+        ],
+        "schedules": [
+          {
+            "id": "sch_latenight",
+            "name": "Late-Night Menu (Fri/Sat 10PM–2AM)",
+            "days": [
+              5,
+              6
+            ],
+            "startMin": 1320,
+            "endMin": 120,
+            "appliesTo": [
+              "it_wings",
+              "it_loaded_fries"
+            ],
+            "splitFrom": null
+          },
+          {
+            "id": "sch_bar",
+            "name": "Bar Happy Hour (daily 9PM–2AM)",
+            "days": [
+              0,
+              1,
+              2,
+              3,
+              4,
+              5,
+              6
+            ],
+            "startMin": 1260,
+            "endMin": 120,
+            "appliesTo": [
+              "it_draft",
+              "it_wings"
+            ],
+            "splitFrom": null
+          },
+          {
+            "id": "sch_brunch",
+            "name": "Weekend Brunch (Sat/Sun 10AM–2PM)",
+            "days": [
+              6,
+              0
+            ],
+            "startMin": 600,
+            "endMin": 840,
+            "appliesTo": [],
+            "splitFrom": null
+          }
+        ]
+      }
+    },
+    {
+      "id": "loc_marios_square",
+      "name": "Mario’s — Square Location",
+      "platform": "square",
+      "timezone": "America/Denver",
+      "menu": {
+        "name": "Mario’s Square Menu",
+        "version": 1,
+        "updatedAt": "2026-09-15T00:00:00.000Z",
+        "categories": [
+          {
+            "id": "cat_pizza",
+            "name": "Pizza"
+          },
+          {
+            "id": "cat_apps",
+            "name": "Appetizers"
+          },
+          {
+            "id": "cat_salads",
+            "name": "Salads"
+          },
+          {
+            "id": "cat_desserts",
+            "name": "Desserts"
+          },
+          {
+            "id": "cat_bev",
+            "name": "Beverages"
+          }
+        ],
+        "channels": [
+          {
+            "name": "Dine-In",
+            "status": "live"
+          },
+          {
+            "name": "Carry-Out",
+            "status": "live"
+          },
+          {
+            "name": "Pick-Up",
+            "status": "live"
+          },
+          {
+            "name": "Online",
+            "status": "live"
+          },
+          {
+            "name": "Bar",
+            "status": "live"
+          }
+        ],
+        "taxRates": [
+          {
+            "id": "tx_food",
+            "name": "Food",
+            "ratePct": 3.9
+          },
+          {
+            "id": "tx_alc",
+            "name": "Alcohol",
+            "ratePct": 12
+          }
+        ],
+        "modifierGroups": [
+          {
+            "id": "mg_toppings",
+            "name": "Pizza Toppings",
+            "minChoices": 0,
+            "maxChoices": 6,
+            "included": 0,
+            "shared": false,
+            "halfAndHalfAllowed": true,
+            "availableOnline": true,
+            "options": [
+              {
+                "id": "mo_pep",
+                "name": "Pepperoni",
+                "priceDelta": 250,
+                "default": false
+              },
+              {
+                "id": "mo_cheese",
+                "name": "Extra Cheese",
+                "priceDelta": 200,
+                "default": false
+              },
+              {
+                "id": "mo_sausage",
+                "name": "Italian Sausage",
+                "priceDelta": 250,
+                "default": false
+              }
+            ],
+            "itemScope": null
+          },
+          {
+            "id": "mg_crust",
+            "name": "Crust",
+            "minChoices": 1,
+            "maxChoices": 1,
+            "included": 1,
+            "shared": true,
+            "halfAndHalfAllowed": false,
+            "availableOnline": true,
+            "options": [
+              {
+                "id": "mo_hand",
+                "name": "Hand Tossed",
+                "priceDelta": 0,
+                "default": true
+              },
+              {
+                "id": "mo_thin",
+                "name": "Thin",
+                "priceDelta": 0,
+                "default": false
+              },
+              {
+                "id": "mo_stuffed",
+                "name": "Stuffed",
+                "priceDelta": 200,
+                "default": false
+              }
+            ],
+            "itemScope": null
+          },
+          {
+            "id": "mg_size",
+            "name": "Size",
+            "minChoices": 1,
+            "maxChoices": 1,
+            "included": 1,
+            "shared": true,
+            "halfAndHalfAllowed": false,
+            "availableOnline": true,
+            "options": [
+              {
+                "id": "sz_s",
+                "name": "Small",
+                "priceDelta": -300,
+                "default": false
+              },
+              {
+                "id": "sz_m",
+                "name": "Medium",
+                "priceDelta": 0,
+                "default": true
+              },
+              {
+                "id": "sz_l",
+                "name": "Large",
+                "priceDelta": 300,
+                "default": false
+              }
+            ],
+            "itemScope": null
+          }
+        ],
+        "items": [
+          {
+            "id": "it_marg",
+            "name": "Margherita Pizza",
+            "category": "Pizza",
+            "price": 1200,
+            "description": "House-made dough; San Marzano; fresh mozzarella.",
+            "modifierGroups": [
+              "mg_crust"
+            ],
+            "channels": [
+              "Dine-In",
+              "Carry-Out",
+              "Pick-Up",
+              "Online"
+            ],
+            "course": 2,
+            "rush": false,
+            "hold": false,
+            "halfAndHalf": true,
+            "misc": false,
+            "unavailable": null,
+            "stock": null,
+            "taxRateId": "tx_food",
+            "archived": false
+          },
+          {
+            "id": "it_pep",
+            "name": "Pepperoni Pizza",
+            "category": "Pizza",
+            "price": 1450,
+            "description": "Classic.",
+            "modifierGroups": [
+              "mg_toppings",
+              "mg_crust"
+            ],
+            "channels": [
+              "Dine-In",
+              "Carry-Out",
+              "Pick-Up",
+              "Online"
+            ],
+            "course": 2,
+            "rush": false,
+            "hold": false,
+            "halfAndHalf": true,
+            "misc": false,
+            "unavailable": null,
+            "stock": null,
+            "taxRateId": "tx_food",
+            "archived": false
+          },
+          {
+            "id": "it_cheese",
+            "name": "Cheese Pizza",
+            "category": "Pizza",
+            "price": 1250,
+            "description": "",
+            "modifierGroups": [
+              "mg_toppings",
+              "mg_crust"
+            ],
+            "channels": [
+              "Dine-In",
+              "Carry-Out",
+              "Pick-Up",
+              "Online"
+            ],
+            "course": 2,
+            "rush": false,
+            "hold": false,
+            "halfAndHalf": true,
+            "misc": false,
+            "unavailable": null,
+            "stock": null,
+            "taxRateId": "tx_food",
+            "archived": false
+          },
+          {
+            "id": "it_veg",
+            "name": "Veggie Pizza",
+            "category": "Pizza",
+            "price": 1500,
+            "description": "",
+            "modifierGroups": [
+              "mg_toppings",
+              "mg_crust"
+            ],
+            "channels": [
+              "Dine-In",
+              "Carry-Out",
+              "Online"
+            ],
+            "course": 2,
+            "rush": false,
+            "hold": false,
+            "halfAndHalf": true,
+            "misc": false,
+            "unavailable": null,
+            "stock": null,
+            "taxRateId": "tx_food",
+            "archived": false
+          },
+          {
+            "id": "it_saus",
+            "name": "Sausage Pizza",
+            "category": "Pizza",
+            "price": 1500,
+            "description": "",
+            "modifierGroups": [
+              "mg_toppings",
+              "mg_crust"
+            ],
+            "channels": [
+              "Dine-In",
+              "Carry-Out",
+              "Pick-Up",
+              "Online"
+            ],
+            "course": 2,
+            "rush": false,
+            "hold": false,
+            "halfAndHalf": true,
+            "misc": false,
+            "unavailable": null,
+            "stock": null,
+            "taxRateId": "tx_food",
+            "archived": false
+          },
+          {
+            "id": "it_wings",
+            "name": "Buffalo Wings",
+            "category": "Appetizers",
+            "price": 1150,
+            "description": "",
+            "modifierGroups": [],
+            "channels": [
+              "Dine-In",
+              "Bar"
+            ],
+            "course": 1,
+            "rush": false,
+            "hold": false,
+            "halfAndHalf": false,
+            "misc": false,
+            "unavailable": null,
+            "stock": null,
+            "taxRateId": "tx_food",
+            "archived": false
+          },
+          {
+            "id": "it_knots",
+            "name": "Garlic Knots",
+            "category": "Appetizers",
+            "price": 550,
+            "description": "",
+            "modifierGroups": [],
+            "channels": [
+              "Dine-In",
+              "Carry-Out"
+            ],
+            "course": 1,
+            "rush": false,
+            "hold": false,
+            "halfAndHalf": false,
+            "misc": false,
+            "unavailable": null,
+            "stock": null,
+            "taxRateId": "tx_food",
+            "archived": false
+          },
+          {
+            "id": "it_caesar",
+            "name": "Caesar",
+            "category": "Salads",
+            "price": 900,
+            "description": "",
+            "modifierGroups": [],
+            "channels": [
+              "Dine-In",
+              "Online"
+            ],
+            "course": 1,
+            "rush": false,
+            "hold": false,
+            "halfAndHalf": false,
+            "misc": false,
+            "unavailable": null,
+            "stock": null,
+            "taxRateId": "tx_food",
+            "archived": false
+          },
+          {
+            "id": "it_tira",
+            "name": "Tiramisu",
+            "category": "Desserts",
+            "price": 650,
+            "description": "",
+            "modifierGroups": [],
+            "channels": [
+              "Dine-In",
+              "Carry-Out",
+              "Online"
+            ],
+            "course": 3,
+            "rush": false,
+            "hold": false,
+            "halfAndHalf": false,
+            "misc": false,
+            "unavailable": null,
+            "stock": null,
+            "taxRateId": "tx_food",
+            "archived": false
+          },
+          {
+            "id": "it_draft",
+            "name": "Draft Beer",
+            "category": "Beverages",
+            "price": 600,
+            "description": "",
+            "modifierGroups": [
+              "mg_size"
+            ],
+            "channels": [
+              "Dine-In",
+              "Bar"
+            ],
+            "course": 0,
+            "rush": false,
+            "hold": false,
+            "halfAndHalf": false,
+            "misc": false,
+            "unavailable": null,
+            "stock": null,
+            "taxRateId": "tx_alc",
+            "archived": false
+          },
+          {
+            "id": "it_soda",
+            "name": "Fountain Soda",
+            "category": "Beverages",
+            "price": 275,
+            "description": "",
+            "modifierGroups": [
+              "mg_size"
+            ],
+            "channels": [
+              "Dine-In",
+              "Carry-Out",
+              "Pick-Up",
+              "Online"
+            ],
+            "course": 0,
+            "rush": false,
+            "hold": false,
+            "halfAndHalf": false,
+            "misc": true,
+            "unavailable": null,
+            "stock": null,
+            "taxRateId": "tx_food",
+            "archived": false
+          }
+        ],
+        "pricingRules": [
+          {
+            "id": "pr_hh",
+            "name": "Happy Hour Draft",
+            "type": "force",
+            "value": 300,
+            "appliesTo": {
+              "items": [
+                "it_draft"
+              ]
+            },
+            "scope": {
+              "days": [
+                1,
+                2,
+                3,
+                4,
+                5
+              ],
+              "timeRanges": [
+                {
+                  "startMin": 960,
+                  "endMin": 1080
+                }
+              ],
+              "channel": null,
+              "room": null
+            },
+            "postTax": false,
+            "priority": 1,
+            "enabled": true
+          }
+        ],
+        "schedules": [
+          {
+            "id": "sch_brunch",
+            "name": "Weekend Brunch",
+            "days": [
+              6,
+              0
+            ],
+            "startMin": 600,
+            "endMin": 840,
+            "appliesTo": [],
+            "splitFrom": null
+          }
+        ]
+      }
+    },
+    {
+      "id": "loc_marios_clover",
+      "name": "Mario’s — Clover Location",
+      "platform": "clover",
+      "timezone": "America/Denver",
+      "menu": {
+        "name": "Mario’s Clover Menu",
+        "version": 1,
+        "updatedAt": "2026-09-15T00:00:00.000Z",
+        "categories": [
+          {
+            "id": "cat_pizza",
+            "name": "Pizza"
+          },
+          {
+            "id": "cat_apps",
+            "name": "Appetizers"
+          },
+          {
+            "id": "cat_salads",
+            "name": "Salads"
+          },
+          {
+            "id": "cat_desserts",
+            "name": "Desserts"
+          },
+          {
+            "id": "cat_bev",
+            "name": "Beverages"
+          }
+        ],
+        "channels": [
+          {
+            "name": "Dine-In",
+            "status": "live"
+          },
+          {
+            "name": "Carry-Out",
+            "status": "live"
+          },
+          {
+            "name": "Pick-Up",
+            "status": "live"
+          },
+          {
+            "name": "Online",
+            "status": "live"
+          },
+          {
+            "name": "Bar",
+            "status": "live"
+          }
+        ],
+        "taxRates": [
+          {
+            "id": "tx_food",
+            "name": "Food",
+            "ratePct": 3.9
+          },
+          {
+            "id": "tx_alc",
+            "name": "Alcohol",
+            "ratePct": 12
+          }
+        ],
+        "modifierGroups": [
+          {
+            "id": "mg_toppings",
+            "name": "Pizza Toppings",
+            "minChoices": 0,
+            "maxChoices": 6,
+            "included": 0,
+            "shared": false,
+            "halfAndHalfAllowed": true,
+            "availableOnline": true,
+            "options": [
+              {
+                "id": "mo_pep",
+                "name": "Pepperoni",
+                "priceDelta": 250,
+                "default": false
+              },
+              {
+                "id": "mo_cheese",
+                "name": "Extra Cheese",
+                "priceDelta": 200,
+                "default": false
+              },
+              {
+                "id": "mo_sausage",
+                "name": "Italian Sausage",
+                "priceDelta": 250,
+                "default": false
+              }
+            ],
+            "itemScope": null
+          },
+          {
+            "id": "mg_crust",
+            "name": "Crust",
+            "minChoices": 1,
+            "maxChoices": 1,
+            "included": 1,
+            "shared": true,
+            "halfAndHalfAllowed": false,
+            "availableOnline": true,
+            "options": [
+              {
+                "id": "mo_hand",
+                "name": "Hand Tossed",
+                "priceDelta": 0,
+                "default": true
+              },
+              {
+                "id": "mo_thin",
+                "name": "Thin",
+                "priceDelta": 0,
+                "default": false
+              },
+              {
+                "id": "mo_stuffed",
+                "name": "Stuffed",
+                "priceDelta": 200,
+                "default": false
+              }
+            ],
+            "itemScope": null
+          },
+          {
+            "id": "mg_size",
+            "name": "Size",
+            "minChoices": 1,
+            "maxChoices": 1,
+            "included": 1,
+            "shared": true,
+            "halfAndHalfAllowed": false,
+            "availableOnline": true,
+            "options": [
+              {
+                "id": "sz_s",
+                "name": "Small",
+                "priceDelta": -300,
+                "default": false
+              },
+              {
+                "id": "sz_m",
+                "name": "Medium",
+                "priceDelta": 0,
+                "default": true
+              },
+              {
+                "id": "sz_l",
+                "name": "Large",
+                "priceDelta": 300,
+                "default": false
+              }
+            ],
+            "itemScope": null
+          }
+        ],
+        "items": [
+          {
+            "id": "it_marg",
+            "name": "Margherita Pizza",
+            "category": "Pizza",
+            "price": 1200,
+            "description": "House-made dough; San Marzano; fresh mozzarella.",
+            "modifierGroups": [
+              "mg_crust"
+            ],
+            "channels": [
+              "Dine-In",
+              "Carry-Out",
+              "Pick-Up",
+              "Online"
+            ],
+            "course": 2,
+            "rush": false,
+            "hold": false,
+            "halfAndHalf": true,
+            "misc": false,
+            "unavailable": null,
+            "stock": null,
+            "taxRateId": "tx_food",
+            "archived": false
+          },
+          {
+            "id": "it_pep",
+            "name": "Pepperoni Pizza",
+            "category": "Pizza",
+            "price": 1450,
+            "description": "Classic.",
+            "modifierGroups": [
+              "mg_toppings",
+              "mg_crust"
+            ],
+            "channels": [
+              "Dine-In",
+              "Carry-Out",
+              "Pick-Up",
+              "Online"
+            ],
+            "course": 2,
+            "rush": false,
+            "hold": false,
+            "halfAndHalf": true,
+            "misc": false,
+            "unavailable": null,
+            "stock": null,
+            "taxRateId": "tx_food",
+            "archived": false
+          },
+          {
+            "id": "it_cheese",
+            "name": "Cheese Pizza",
+            "category": "Pizza",
+            "price": 1250,
+            "description": "",
+            "modifierGroups": [
+              "mg_toppings",
+              "mg_crust"
+            ],
+            "channels": [
+              "Dine-In",
+              "Carry-Out",
+              "Pick-Up",
+              "Online"
+            ],
+            "course": 2,
+            "rush": false,
+            "hold": false,
+            "halfAndHalf": true,
+            "misc": false,
+            "unavailable": null,
+            "stock": null,
+            "taxRateId": "tx_food",
+            "archived": false
+          },
+          {
+            "id": "it_veg",
+            "name": "Veggie Pizza",
+            "category": "Pizza",
+            "price": 1500,
+            "description": "",
+            "modifierGroups": [
+              "mg_toppings",
+              "mg_crust"
+            ],
+            "channels": [
+              "Dine-In",
+              "Carry-Out",
+              "Online"
+            ],
+            "course": 2,
+            "rush": false,
+            "hold": false,
+            "halfAndHalf": true,
+            "misc": false,
+            "unavailable": null,
+            "stock": null,
+            "taxRateId": "tx_food",
+            "archived": false
+          },
+          {
+            "id": "it_saus",
+            "name": "Sausage Pizza",
+            "category": "Pizza",
+            "price": 1500,
+            "description": "",
+            "modifierGroups": [
+              "mg_toppings",
+              "mg_crust"
+            ],
+            "channels": [
+              "Dine-In",
+              "Carry-Out",
+              "Pick-Up",
+              "Online"
+            ],
+            "course": 2,
+            "rush": false,
+            "hold": false,
+            "halfAndHalf": true,
+            "misc": false,
+            "unavailable": null,
+            "stock": null,
+            "taxRateId": "tx_food",
+            "archived": false
+          },
+          {
+            "id": "it_wings",
+            "name": "Buffalo Wings",
+            "category": "Appetizers",
+            "price": 1150,
+            "description": "",
+            "modifierGroups": [],
+            "channels": [
+              "Dine-In",
+              "Bar"
+            ],
+            "course": 1,
+            "rush": false,
+            "hold": false,
+            "halfAndHalf": false,
+            "misc": false,
+            "unavailable": null,
+            "stock": null,
+            "taxRateId": "tx_food",
+            "archived": false
+          },
+          {
+            "id": "it_knots",
+            "name": "Garlic Knots",
+            "category": "Appetizers",
+            "price": 550,
+            "description": "",
+            "modifierGroups": [],
+            "channels": [
+              "Dine-In",
+              "Carry-Out"
+            ],
+            "course": 1,
+            "rush": false,
+            "hold": false,
+            "halfAndHalf": false,
+            "misc": false,
+            "unavailable": null,
+            "stock": null,
+            "taxRateId": "tx_food",
+            "archived": false
+          },
+          {
+            "id": "it_caesar",
+            "name": "Caesar",
+            "category": "Salads",
+            "price": 900,
+            "description": "",
+            "modifierGroups": [],
+            "channels": [
+              "Dine-In",
+              "Online"
+            ],
+            "course": 1,
+            "rush": false,
+            "hold": false,
+            "halfAndHalf": false,
+            "misc": false,
+            "unavailable": null,
+            "stock": null,
+            "taxRateId": "tx_food",
+            "archived": false
+          },
+          {
+            "id": "it_tira",
+            "name": "Tiramisu",
+            "category": "Desserts",
+            "price": 650,
+            "description": "",
+            "modifierGroups": [],
+            "channels": [
+              "Dine-In",
+              "Carry-Out",
+              "Online"
+            ],
+            "course": 3,
+            "rush": false,
+            "hold": false,
+            "halfAndHalf": false,
+            "misc": false,
+            "unavailable": null,
+            "stock": null,
+            "taxRateId": "tx_food",
+            "archived": false
+          },
+          {
+            "id": "it_draft",
+            "name": "Draft Beer",
+            "category": "Beverages",
+            "price": 600,
+            "description": "",
+            "modifierGroups": [
+              "mg_size"
+            ],
+            "channels": [
+              "Dine-In",
+              "Bar"
+            ],
+            "course": 0,
+            "rush": false,
+            "hold": false,
+            "halfAndHalf": false,
+            "misc": false,
+            "unavailable": null,
+            "stock": null,
+            "taxRateId": "tx_alc",
+            "archived": false
+          },
+          {
+            "id": "it_soda",
+            "name": "Fountain Soda",
+            "category": "Beverages",
+            "price": 275,
+            "description": "",
+            "modifierGroups": [
+              "mg_size"
+            ],
+            "channels": [
+              "Dine-In",
+              "Carry-Out",
+              "Pick-Up",
+              "Online"
+            ],
+            "course": 0,
+            "rush": false,
+            "hold": false,
+            "halfAndHalf": false,
+            "misc": true,
+            "unavailable": null,
+            "stock": null,
+            "taxRateId": "tx_food",
+            "archived": false
+          }
+        ],
+        "pricingRules": [
+          {
+            "id": "pr_hh",
+            "name": "Happy Hour Draft",
+            "type": "force",
+            "value": 300,
+            "appliesTo": {
+              "items": [
+                "it_draft"
+              ]
+            },
+            "scope": {
+              "days": [
+                1,
+                2,
+                3,
+                4,
+                5
+              ],
+              "timeRanges": [
+                {
+                  "startMin": 960,
+                  "endMin": 1080
+                }
+              ],
+              "channel": null,
+              "room": null
+            },
+            "postTax": false,
+            "priority": 1,
+            "enabled": true
+          }
+        ],
+        "schedules": [
+          {
+            "id": "sch_brunch",
+            "name": "Weekend Brunch",
+            "days": [
+              6,
+              0
+            ],
+            "startMin": 600,
+            "endMin": 840,
+            "appliesTo": [],
+            "splitFrom": null
+          }
+        ]
+      }
+    },
+    {
+      "id": "loc_marios_lightspeed",
+      "name": "Mario’s — Lightspeed Location",
+      "platform": "lightspeed",
+      "timezone": "America/Denver",
+      "menu": {
+        "name": "Mario’s Lightspeed Menu",
+        "version": 1,
+        "updatedAt": "2026-09-15T00:00:00.000Z",
+        "categories": [
+          {
+            "id": "cat_pizza",
+            "name": "Pizza"
+          },
+          {
+            "id": "cat_apps",
+            "name": "Appetizers"
+          },
+          {
+            "id": "cat_salads",
+            "name": "Salads"
+          },
+          {
+            "id": "cat_desserts",
+            "name": "Desserts"
+          },
+          {
+            "id": "cat_bev",
+            "name": "Beverages"
+          }
+        ],
+        "channels": [
+          {
+            "name": "Dine-In",
+            "status": "live"
+          },
+          {
+            "name": "Carry-Out",
+            "status": "live"
+          },
+          {
+            "name": "Pick-Up",
+            "status": "live"
+          },
+          {
+            "name": "Online",
+            "status": "live"
+          },
+          {
+            "name": "Bar",
+            "status": "live"
+          }
+        ],
+        "taxRates": [
+          {
+            "id": "tx_food",
+            "name": "Food",
+            "ratePct": 3.9
+          },
+          {
+            "id": "tx_alc",
+            "name": "Alcohol",
+            "ratePct": 12
+          }
+        ],
+        "modifierGroups": [
+          {
+            "id": "mg_toppings",
+            "name": "Pizza Toppings",
+            "minChoices": 0,
+            "maxChoices": 6,
+            "included": 0,
+            "shared": false,
+            "halfAndHalfAllowed": true,
+            "availableOnline": true,
+            "options": [
+              {
+                "id": "mo_pep",
+                "name": "Pepperoni",
+                "priceDelta": 250,
+                "default": false
+              },
+              {
+                "id": "mo_cheese",
+                "name": "Extra Cheese",
+                "priceDelta": 200,
+                "default": false
+              },
+              {
+                "id": "mo_sausage",
+                "name": "Italian Sausage",
+                "priceDelta": 250,
+                "default": false
+              }
+            ],
+            "itemScope": null
+          },
+          {
+            "id": "mg_crust",
+            "name": "Crust",
+            "minChoices": 1,
+            "maxChoices": 1,
+            "included": 1,
+            "shared": true,
+            "halfAndHalfAllowed": false,
+            "availableOnline": true,
+            "options": [
+              {
+                "id": "mo_hand",
+                "name": "Hand Tossed",
+                "priceDelta": 0,
+                "default": true
+              },
+              {
+                "id": "mo_thin",
+                "name": "Thin",
+                "priceDelta": 0,
+                "default": false
+              },
+              {
+                "id": "mo_stuffed",
+                "name": "Stuffed",
+                "priceDelta": 200,
+                "default": false
+              }
+            ],
+            "itemScope": null
+          },
+          {
+            "id": "mg_size",
+            "name": "Size",
+            "minChoices": 1,
+            "maxChoices": 1,
+            "included": 1,
+            "shared": true,
+            "halfAndHalfAllowed": false,
+            "availableOnline": true,
+            "options": [
+              {
+                "id": "sz_s",
+                "name": "Small",
+                "priceDelta": -300,
+                "default": false
+              },
+              {
+                "id": "sz_m",
+                "name": "Medium",
+                "priceDelta": 0,
+                "default": true
+              },
+              {
+                "id": "sz_l",
+                "name": "Large",
+                "priceDelta": 300,
+                "default": false
+              }
+            ],
+            "itemScope": null
+          }
+        ],
+        "items": [
+          {
+            "id": "it_marg",
+            "name": "Margherita Pizza",
+            "category": "Pizza",
+            "price": 1200,
+            "description": "House-made dough; San Marzano; fresh mozzarella.",
+            "modifierGroups": [
+              "mg_crust"
+            ],
+            "channels": [
+              "Dine-In",
+              "Carry-Out",
+              "Pick-Up",
+              "Online"
+            ],
+            "course": 2,
+            "rush": false,
+            "hold": false,
+            "halfAndHalf": true,
+            "misc": false,
+            "unavailable": null,
+            "stock": null,
+            "taxRateId": "tx_food",
+            "archived": false
+          },
+          {
+            "id": "it_pep",
+            "name": "Pepperoni Pizza",
+            "category": "Pizza",
+            "price": 1450,
+            "description": "Classic.",
+            "modifierGroups": [
+              "mg_toppings",
+              "mg_crust"
+            ],
+            "channels": [
+              "Dine-In",
+              "Carry-Out",
+              "Pick-Up",
+              "Online"
+            ],
+            "course": 2,
+            "rush": false,
+            "hold": false,
+            "halfAndHalf": true,
+            "misc": false,
+            "unavailable": null,
+            "stock": null,
+            "taxRateId": "tx_food",
+            "archived": false
+          },
+          {
+            "id": "it_cheese",
+            "name": "Cheese Pizza",
+            "category": "Pizza",
+            "price": 1250,
+            "description": "",
+            "modifierGroups": [
+              "mg_toppings",
+              "mg_crust"
+            ],
+            "channels": [
+              "Dine-In",
+              "Carry-Out",
+              "Pick-Up",
+              "Online"
+            ],
+            "course": 2,
+            "rush": false,
+            "hold": false,
+            "halfAndHalf": true,
+            "misc": false,
+            "unavailable": null,
+            "stock": null,
+            "taxRateId": "tx_food",
+            "archived": false
+          },
+          {
+            "id": "it_veg",
+            "name": "Veggie Pizza",
+            "category": "Pizza",
+            "price": 1500,
+            "description": "",
+            "modifierGroups": [
+              "mg_toppings",
+              "mg_crust"
+            ],
+            "channels": [
+              "Dine-In",
+              "Carry-Out",
+              "Online"
+            ],
+            "course": 2,
+            "rush": false,
+            "hold": false,
+            "halfAndHalf": true,
+            "misc": false,
+            "unavailable": null,
+            "stock": null,
+            "taxRateId": "tx_food",
+            "archived": false
+          },
+          {
+            "id": "it_saus",
+            "name": "Sausage Pizza",
+            "category": "Pizza",
+            "price": 1500,
+            "description": "",
+            "modifierGroups": [
+              "mg_toppings",
+              "mg_crust"
+            ],
+            "channels": [
+              "Dine-In",
+              "Carry-Out",
+              "Pick-Up",
+              "Online"
+            ],
+            "course": 2,
+            "rush": false,
+            "hold": false,
+            "halfAndHalf": true,
+            "misc": false,
+            "unavailable": null,
+            "stock": null,
+            "taxRateId": "tx_food",
+            "archived": false
+          },
+          {
+            "id": "it_wings",
+            "name": "Buffalo Wings",
+            "category": "Appetizers",
+            "price": 1150,
+            "description": "",
+            "modifierGroups": [],
+            "channels": [
+              "Dine-In",
+              "Bar"
+            ],
+            "course": 1,
+            "rush": false,
+            "hold": false,
+            "halfAndHalf": false,
+            "misc": false,
+            "unavailable": null,
+            "stock": null,
+            "taxRateId": "tx_food",
+            "archived": false
+          },
+          {
+            "id": "it_knots",
+            "name": "Garlic Knots",
+            "category": "Appetizers",
+            "price": 550,
+            "description": "",
+            "modifierGroups": [],
+            "channels": [
+              "Dine-In",
+              "Carry-Out"
+            ],
+            "course": 1,
+            "rush": false,
+            "hold": false,
+            "halfAndHalf": false,
+            "misc": false,
+            "unavailable": null,
+            "stock": null,
+            "taxRateId": "tx_food",
+            "archived": false
+          },
+          {
+            "id": "it_caesar",
+            "name": "Caesar",
+            "category": "Salads",
+            "price": 900,
+            "description": "",
+            "modifierGroups": [],
+            "channels": [
+              "Dine-In",
+              "Online"
+            ],
+            "course": 1,
+            "rush": false,
+            "hold": false,
+            "halfAndHalf": false,
+            "misc": false,
+            "unavailable": null,
+            "stock": null,
+            "taxRateId": "tx_food",
+            "archived": false
+          },
+          {
+            "id": "it_tira",
+            "name": "Tiramisu",
+            "category": "Desserts",
+            "price": 650,
+            "description": "",
+            "modifierGroups": [],
+            "channels": [
+              "Dine-In",
+              "Carry-Out",
+              "Online"
+            ],
+            "course": 3,
+            "rush": false,
+            "hold": false,
+            "halfAndHalf": false,
+            "misc": false,
+            "unavailable": null,
+            "stock": null,
+            "taxRateId": "tx_food",
+            "archived": false
+          },
+          {
+            "id": "it_draft",
+            "name": "Draft Beer",
+            "category": "Beverages",
+            "price": 600,
+            "description": "",
+            "modifierGroups": [
+              "mg_size"
+            ],
+            "channels": [
+              "Dine-In",
+              "Bar"
+            ],
+            "course": 0,
+            "rush": false,
+            "hold": false,
+            "halfAndHalf": false,
+            "misc": false,
+            "unavailable": null,
+            "stock": null,
+            "taxRateId": "tx_alc",
+            "archived": false
+          },
+          {
+            "id": "it_soda",
+            "name": "Fountain Soda",
+            "category": "Beverages",
+            "price": 275,
+            "description": "",
+            "modifierGroups": [
+              "mg_size"
+            ],
+            "channels": [
+              "Dine-In",
+              "Carry-Out",
+              "Pick-Up",
+              "Online"
+            ],
+            "course": 0,
+            "rush": false,
+            "hold": false,
+            "halfAndHalf": false,
+            "misc": true,
+            "unavailable": null,
+            "stock": null,
+            "taxRateId": "tx_food",
+            "archived": false
+          }
+        ],
+        "pricingRules": [
+          {
+            "id": "pr_hh",
+            "name": "Happy Hour Draft",
+            "type": "force",
+            "value": 300,
+            "appliesTo": {
+              "items": [
+                "it_draft"
+              ]
+            },
+            "scope": {
+              "days": [
+                1,
+                2,
+                3,
+                4,
+                5
+              ],
+              "timeRanges": [
+                {
+                  "startMin": 960,
+                  "endMin": 1080
+                }
+              ],
+              "channel": null,
+              "room": null
+            },
+            "postTax": false,
+            "priority": 1,
+            "enabled": true
+          }
+        ],
+        "schedules": [
+          {
+            "id": "sch_brunch",
+            "name": "Weekend Brunch",
+            "days": [
+              6,
+              0
+            ],
+            "startMin": 600,
+            "endMin": 840,
+            "appliesTo": [],
+            "splitFrom": null
+          }
+        ]
+      }
+    },
+    {
+      "id": "loc_marios_touchbistro",
+      "name": "Mario’s — TouchBistro Location",
+      "platform": "touchbistro",
+      "timezone": "America/Denver",
+      "menu": {
+        "name": "Mario’s TouchBistro Menu",
+        "version": 1,
+        "updatedAt": "2026-09-15T00:00:00.000Z",
+        "categories": [
+          {
+            "id": "cat_pizza",
+            "name": "Pizza"
+          },
+          {
+            "id": "cat_apps",
+            "name": "Appetizers"
+          },
+          {
+            "id": "cat_salads",
+            "name": "Salads"
+          },
+          {
+            "id": "cat_desserts",
+            "name": "Desserts"
+          },
+          {
+            "id": "cat_bev",
+            "name": "Beverages"
+          }
+        ],
+        "channels": [
+          {
+            "name": "Dine-In",
+            "status": "live"
+          },
+          {
+            "name": "Carry-Out",
+            "status": "live"
+          },
+          {
+            "name": "Pick-Up",
+            "status": "live"
+          },
+          {
+            "name": "Online",
+            "status": "live"
+          },
+          {
+            "name": "Bar",
+            "status": "live"
+          }
+        ],
+        "taxRates": [
+          {
+            "id": "tx_food",
+            "name": "Food",
+            "ratePct": 3.9
+          },
+          {
+            "id": "tx_alc",
+            "name": "Alcohol",
+            "ratePct": 12
+          }
+        ],
+        "modifierGroups": [
+          {
+            "id": "mg_toppings",
+            "name": "Pizza Toppings",
+            "minChoices": 0,
+            "maxChoices": 6,
+            "included": 0,
+            "shared": false,
+            "halfAndHalfAllowed": true,
+            "availableOnline": true,
+            "options": [
+              {
+                "id": "mo_pep",
+                "name": "Pepperoni",
+                "priceDelta": 250,
+                "default": false
+              },
+              {
+                "id": "mo_cheese",
+                "name": "Extra Cheese",
+                "priceDelta": 200,
+                "default": false
+              },
+              {
+                "id": "mo_sausage",
+                "name": "Italian Sausage",
+                "priceDelta": 250,
+                "default": false
+              }
+            ],
+            "itemScope": null
+          },
+          {
+            "id": "mg_crust",
+            "name": "Crust",
+            "minChoices": 1,
+            "maxChoices": 1,
+            "included": 1,
+            "shared": true,
+            "halfAndHalfAllowed": false,
+            "availableOnline": true,
+            "options": [
+              {
+                "id": "mo_hand",
+                "name": "Hand Tossed",
+                "priceDelta": 0,
+                "default": true
+              },
+              {
+                "id": "mo_thin",
+                "name": "Thin",
+                "priceDelta": 0,
+                "default": false
+              },
+              {
+                "id": "mo_stuffed",
+                "name": "Stuffed",
+                "priceDelta": 200,
+                "default": false
+              }
+            ],
+            "itemScope": null
+          },
+          {
+            "id": "mg_size",
+            "name": "Size",
+            "minChoices": 1,
+            "maxChoices": 1,
+            "included": 1,
+            "shared": true,
+            "halfAndHalfAllowed": false,
+            "availableOnline": true,
+            "options": [
+              {
+                "id": "sz_s",
+                "name": "Small",
+                "priceDelta": -300,
+                "default": false
+              },
+              {
+                "id": "sz_m",
+                "name": "Medium",
+                "priceDelta": 0,
+                "default": true
+              },
+              {
+                "id": "sz_l",
+                "name": "Large",
+                "priceDelta": 300,
+                "default": false
+              }
+            ],
+            "itemScope": null
+          }
+        ],
+        "items": [
+          {
+            "id": "it_marg",
+            "name": "Margherita Pizza",
+            "category": "Pizza",
+            "price": 1200,
+            "description": "House-made dough; San Marzano; fresh mozzarella.",
+            "modifierGroups": [
+              "mg_crust"
+            ],
+            "channels": [
+              "Dine-In",
+              "Carry-Out",
+              "Pick-Up",
+              "Online"
+            ],
+            "course": 2,
+            "rush": false,
+            "hold": false,
+            "halfAndHalf": true,
+            "misc": false,
+            "unavailable": null,
+            "stock": null,
+            "taxRateId": "tx_food",
+            "archived": false
+          },
+          {
+            "id": "it_pep",
+            "name": "Pepperoni Pizza",
+            "category": "Pizza",
+            "price": 1450,
+            "description": "Classic.",
+            "modifierGroups": [
+              "mg_toppings",
+              "mg_crust"
+            ],
+            "channels": [
+              "Dine-In",
+              "Carry-Out",
+              "Pick-Up",
+              "Online"
+            ],
+            "course": 2,
+            "rush": false,
+            "hold": false,
+            "halfAndHalf": true,
+            "misc": false,
+            "unavailable": null,
+            "stock": null,
+            "taxRateId": "tx_food",
+            "archived": false
+          },
+          {
+            "id": "it_cheese",
+            "name": "Cheese Pizza",
+            "category": "Pizza",
+            "price": 1250,
+            "description": "",
+            "modifierGroups": [
+              "mg_toppings",
+              "mg_crust"
+            ],
+            "channels": [
+              "Dine-In",
+              "Carry-Out",
+              "Pick-Up",
+              "Online"
+            ],
+            "course": 2,
+            "rush": false,
+            "hold": false,
+            "halfAndHalf": true,
+            "misc": false,
+            "unavailable": null,
+            "stock": null,
+            "taxRateId": "tx_food",
+            "archived": false
+          },
+          {
+            "id": "it_veg",
+            "name": "Veggie Pizza",
+            "category": "Pizza",
+            "price": 1500,
+            "description": "",
+            "modifierGroups": [
+              "mg_toppings",
+              "mg_crust"
+            ],
+            "channels": [
+              "Dine-In",
+              "Carry-Out",
+              "Online"
+            ],
+            "course": 2,
+            "rush": false,
+            "hold": false,
+            "halfAndHalf": true,
+            "misc": false,
+            "unavailable": null,
+            "stock": null,
+            "taxRateId": "tx_food",
+            "archived": false
+          },
+          {
+            "id": "it_saus",
+            "name": "Sausage Pizza",
+            "category": "Pizza",
+            "price": 1500,
+            "description": "",
+            "modifierGroups": [
+              "mg_toppings",
+              "mg_crust"
+            ],
+            "channels": [
+              "Dine-In",
+              "Carry-Out",
+              "Pick-Up",
+              "Online"
+            ],
+            "course": 2,
+            "rush": false,
+            "hold": false,
+            "halfAndHalf": true,
+            "misc": false,
+            "unavailable": null,
+            "stock": null,
+            "taxRateId": "tx_food",
+            "archived": false
+          },
+          {
+            "id": "it_wings",
+            "name": "Buffalo Wings",
+            "category": "Appetizers",
+            "price": 1150,
+            "description": "",
+            "modifierGroups": [],
+            "channels": [
+              "Dine-In",
+              "Bar"
+            ],
+            "course": 1,
+            "rush": false,
+            "hold": false,
+            "halfAndHalf": false,
+            "misc": false,
+            "unavailable": null,
+            "stock": null,
+            "taxRateId": "tx_food",
+            "archived": false
+          },
+          {
+            "id": "it_knots",
+            "name": "Garlic Knots",
+            "category": "Appetizers",
+            "price": 550,
+            "description": "",
+            "modifierGroups": [],
+            "channels": [
+              "Dine-In",
+              "Carry-Out"
+            ],
+            "course": 1,
+            "rush": false,
+            "hold": false,
+            "halfAndHalf": false,
+            "misc": false,
+            "unavailable": null,
+            "stock": null,
+            "taxRateId": "tx_food",
+            "archived": false
+          },
+          {
+            "id": "it_caesar",
+            "name": "Caesar",
+            "category": "Salads",
+            "price": 900,
+            "description": "",
+            "modifierGroups": [],
+            "channels": [
+              "Dine-In",
+              "Online"
+            ],
+            "course": 1,
+            "rush": false,
+            "hold": false,
+            "halfAndHalf": false,
+            "misc": false,
+            "unavailable": null,
+            "stock": null,
+            "taxRateId": "tx_food",
+            "archived": false
+          },
+          {
+            "id": "it_tira",
+            "name": "Tiramisu",
+            "category": "Desserts",
+            "price": 650,
+            "description": "",
+            "modifierGroups": [],
+            "channels": [
+              "Dine-In",
+              "Carry-Out",
+              "Online"
+            ],
+            "course": 3,
+            "rush": false,
+            "hold": false,
+            "halfAndHalf": false,
+            "misc": false,
+            "unavailable": null,
+            "stock": null,
+            "taxRateId": "tx_food",
+            "archived": false
+          },
+          {
+            "id": "it_draft",
+            "name": "Draft Beer",
+            "category": "Beverages",
+            "price": 600,
+            "description": "",
+            "modifierGroups": [
+              "mg_size"
+            ],
+            "channels": [
+              "Dine-In",
+              "Bar"
+            ],
+            "course": 0,
+            "rush": false,
+            "hold": false,
+            "halfAndHalf": false,
+            "misc": false,
+            "unavailable": null,
+            "stock": null,
+            "taxRateId": "tx_alc",
+            "archived": false
+          },
+          {
+            "id": "it_soda",
+            "name": "Fountain Soda",
+            "category": "Beverages",
+            "price": 275,
+            "description": "",
+            "modifierGroups": [
+              "mg_size"
+            ],
+            "channels": [
+              "Dine-In",
+              "Carry-Out",
+              "Pick-Up",
+              "Online"
+            ],
+            "course": 0,
+            "rush": false,
+            "hold": false,
+            "halfAndHalf": false,
+            "misc": true,
+            "unavailable": null,
+            "stock": null,
+            "taxRateId": "tx_food",
+            "archived": false
+          }
+        ],
+        "pricingRules": [
+          {
+            "id": "pr_hh",
+            "name": "Happy Hour Draft",
+            "type": "force",
+            "value": 300,
+            "appliesTo": {
+              "items": [
+                "it_draft"
+              ]
+            },
+            "scope": {
+              "days": [
+                1,
+                2,
+                3,
+                4,
+                5
+              ],
+              "timeRanges": [
+                {
+                  "startMin": 960,
+                  "endMin": 1080
+                }
+              ],
+              "channel": null,
+              "room": null
+            },
+            "postTax": false,
+            "priority": 1,
+            "enabled": true
+          }
+        ],
+        "schedules": [
+          {
+            "id": "sch_brunch",
+            "name": "Weekend Brunch",
+            "days": [
+              6,
+              0
+            ],
+            "startMin": 600,
+            "endMin": 840,
+            "appliesTo": [],
+            "splitFrom": null
+          }
+        ]
+      }
+    },
+    {
+      "id": "loc_marios_aloha",
+      "name": "Mario’s — Aloha Location",
+      "platform": "aloha",
+      "timezone": "America/Denver",
+      "menu": {
+        "name": "Mario’s Aloha Menu",
+        "version": 1,
+        "updatedAt": "2026-09-15T00:00:00.000Z",
+        "categories": [
+          {
+            "id": "cat_pizza",
+            "name": "Pizza"
+          },
+          {
+            "id": "cat_apps",
+            "name": "Appetizers"
+          },
+          {
+            "id": "cat_salads",
+            "name": "Salads"
+          },
+          {
+            "id": "cat_desserts",
+            "name": "Desserts"
+          },
+          {
+            "id": "cat_bev",
+            "name": "Beverages"
+          }
+        ],
+        "channels": [
+          {
+            "name": "Dine-In",
+            "status": "live"
+          },
+          {
+            "name": "Carry-Out",
+            "status": "live"
+          },
+          {
+            "name": "Pick-Up",
+            "status": "live"
+          },
+          {
+            "name": "Online",
+            "status": "live"
+          },
+          {
+            "name": "Bar",
+            "status": "live"
+          }
+        ],
+        "taxRates": [
+          {
+            "id": "tx_food",
+            "name": "Food",
+            "ratePct": 3.9
+          },
+          {
+            "id": "tx_alc",
+            "name": "Alcohol",
+            "ratePct": 12
+          }
+        ],
+        "modifierGroups": [
+          {
+            "id": "mg_toppings",
+            "name": "Pizza Toppings",
+            "minChoices": 0,
+            "maxChoices": 6,
+            "included": 0,
+            "shared": false,
+            "halfAndHalfAllowed": true,
+            "availableOnline": true,
+            "options": [
+              {
+                "id": "mo_pep",
+                "name": "Pepperoni",
+                "priceDelta": 250,
+                "default": false
+              },
+              {
+                "id": "mo_cheese",
+                "name": "Extra Cheese",
+                "priceDelta": 200,
+                "default": false
+              },
+              {
+                "id": "mo_sausage",
+                "name": "Italian Sausage",
+                "priceDelta": 250,
+                "default": false
+              }
+            ],
+            "itemScope": null
+          },
+          {
+            "id": "mg_crust",
+            "name": "Crust",
+            "minChoices": 1,
+            "maxChoices": 1,
+            "included": 1,
+            "shared": true,
+            "halfAndHalfAllowed": false,
+            "availableOnline": true,
+            "options": [
+              {
+                "id": "mo_hand",
+                "name": "Hand Tossed",
+                "priceDelta": 0,
+                "default": true
+              },
+              {
+                "id": "mo_thin",
+                "name": "Thin",
+                "priceDelta": 0,
+                "default": false
+              },
+              {
+                "id": "mo_stuffed",
+                "name": "Stuffed",
+                "priceDelta": 200,
+                "default": false
+              }
+            ],
+            "itemScope": null
+          },
+          {
+            "id": "mg_size",
+            "name": "Size",
+            "minChoices": 1,
+            "maxChoices": 1,
+            "included": 1,
+            "shared": true,
+            "halfAndHalfAllowed": false,
+            "availableOnline": true,
+            "options": [
+              {
+                "id": "sz_s",
+                "name": "Small",
+                "priceDelta": -300,
+                "default": false
+              },
+              {
+                "id": "sz_m",
+                "name": "Medium",
+                "priceDelta": 0,
+                "default": true
+              },
+              {
+                "id": "sz_l",
+                "name": "Large",
+                "priceDelta": 300,
+                "default": false
+              }
+            ],
+            "itemScope": null
+          }
+        ],
+        "items": [
+          {
+            "id": "it_marg",
+            "name": "Margherita Pizza",
+            "category": "Pizza",
+            "price": 1200,
+            "description": "House-made dough; San Marzano; fresh mozzarella.",
+            "modifierGroups": [
+              "mg_crust"
+            ],
+            "channels": [
+              "Dine-In",
+              "Carry-Out",
+              "Pick-Up",
+              "Online"
+            ],
+            "course": 2,
+            "rush": false,
+            "hold": false,
+            "halfAndHalf": true,
+            "misc": false,
+            "unavailable": null,
+            "stock": null,
+            "taxRateId": "tx_food",
+            "archived": false
+          },
+          {
+            "id": "it_pep",
+            "name": "Pepperoni Pizza",
+            "category": "Pizza",
+            "price": 1450,
+            "description": "Classic.",
+            "modifierGroups": [
+              "mg_toppings",
+              "mg_crust"
+            ],
+            "channels": [
+              "Dine-In",
+              "Carry-Out",
+              "Pick-Up",
+              "Online"
+            ],
+            "course": 2,
+            "rush": false,
+            "hold": false,
+            "halfAndHalf": true,
+            "misc": false,
+            "unavailable": null,
+            "stock": null,
+            "taxRateId": "tx_food",
+            "archived": false
+          },
+          {
+            "id": "it_cheese",
+            "name": "Cheese Pizza",
+            "category": "Pizza",
+            "price": 1250,
+            "description": "",
+            "modifierGroups": [
+              "mg_toppings",
+              "mg_crust"
+            ],
+            "channels": [
+              "Dine-In",
+              "Carry-Out",
+              "Pick-Up",
+              "Online"
+            ],
+            "course": 2,
+            "rush": false,
+            "hold": false,
+            "halfAndHalf": true,
+            "misc": false,
+            "unavailable": null,
+            "stock": null,
+            "taxRateId": "tx_food",
+            "archived": false
+          },
+          {
+            "id": "it_veg",
+            "name": "Veggie Pizza",
+            "category": "Pizza",
+            "price": 1500,
+            "description": "",
+            "modifierGroups": [
+              "mg_toppings",
+              "mg_crust"
+            ],
+            "channels": [
+              "Dine-In",
+              "Carry-Out",
+              "Online"
+            ],
+            "course": 2,
+            "rush": false,
+            "hold": false,
+            "halfAndHalf": true,
+            "misc": false,
+            "unavailable": null,
+            "stock": null,
+            "taxRateId": "tx_food",
+            "archived": false
+          },
+          {
+            "id": "it_saus",
+            "name": "Sausage Pizza",
+            "category": "Pizza",
+            "price": 1500,
+            "description": "",
+            "modifierGroups": [
+              "mg_toppings",
+              "mg_crust"
+            ],
+            "channels": [
+              "Dine-In",
+              "Carry-Out",
+              "Pick-Up",
+              "Online"
+            ],
+            "course": 2,
+            "rush": false,
+            "hold": false,
+            "halfAndHalf": true,
+            "misc": false,
+            "unavailable": null,
+            "stock": null,
+            "taxRateId": "tx_food",
+            "archived": false
+          },
+          {
+            "id": "it_wings",
+            "name": "Buffalo Wings",
+            "category": "Appetizers",
+            "price": 1150,
+            "description": "",
+            "modifierGroups": [],
+            "channels": [
+              "Dine-In",
+              "Bar"
+            ],
+            "course": 1,
+            "rush": false,
+            "hold": false,
+            "halfAndHalf": false,
+            "misc": false,
+            "unavailable": null,
+            "stock": null,
+            "taxRateId": "tx_food",
+            "archived": false
+          },
+          {
+            "id": "it_knots",
+            "name": "Garlic Knots",
+            "category": "Appetizers",
+            "price": 550,
+            "description": "",
+            "modifierGroups": [],
+            "channels": [
+              "Dine-In",
+              "Carry-Out"
+            ],
+            "course": 1,
+            "rush": false,
+            "hold": false,
+            "halfAndHalf": false,
+            "misc": false,
+            "unavailable": null,
+            "stock": null,
+            "taxRateId": "tx_food",
+            "archived": false
+          },
+          {
+            "id": "it_caesar",
+            "name": "Caesar",
+            "category": "Salads",
+            "price": 900,
+            "description": "",
+            "modifierGroups": [],
+            "channels": [
+              "Dine-In",
+              "Online"
+            ],
+            "course": 1,
+            "rush": false,
+            "hold": false,
+            "halfAndHalf": false,
+            "misc": false,
+            "unavailable": null,
+            "stock": null,
+            "taxRateId": "tx_food",
+            "archived": false
+          },
+          {
+            "id": "it_tira",
+            "name": "Tiramisu",
+            "category": "Desserts",
+            "price": 650,
+            "description": "",
+            "modifierGroups": [],
+            "channels": [
+              "Dine-In",
+              "Carry-Out",
+              "Online"
+            ],
+            "course": 3,
+            "rush": false,
+            "hold": false,
+            "halfAndHalf": false,
+            "misc": false,
+            "unavailable": null,
+            "stock": null,
+            "taxRateId": "tx_food",
+            "archived": false
+          },
+          {
+            "id": "it_draft",
+            "name": "Draft Beer",
+            "category": "Beverages",
+            "price": 600,
+            "description": "",
+            "modifierGroups": [
+              "mg_size"
+            ],
+            "channels": [
+              "Dine-In",
+              "Bar"
+            ],
+            "course": 0,
+            "rush": false,
+            "hold": false,
+            "halfAndHalf": false,
+            "misc": false,
+            "unavailable": null,
+            "stock": null,
+            "taxRateId": "tx_alc",
+            "archived": false
+          },
+          {
+            "id": "it_soda",
+            "name": "Fountain Soda",
+            "category": "Beverages",
+            "price": 275,
+            "description": "",
+            "modifierGroups": [
+              "mg_size"
+            ],
+            "channels": [
+              "Dine-In",
+              "Carry-Out",
+              "Pick-Up",
+              "Online"
+            ],
+            "course": 0,
+            "rush": false,
+            "hold": false,
+            "halfAndHalf": false,
+            "misc": true,
+            "unavailable": null,
+            "stock": null,
+            "taxRateId": "tx_food",
+            "archived": false
+          }
+        ],
+        "pricingRules": [
+          {
+            "id": "pr_hh",
+            "name": "Happy Hour Draft",
+            "type": "force",
+            "value": 300,
+            "appliesTo": {
+              "items": [
+                "it_draft"
+              ]
+            },
+            "scope": {
+              "days": [
+                1,
+                2,
+                3,
+                4,
+                5
+              ],
+              "timeRanges": [
+                {
+                  "startMin": 960,
+                  "endMin": 1080
+                }
+              ],
+              "channel": null,
+              "room": null
+            },
+            "postTax": false,
+            "priority": 1,
+            "enabled": true
+          }
+        ],
+        "schedules": [
+          {
+            "id": "sch_brunch",
+            "name": "Weekend Brunch",
+            "days": [
+              6,
+              0
+            ],
+            "startMin": 600,
+            "endMin": 840,
+            "appliesTo": [],
+            "splitFrom": null
+          }
+        ]
+      }
+    },
+    {
+      "id": "loc_marios_toast",
+      "name": "Mario’s — Toast Migration Site",
+      "platform": "toast",
+      "timezone": "America/Denver",
+      "menu": {
+        "name": "Mario’s Toast Migration Menu",
+        "version": 1,
+        "updatedAt": "2026-09-15T00:00:00.000Z",
+        "categories": [
+          {
+            "id": "cat_pizza",
+            "name": "Pizza"
+          },
+          {
+            "id": "cat_apps",
+            "name": "Appetizers"
+          },
+          {
+            "id": "cat_salads",
+            "name": "Salads"
+          },
+          {
+            "id": "cat_desserts",
+            "name": "Desserts"
+          },
+          {
+            "id": "cat_bev",
+            "name": "Beverages"
+          }
+        ],
+        "channels": [
+          {
+            "name": "Dine-In",
+            "status": "live"
+          },
+          {
+            "name": "Carry-Out",
+            "status": "live"
+          },
+          {
+            "name": "Pick-Up",
+            "status": "live"
+          },
+          {
+            "name": "Online",
+            "status": "live"
+          },
+          {
+            "name": "Bar",
+            "status": "live"
+          }
+        ],
+        "taxRates": [
+          {
+            "id": "tx_food",
+            "name": "Food",
+            "ratePct": 3.9
+          },
+          {
+            "id": "tx_alc",
+            "name": "Alcohol",
+            "ratePct": 12
+          }
+        ],
+        "modifierGroups": [
+          {
+            "id": "mg_toppings",
+            "name": "Pizza Toppings",
+            "minChoices": 0,
+            "maxChoices": 6,
+            "included": 0,
+            "shared": false,
+            "halfAndHalfAllowed": true,
+            "availableOnline": true,
+            "options": [
+              {
+                "id": "mo_pep",
+                "name": "Pepperoni",
+                "priceDelta": 250,
+                "default": false
+              },
+              {
+                "id": "mo_cheese",
+                "name": "Extra Cheese",
+                "priceDelta": 200,
+                "default": false
+              },
+              {
+                "id": "mo_sausage",
+                "name": "Italian Sausage",
+                "priceDelta": 250,
+                "default": false
+              }
+            ],
+            "itemScope": null
+          },
+          {
+            "id": "mg_crust",
+            "name": "Crust",
+            "minChoices": 1,
+            "maxChoices": 1,
+            "included": 1,
+            "shared": true,
+            "halfAndHalfAllowed": false,
+            "availableOnline": true,
+            "options": [
+              {
+                "id": "mo_hand",
+                "name": "Hand Tossed",
+                "priceDelta": 0,
+                "default": true
+              },
+              {
+                "id": "mo_thin",
+                "name": "Thin",
+                "priceDelta": 0,
+                "default": false
+              },
+              {
+                "id": "mo_stuffed",
+                "name": "Stuffed",
+                "priceDelta": 200,
+                "default": false
+              }
+            ],
+            "itemScope": null
+          },
+          {
+            "id": "mg_size",
+            "name": "Size",
+            "minChoices": 1,
+            "maxChoices": 1,
+            "included": 1,
+            "shared": true,
+            "halfAndHalfAllowed": false,
+            "availableOnline": true,
+            "options": [
+              {
+                "id": "sz_s",
+                "name": "Small",
+                "priceDelta": -300,
+                "default": false
+              },
+              {
+                "id": "sz_m",
+                "name": "Medium",
+                "priceDelta": 0,
+                "default": true
+              },
+              {
+                "id": "sz_l",
+                "name": "Large",
+                "priceDelta": 300,
+                "default": false
+              }
+            ],
+            "itemScope": null
+          }
+        ],
+        "items": [
+          {
+            "id": "it_marg",
+            "name": "Margherita Pizza",
+            "category": "Pizza",
+            "price": 1200,
+            "description": "House-made dough; San Marzano; fresh mozzarella.",
+            "modifierGroups": [
+              "mg_crust"
+            ],
+            "channels": [
+              "Dine-In",
+              "Carry-Out",
+              "Pick-Up",
+              "Online"
+            ],
+            "course": 2,
+            "rush": false,
+            "hold": false,
+            "halfAndHalf": true,
+            "misc": false,
+            "unavailable": null,
+            "stock": null,
+            "taxRateId": "tx_food",
+            "archived": false
+          },
+          {
+            "id": "it_pep",
+            "name": "Pepperoni Pizza",
+            "category": "Pizza",
+            "price": 1450,
+            "description": "Classic.",
+            "modifierGroups": [
+              "mg_toppings",
+              "mg_crust"
+            ],
+            "channels": [
+              "Dine-In",
+              "Carry-Out",
+              "Pick-Up",
+              "Online"
+            ],
+            "course": 2,
+            "rush": false,
+            "hold": false,
+            "halfAndHalf": true,
+            "misc": false,
+            "unavailable": null,
+            "stock": null,
+            "taxRateId": "tx_food",
+            "archived": false
+          },
+          {
+            "id": "it_cheese",
+            "name": "Cheese Pizza",
+            "category": "Pizza",
+            "price": 1250,
+            "description": "",
+            "modifierGroups": [
+              "mg_toppings",
+              "mg_crust"
+            ],
+            "channels": [
+              "Dine-In",
+              "Carry-Out",
+              "Pick-Up",
+              "Online"
+            ],
+            "course": 2,
+            "rush": false,
+            "hold": false,
+            "halfAndHalf": true,
+            "misc": false,
+            "unavailable": null,
+            "stock": null,
+            "taxRateId": "tx_food",
+            "archived": false
+          },
+          {
+            "id": "it_veg",
+            "name": "Veggie Pizza",
+            "category": "Pizza",
+            "price": 1500,
+            "description": "",
+            "modifierGroups": [
+              "mg_toppings",
+              "mg_crust"
+            ],
+            "channels": [
+              "Dine-In",
+              "Carry-Out",
+              "Online"
+            ],
+            "course": 2,
+            "rush": false,
+            "hold": false,
+            "halfAndHalf": true,
+            "misc": false,
+            "unavailable": null,
+            "stock": null,
+            "taxRateId": "tx_food",
+            "archived": false
+          },
+          {
+            "id": "it_saus",
+            "name": "Sausage Pizza",
+            "category": "Pizza",
+            "price": 1500,
+            "description": "",
+            "modifierGroups": [
+              "mg_toppings",
+              "mg_crust"
+            ],
+            "channels": [
+              "Dine-In",
+              "Carry-Out",
+              "Pick-Up",
+              "Online"
+            ],
+            "course": 2,
+            "rush": false,
+            "hold": false,
+            "halfAndHalf": true,
+            "misc": false,
+            "unavailable": null,
+            "stock": null,
+            "taxRateId": "tx_food",
+            "archived": false
+          },
+          {
+            "id": "it_wings",
+            "name": "Buffalo Wings",
+            "category": "Appetizers",
+            "price": 1150,
+            "description": "",
+            "modifierGroups": [],
+            "channels": [
+              "Dine-In",
+              "Bar"
+            ],
+            "course": 1,
+            "rush": false,
+            "hold": false,
+            "halfAndHalf": false,
+            "misc": false,
+            "unavailable": null,
+            "stock": null,
+            "taxRateId": "tx_food",
+            "archived": false
+          },
+          {
+            "id": "it_knots",
+            "name": "Garlic Knots",
+            "category": "Appetizers",
+            "price": 550,
+            "description": "",
+            "modifierGroups": [],
+            "channels": [
+              "Dine-In",
+              "Carry-Out"
+            ],
+            "course": 1,
+            "rush": false,
+            "hold": false,
+            "halfAndHalf": false,
+            "misc": false,
+            "unavailable": null,
+            "stock": null,
+            "taxRateId": "tx_food",
+            "archived": false
+          },
+          {
+            "id": "it_caesar",
+            "name": "Caesar",
+            "category": "Salads",
+            "price": 900,
+            "description": "",
+            "modifierGroups": [],
+            "channels": [
+              "Dine-In",
+              "Online"
+            ],
+            "course": 1,
+            "rush": false,
+            "hold": false,
+            "halfAndHalf": false,
+            "misc": false,
+            "unavailable": null,
+            "stock": null,
+            "taxRateId": "tx_food",
+            "archived": false
+          },
+          {
+            "id": "it_tira",
+            "name": "Tiramisu",
+            "category": "Desserts",
+            "price": 650,
+            "description": "",
+            "modifierGroups": [],
+            "channels": [
+              "Dine-In",
+              "Carry-Out",
+              "Online"
+            ],
+            "course": 3,
+            "rush": false,
+            "hold": false,
+            "halfAndHalf": false,
+            "misc": false,
+            "unavailable": null,
+            "stock": null,
+            "taxRateId": "tx_food",
+            "archived": false
+          },
+          {
+            "id": "it_draft",
+            "name": "Draft Beer",
+            "category": "Beverages",
+            "price": 600,
+            "description": "",
+            "modifierGroups": [
+              "mg_size"
+            ],
+            "channels": [
+              "Dine-In",
+              "Bar"
+            ],
+            "course": 0,
+            "rush": false,
+            "hold": false,
+            "halfAndHalf": false,
+            "misc": false,
+            "unavailable": null,
+            "stock": null,
+            "taxRateId": "tx_alc",
+            "archived": false
+          },
+          {
+            "id": "it_soda",
+            "name": "Fountain Soda",
+            "category": "Beverages",
+            "price": 275,
+            "description": "",
+            "modifierGroups": [
+              "mg_size"
+            ],
+            "channels": [
+              "Dine-In",
+              "Carry-Out",
+              "Pick-Up",
+              "Online"
+            ],
+            "course": 0,
+            "rush": false,
+            "hold": false,
+            "halfAndHalf": false,
+            "misc": true,
+            "unavailable": null,
+            "stock": null,
+            "taxRateId": "tx_food",
+            "archived": false
+          }
+        ],
+        "pricingRules": [
+          {
+            "id": "pr_hh",
+            "name": "Happy Hour Draft",
+            "type": "force",
+            "value": 300,
+            "appliesTo": {
+              "items": [
+                "it_draft"
+              ]
+            },
+            "scope": {
+              "days": [
+                1,
+                2,
+                3,
+                4,
+                5
+              ],
+              "timeRanges": [
+                {
+                  "startMin": 960,
+                  "endMin": 1080
+                }
+              ],
+              "channel": null,
+              "room": null
+            },
+            "postTax": false,
+            "priority": 1,
+            "enabled": true
+          }
+        ],
+        "schedules": [
+          {
+            "id": "sch_brunch",
+            "name": "Weekend Brunch",
+            "days": [
+              6,
+              0
+            ],
+            "startMin": 600,
+            "endMin": 840,
+            "appliesTo": [],
+            "splitFrom": null
+          }
+        ]
+      }
+    }
+  ]
+}

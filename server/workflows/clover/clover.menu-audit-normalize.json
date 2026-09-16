@@ -1,0 +1,76 @@
+{
+  "platform": "clover",
+  "id": "clover.menu-audit-normalize",
+  "category": "audit",
+  "risk": "medium",
+  "title": "Audit + normalize (shared modifier isolation, shadows, sync preflight)",
+  "summary": "The Signal F audit pipeline on a Clover account: full audit, written approval gate, normalize, isolate cross-category modifiers, shadow channels, empty-group blocker sweep.",
+  "inputs": [
+    {
+      "name": "fixModifier",
+      "type": "string",
+      "required": false,
+      "example": "Pepperoni"
+    }
+  ],
+  "steps": [
+    {
+      "id": "s-audit",
+      "kind": "auto",
+      "title": "Run the full menu audit and write the client report",
+      "skill": "audit.full",
+      "args": {},
+      "citations": [
+        {
+          "doc": "heartland.kb.audit-protocol",
+          "section": "protocol"
+        }
+      ]
+    },
+    {
+      "id": "s-gate",
+      "kind": "gate",
+      "title": "Client approval of audit findings + scope",
+      "instructions": "Present the audit report (HIGH/MEDIUM findings, 86-cascade exposure). Obtain WRITTEN approval for the scope: targeted fix vs full normalization. Never touch the live system before this gate."
+    },
+    {
+      "id": "s-norm",
+      "kind": "auto",
+      "title": "Normalize casing/prices/duplicate options",
+      "skill": "menu.normalize",
+      "args": {}
+    },
+    {
+      "id": "s-iso",
+      "kind": "auto",
+      "title": "Isolate the flagged shared modifier",
+      "skill": "menu.modifier.isolate",
+      "args": {
+        "modifier": "{fixModifier}"
+      },
+      "fatal": false
+    },
+    {
+      "id": "s-shadow",
+      "kind": "auto",
+      "title": "Shadow v2 channels",
+      "skill": "channel.shadow_create",
+      "args": {}
+    },
+    {
+      "id": "s-verify",
+      "kind": "auto",
+      "title": "Verify shadows + sync blockers",
+      "skill": "channel.shadow_verify",
+      "args": {},
+      "checks": [
+        {
+          "check": "no-empty-modifier-groups"
+        },
+        {
+          "check": "shadow-verified"
+        }
+      ]
+    }
+  ]
+}

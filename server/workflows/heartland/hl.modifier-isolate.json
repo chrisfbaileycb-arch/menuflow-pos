@@ -1,0 +1,94 @@
+{
+  "platform": "heartland",
+  "id": "hl.modifier-isolate",
+  "category": "modifiers",
+  "risk": "medium",
+  "title": "Isolate a shared modifier — fix the pepperoni problem",
+  "summary": "Splits one cross-category modifier into per-category item-scoped copies (Is Shared = false) so 86-ing pizza pepperoni never disables pasta/salad revenue.",
+  "inputs": [
+    {
+      "name": "modifier",
+      "type": "string",
+      "required": true,
+      "example": "Pepperoni"
+    }
+  ],
+  "steps": [
+    {
+      "id": "s-scan",
+      "kind": "auto",
+      "title": "Quantify current cross-contamination + 86 exposure",
+      "skill": "audit.cross-contamination",
+      "args": {},
+      "citations": [
+        {
+          "doc": "heartland.kb.modifier-architecture",
+          "section": "pepperoni-problem"
+        }
+      ]
+    },
+    {
+      "id": "s-risk",
+      "kind": "auto",
+      "title": "Revenue exposure if the shared copy is disabled",
+      "skill": "audit.86-risk",
+      "args": {},
+      "citations": [
+        {
+          "doc": "heartland.kb.audit-protocol",
+          "section": "never-86"
+        }
+      ]
+    },
+    {
+      "id": "s-approve",
+      "kind": "gate",
+      "title": "Written client approval for the rebuild of this modifier",
+      "instructions": "Present items/categories/revenue exposure from the two scans. Modifier isolation changes ordering UX, so it requires explicit sign-off (KB: audit before action)."
+    },
+    {
+      "id": "s-isolate",
+      "kind": "auto",
+      "title": "Split into per-category, item-scoped groups",
+      "skill": "menu.modifier.isolate",
+      "args": {
+        "modifier": "{modifier}"
+      },
+      "citations": [
+        {
+          "doc": "heartland.kb.modifier-architecture",
+          "section": "isolation"
+        }
+      ]
+    },
+    {
+      "id": "s-portal",
+      "kind": "manual",
+      "title": "Mirror the split in the Admin Console",
+      "instructions": "Admin Console > Menu > Modifiers: create one group per category (e.g. \"Pizza Pepperoni\"), leave the shared flag OFF, and re-assign items from the single shared copy to the scoped copies. Delete the shared copy only after both sides match.",
+      "citations": [
+        {
+          "doc": "heartland.modifiers-screen",
+          "section": "assigned-items"
+        }
+      ]
+    },
+    {
+      "id": "s-verify",
+      "kind": "auto",
+      "title": "Verify isolation + improvement vs baseline",
+      "skill": "audit.verify_fix",
+      "args": {
+        "metric": "cross_contamination"
+      },
+      "checks": [
+        {
+          "check": "modifier-isolated",
+          "args": {
+            "modifier": "{modifier}"
+          }
+        }
+      ]
+    }
+  ]
+}

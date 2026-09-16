@@ -1,0 +1,96 @@
+{
+  "platform": "heartland",
+  "id": "hl.86-stock-limit",
+  "category": "operations",
+  "risk": "medium",
+  "title": "Run-out protocol: 86 via stock limit — never by deleting",
+  "summary": "Implements the Heartland item-stock path (long-press item > stock limit, or Manager > Item Stock Management) with the Signal F rule: contact customers, disable in-system only after service.",
+  "inputs": [
+    {
+      "name": "item",
+      "type": "string",
+      "required": true,
+      "example": "Pepperoni Pizza"
+    },
+    {
+      "name": "count",
+      "type": "number",
+      "required": false,
+      "example": "6 — remaining sellable quantity"
+    },
+    {
+      "name": "reason",
+      "type": "string",
+      "required": true,
+      "example": "86 pepperoni — delivery missed"
+    }
+  ],
+  "steps": [
+    {
+      "id": "s-cascade",
+      "kind": "auto",
+      "title": "Check cascade: what else shares this ingredient?",
+      "skill": "audit.86-risk",
+      "args": {},
+      "citations": [
+        {
+          "doc": "heartland.kb.audit-protocol",
+          "section": "never-86"
+        }
+      ]
+    },
+    {
+      "id": "s-stock",
+      "kind": "manual",
+      "title": "Set the stock limit at the POS",
+      "instructions": "In the order screen long-press the item and enter the remaining stock number; for bulk changes use User Menu > Manager > Item Stock Management. The item disappears from ordering when the count reaches zero — nothing is deleted.",
+      "citations": [
+        {
+          "doc": "heartland.mini-manager-guide",
+          "section": "item-stock"
+        }
+      ]
+    },
+    {
+      "id": "s-mark",
+      "kind": "auto",
+      "title": "Record the reversible POS-level 86 in the workbench",
+      "skill": "menu.item.86",
+      "args": {
+        "item": "{item}",
+        "reason": "{reason}",
+        "count": "{count}"
+      },
+      "fatal": false
+    },
+    {
+      "id": "s-verify",
+      "kind": "auto",
+      "title": "Verify availability state on the workbench",
+      "skill": "menu.channel.list",
+      "args": {},
+      "checks": [
+        {
+          "check": "item-unavailable",
+          "args": {
+            "item": "{item}"
+          },
+          "fatal": false
+        }
+      ],
+      "fatal": false
+    },
+    {
+      "id": "s-restore",
+      "kind": "manual",
+      "title": "Re-enable at next delivery + clear customer backlog",
+      "instructions": "When supply returns, restore stock counts. During the outage, staff must contact guests who already ordered the affected items rather than letting silent substitutions happen.",
+      "citations": [
+        {
+          "doc": "heartland.kb.audit-protocol",
+          "section": "never-86"
+        }
+      ]
+    }
+  ]
+}

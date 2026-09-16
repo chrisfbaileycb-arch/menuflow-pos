@@ -1,0 +1,77 @@
+{
+  "platform": "square",
+  "id": "square.sold-out-86",
+  "category": "operations",
+  "risk": "medium",
+  "title": "86 safely: Sold-out with scheduled auto-return",
+  "summary": "Square supports marking an item temporarily sold out with automatic return — the reversible 86. Never hide items by deleting or unpublishing the category.",
+  "inputs": [
+    {
+      "name": "item",
+      "type": "string",
+      "required": true,
+      "example": "Pepperoni Pizza"
+    },
+    {
+      "name": "reason",
+      "type": "string",
+      "required": true,
+      "example": "86 pepperoni until tomorrow 11 AM"
+    }
+  ],
+  "steps": [
+    {
+      "id": "s-cascade",
+      "kind": "auto",
+      "title": "Cascade check first",
+      "skill": "audit.86-risk",
+      "args": {},
+      "citations": [
+        {
+          "doc": "heartland.kb.audit-protocol",
+          "section": "never-86"
+        }
+      ]
+    },
+    {
+      "id": "s-soldout",
+      "kind": "manual",
+      "title": "Mark Sold out with scheduled return",
+      "instructions": "In the item record (or the Restaurants app during service), set the item Sold out and schedule when it should come back automatically — that removes ordering without breaking reporting history.",
+      "citations": [
+        {
+          "doc": "square.library-items",
+          "section": "sold-out"
+        }
+      ]
+    },
+    {
+      "id": "s-mirror",
+      "kind": "auto",
+      "title": "Mirror the state on the workbench",
+      "skill": "menu.item.86",
+      "args": {
+        "item": "{item}",
+        "reason": "{reason}"
+      },
+      "fatal": false
+    },
+    {
+      "id": "s-verify",
+      "kind": "auto",
+      "title": "Verify availability state",
+      "skill": "menu.channel.list",
+      "args": {},
+      "checks": [
+        {
+          "check": "item-unavailable",
+          "args": {
+            "item": "{item}"
+          },
+          "fatal": false
+        }
+      ],
+      "fatal": false
+    }
+  ]
+}

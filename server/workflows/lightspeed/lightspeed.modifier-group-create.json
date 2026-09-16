@@ -1,0 +1,95 @@
+{
+  "platform": "lightspeed",
+  "id": "lightspeed.modifier-group-create",
+  "category": "modifiers",
+  "risk": "low",
+  "title": "Create a modifier group + modifiers (and attach)",
+  "summary": "Menu > Item list > Create > Modifier group; existing modifiers are found by name search to prevent duplicate entries — the engine mirrors that: reuse by normalized name.",
+  "inputs": [
+    {
+      "name": "groupName",
+      "type": "string",
+      "required": true,
+      "example": "Extra sauces"
+    },
+    {
+      "name": "optionName",
+      "type": "string",
+      "required": true,
+      "example": "Extra garlic sauce"
+    },
+    {
+      "name": "priceDelta",
+      "type": "money",
+      "required": false,
+      "example": "1.50"
+    },
+    {
+      "name": "item",
+      "type": "string",
+      "required": false,
+      "example": "Cacio e Pepe"
+    }
+  ],
+  "steps": [
+    {
+      "id": "s-grp",
+      "kind": "auto",
+      "title": "Create/reuse the group (name-search semantics)",
+      "skill": "menu.modifier.group.ensure",
+      "args": {
+        "name": "{groupName}",
+        "shared": false
+      },
+      "citations": [
+        {
+          "doc": "lightspeed.item-list",
+          "section": "create"
+        }
+      ]
+    },
+    {
+      "id": "s-opt",
+      "kind": "auto",
+      "title": "Add the modifier option",
+      "skill": "menu.modifier.option.upsert",
+      "args": {
+        "group": "{groupName}",
+        "name": "{optionName}",
+        "priceDelta": "{priceDelta}"
+      }
+    },
+    {
+      "id": "s-link",
+      "kind": "auto",
+      "title": "Attach to the item record (Details > Modifier groups)",
+      "skill": "menu.modifier.link",
+      "args": {
+        "group": "{groupName}",
+        "items": "{item}"
+      },
+      "citations": [
+        {
+          "doc": "lightspeed.item-list",
+          "section": "unlink"
+        }
+      ],
+      "fatal": false
+    },
+    {
+      "id": "s-guard",
+      "kind": "auto",
+      "title": "The new group must have modifiers attached",
+      "skill": "audit.empty-groups",
+      "args": {},
+      "checks": [
+        {
+          "check": "no-empty-modifier-groups",
+          "args": {
+            "group": "{groupName}"
+          }
+        }
+      ]
+    }
+  ]
+}

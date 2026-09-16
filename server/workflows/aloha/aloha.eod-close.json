@@ -1,0 +1,42 @@
+{
+  "platform": "aloha",
+  "id": "aloha.eod-close",
+  "category": "operations",
+  "risk": "low",
+  "title": "End-of-day close checklist",
+  "summary": "Roll the day on the terminals, verify 86 clears and cash/charge totals reconcile per the operator reference.",
+  "inputs": [],
+  "steps": [
+    {
+      "id": "s-eod",
+      "kind": "manual",
+      "title": "Run EOD reports",
+      "instructions": "Terminal: End of Day > roll the business day; verify no open shifts and every drawer closed. Keep the EOD packet with the audit files.",
+      "citations": [
+        {
+          "doc": "aloha.pos-86",
+          "section": "eod"
+        }
+      ]
+    },
+    {
+      "id": "s-86clear",
+      "kind": "manual",
+      "title": "Confirm the 86 list reset for tomorrow",
+      "instructions": "The shift-scoped 86s should not survive into the next open unless intentionally carried.",
+      "citations": [
+        {
+          "doc": "aloha.pos-86",
+          "section": "86"
+        }
+      ]
+    },
+    {
+      "id": "s-snapshot",
+      "kind": "auto",
+      "title": "Snapshot channel/workbench state for the log",
+      "skill": "menu.channel.list",
+      "args": {}
+    }
+  ]
+}

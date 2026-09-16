@@ -1,0 +1,35 @@
+{
+  "platform": "heartland",
+  "id": "hl.full-menu-audit",
+  "category": "audit",
+  "risk": "low",
+  "title": "Full menu audit (cross-contamination, redundancy, 86-cascade, midnight, pricing, coursing)",
+  "summary": "One-run equivalent of executing heartland-pos modifier-scan.py + redundancy-check.py + 86-risk-report.py and reading the KB rules. Writes a client-facing report to data/reports/.",
+  "inputs": [],
+  "steps": [
+    {
+      "id": "s-audit",
+      "kind": "auto",
+      "title": "Run all audit scans over the workbench",
+      "skill": "audit.full",
+      "args": {},
+      "citations": [
+        {
+          "doc": "heartland.kb.audit-protocol",
+          "section": "protocol"
+        },
+        {
+          "doc": "heartland.kb.modifier-architecture",
+          "section": "pepperoni-problem"
+        }
+      ]
+    },
+    {
+      "id": "s-md",
+      "kind": "auto",
+      "title": "Render client-facing markdown report",
+      "skill": "report.markdown",
+      "args": {}
+    }
+  ]
+}

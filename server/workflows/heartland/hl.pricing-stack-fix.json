@@ -1,0 +1,71 @@
+{
+  "platform": "heartland",
+  "id": "hl.pricing-stack-fix",
+  "category": "pricing",
+  "risk": "medium",
+  "title": "Repair the dynamic pricing stack (dead force rules, ordering, post-tax flags)",
+  "summary": "Heartland pricing rules are first-match-wins: sort most-specific first, disable shadowed duplicates non-destructively, and sanity-check discount post-tax flags.",
+  "inputs": [],
+  "steps": [
+    {
+      "id": "s-audit",
+      "kind": "auto",
+      "title": "Find conflicts: deep stacks, dead force rules, post-tax suspects",
+      "skill": "audit.pricing",
+      "args": {},
+      "citations": [
+        {
+          "doc": "heartland.kb.pricing-rules",
+          "section": "audit-conflicts"
+        }
+      ]
+    },
+    {
+      "id": "s-approve",
+      "kind": "gate",
+      "title": "Owner approves rule changes (they move real money)",
+      "instructions": "Force-price changes alter guest charges directly. Confirm which rule should win (bar vs whole-venue happy hour) in writing."
+    },
+    {
+      "id": "s-reorder",
+      "kind": "auto",
+      "title": "Re-sort rules most-specific-first",
+      "skill": "menu.pricing.reorder_specificity",
+      "args": {},
+      "citations": [
+        {
+          "doc": "heartland.kb.pricing-rules",
+          "section": "priority"
+        }
+      ]
+    },
+    {
+      "id": "s-dead",
+      "kind": "auto",
+      "title": "Disable shadowed force rules (non-destructive)",
+      "skill": "menu.pricing.disable_dead_force_rules",
+      "args": {}
+    },
+    {
+      "id": "s-verify",
+      "kind": "auto",
+      "title": "Verify no dead force rules remain",
+      "skill": "audit.pricing",
+      "args": {},
+      "checks": [
+        {
+          "check": "no-dead-force-price"
+        }
+      ]
+    },
+    {
+      "id": "s-fix",
+      "kind": "auto",
+      "title": "Confirm improvement vs baseline",
+      "skill": "audit.verify_fix",
+      "args": {
+        "metric": "pricing"
+      }
+    }
+  ]
+}

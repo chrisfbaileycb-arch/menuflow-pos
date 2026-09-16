@@ -1,0 +1,207 @@
+{
+  "platform": "heartland",
+  "id": "hl.shadow-build-cutover",
+  "category": "rebuild",
+  "risk": "high",
+  "title": "Shadow build v2 channels → client verification → cutover (zero downtime)",
+  "summary": "The rebuild guide as an executable flow: pre-build checklist, export backup, create [Channel] v2 for every live channel, verify structure, gate on client sign-off, cutover with the originals retained as fallback.",
+  "inputs": [
+    {
+      "name": "approvalRef",
+      "type": "string",
+      "required": true,
+      "example": "signed-form-2026-09-14 or email thread link"
+    }
+  ],
+  "steps": [
+    {
+      "id": "s-checklist",
+      "kind": "manual",
+      "title": "Pre-build checklist (all five boxes)",
+      "instructions": "Confirm: audit report delivered & reviewed; client authorization form signed; scope agreed in writing; admin menu credentials live; clean current export saved. Any unchecked box stops the build.",
+      "citations": [
+        {
+          "doc": "heartland.kb.shadow-build",
+          "section": "checklist"
+        }
+      ]
+    },
+    {
+      "id": "s-backup",
+      "kind": "auto",
+      "title": "Save a clean export before building",
+      "skill": "io.export.menu",
+      "args": {
+        "format": "heartland-json",
+        "scope": "live"
+      },
+      "citations": [
+        {
+          "doc": "heartland.kb.shadow-build",
+          "section": "checklist"
+        }
+      ]
+    },
+    {
+      "id": "s-shadow",
+      "kind": "auto",
+      "title": "Create v2 channels for every live channel",
+      "skill": "channel.shadow_create",
+      "args": {},
+      "citations": [
+        {
+          "doc": "heartland.kb.shadow-build",
+          "section": "naming"
+        }
+      ]
+    },
+    {
+      "id": "s-audit",
+      "kind": "auto",
+      "title": "Audit the shadow workbench",
+      "skill": "audit.full",
+      "args": {}
+    },
+    {
+      "id": "s-repairs",
+      "kind": "auto",
+      "title": "Apply the auto-repairs (empty groups, midnight splits, dead force rules, casing/prices)",
+      "skill": "menu.normalize",
+      "args": {}
+    },
+    {
+      "id": "s-empty",
+      "kind": "auto",
+      "title": "Remove empty modifier groups",
+      "skill": "menu.modifier.remove_empty",
+      "args": {},
+      "citations": [
+        {
+          "doc": "signalF.shared-rules",
+          "section": "empty-groups"
+        }
+      ]
+    },
+    {
+      "id": "s-mid",
+      "kind": "auto",
+      "title": "Split midnight-crossing windows",
+      "skill": "menu.schedule.auto_split_all",
+      "args": {},
+      "citations": [
+        {
+          "doc": "heartland.kb.midnight-rule",
+          "section": "rule"
+        }
+      ]
+    },
+    {
+      "id": "s-isoall",
+      "kind": "auto",
+      "title": "Enforce isolation standard menu-wide",
+      "skill": "menu.modifier.isolate_all_shared",
+      "args": {},
+      "citations": [
+        {
+          "doc": "heartland.kb.modifier-architecture",
+          "section": "isolation"
+        }
+      ]
+    },
+    {
+      "id": "s-dead",
+      "kind": "auto",
+      "title": "Disable dead force-price rules",
+      "skill": "menu.pricing.disable_dead_force_rules",
+      "args": {}
+    },
+    {
+      "id": "s-rush",
+      "kind": "auto",
+      "title": "Resolve Rush+Hold kitchen-routing contradictions",
+      "skill": "menu.item.set_course",
+      "args": {
+        "item": "Buffalo Wings (10pc)",
+        "course": 1,
+        "rush": false,
+        "hold": false
+      },
+      "citations": [
+        {
+          "doc": "heartland.kb.coursing",
+          "section": "basics"
+        }
+      ],
+      "fatal": false
+    },
+    {
+      "id": "s-verify",
+      "kind": "auto",
+      "title": "Structural verification of each v2 channel",
+      "skill": "channel.shadow_verify",
+      "args": {},
+      "checks": [
+        {
+          "check": "shadow-channels-exist"
+        },
+        {
+          "check": "shadow-verified"
+        },
+        {
+          "check": "no-empty-modifier-groups"
+        },
+        {
+          "check": "modifier-isolated",
+          "args": {
+            "modifier": "Pepperoni"
+          }
+        }
+      ]
+    },
+    {
+      "id": "s-client",
+      "kind": "gate",
+      "title": "Client has walked each v2 channel on a device",
+      "instructions": "Client tests Dine-In v2, Carry-Out v2, Pick-Up v2, Online v2 end to end (orders, modifiers, tickets, KDS). They control the flip; nothing cuts over before this box is ticked."
+    },
+    {
+      "id": "s-cutover",
+      "kind": "auto",
+      "title": "Promote v2 to live; retain originals as fallback",
+      "skill": "channel.cutover",
+      "args": {
+        "clientApprovalRef": "{approvalRef}"
+      },
+      "citations": [
+        {
+          "doc": "heartland.kb.shadow-build",
+          "section": "principle"
+        }
+      ]
+    },
+    {
+      "id": "s-pub",
+      "kind": "auto",
+      "title": "Publish the workbench to the live menu in this console",
+      "skill": "publish.apply",
+      "args": {}
+    },
+    {
+      "id": "s-retire",
+      "kind": "manual",
+      "title": "Retirement of v1 is the client’s call, later",
+      "instructions": "After a 48-hour clean soak, if the client agrees, retire the v1 channels (channel.retire with approvalRef). Until then, old channels stay available as fallback.",
+      "citations": [
+        {
+          "doc": "heartland.kb.shadow-build",
+          "section": "phase-retire"
+        }
+      ],
+      "checks": [
+        {
+          "check": "cutover-complete"
+        }
+      ]
+    }
+  ]
+}

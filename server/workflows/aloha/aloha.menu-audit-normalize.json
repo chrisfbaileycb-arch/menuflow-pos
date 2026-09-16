@@ -1,0 +1,100 @@
+{
+  "platform": "aloha",
+  "id": "aloha.menu-audit-normalize",
+  "category": "rebuild",
+  "risk": "high",
+  "title": "Aloha menu rebuild pipeline (audit → gate → normalize → shadow → verify)",
+  "summary": "The five-step rebuild for an Aloha venue: canonical audit first, written approval, normalization + isolation + midnight sweep, v2 shadow workbench, verification — ADM-side changes are made by the operator between gates.",
+  "inputs": [
+    {
+      "name": "fixModifier",
+      "type": "string",
+      "required": false,
+      "example": "Pepperoni"
+    }
+  ],
+  "steps": [
+    {
+      "id": "s-audit",
+      "kind": "auto",
+      "title": "Run the full menu audit and write the client report",
+      "skill": "audit.full",
+      "args": {},
+      "citations": [
+        {
+          "doc": "heartland.kb.audit-protocol",
+          "section": "protocol"
+        }
+      ]
+    },
+    {
+      "id": "s-gate",
+      "kind": "gate",
+      "title": "Client approval of audit findings + scope",
+      "instructions": "Present the audit report (HIGH/MEDIUM findings, 86-cascade exposure). Obtain WRITTEN approval for the scope: targeted fix vs full normalization. Never touch the live system before this gate."
+    },
+    {
+      "id": "s-norm",
+      "kind": "auto",
+      "title": "Normalize the workbench menu",
+      "skill": "menu.normalize",
+      "args": {}
+    },
+    {
+      "id": "s-iso",
+      "kind": "auto",
+      "title": "Isolate flagged shared modifier",
+      "skill": "menu.modifier.isolate",
+      "args": {
+        "modifier": "{fixModifier}"
+      },
+      "fatal": false
+    },
+    {
+      "id": "s-mid",
+      "kind": "auto",
+      "title": "Split midnight-crossing ranges",
+      "skill": "audit.midnight",
+      "args": {},
+      "checks": [
+        {
+          "check": "no-midnight-violations",
+          "args": {},
+          "fatal": false
+        }
+      ],
+      "fatal": false
+    },
+    {
+      "id": "s-shadow",
+      "kind": "auto",
+      "title": "Shadow v2 channels",
+      "skill": "channel.shadow_create",
+      "args": {}
+    },
+    {
+      "id": "s-verify",
+      "kind": "auto",
+      "title": "Verify shadow structure",
+      "skill": "channel.shadow_verify",
+      "args": {},
+      "checks": [
+        {
+          "check": "shadow-verified"
+        }
+      ]
+    },
+    {
+      "id": "s-admrebuild",
+      "kind": "manual",
+      "title": "Operator applies the rebuilt structure in ADM",
+      "instructions": "Between gates: rebuild blocks/sections/modifiers in ADM exactly as the workbench shows; export the new build and re-import here (io.import.menu) for parity confirmation.",
+      "citations": [
+        {
+          "doc": "aloha.adm-menu",
+          "section": "structure"
+        }
+      ]
+    }
+  ]
+}

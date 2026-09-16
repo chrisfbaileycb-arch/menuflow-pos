@@ -1,0 +1,46 @@
+{
+  "platform": "clover",
+  "id": "clover.online-sync",
+  "category": "integrations",
+  "risk": "low",
+  "title": "Online ordering / kiosk sync verification",
+  "summary": "After structural changes, force sync and verify price+availability windows; confirms channel visibility matches intent.",
+  "inputs": [],
+  "steps": [
+    {
+      "id": "s-force",
+      "kind": "manual",
+      "title": "Force the sync",
+      "instructions": "Commandpoint/integration panel > \"Sync with Clover\"; price and availability land within ~10 minutes; everything else follows the 4-hour window.",
+      "citations": [
+        {
+          "doc": "clover.sync",
+          "section": "force-sync"
+        },
+        {
+          "doc": "clover.sync",
+          "section": "windows"
+        }
+      ]
+    },
+    {
+      "id": "s-list",
+      "kind": "auto",
+      "title": "Snapshot channels",
+      "skill": "menu.channel.list",
+      "args": {}
+    },
+    {
+      "id": "s-verify",
+      "kind": "manual",
+      "title": "Verify on the customer-facing device",
+      "instructions": "Open the kiosk/online menu as a guest: item names, prices, option popups and group availability must match the POS exactly. Log any drift with timestamps for the support case.",
+      "citations": [
+        {
+          "doc": "clover.sync",
+          "section": "windows"
+        }
+      ]
+    }
+  ]
+}

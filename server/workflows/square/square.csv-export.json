@@ -1,0 +1,27 @@
+{
+  "platform": "square",
+  "id": "square.csv-export",
+  "category": "export",
+  "risk": "low",
+  "title": "Export the library to a Square-shaped CSV",
+  "summary": "Produces the exact importable shape (Name, Category Name, Price, Description, Modifier Set, Visible) that Dashboard > Items > Export yields, for handoff or bulk editing.",
+  "inputs": [],
+  "steps": [
+    {
+      "id": "s-export",
+      "kind": "auto",
+      "title": "Write square-csv to data/exports/",
+      "skill": "io.export.menu",
+      "args": {
+        "format": "square-csv",
+        "scope": "live"
+      },
+      "citations": [
+        {
+          "doc": "square.library-import-export",
+          "section": "export"
+        }
+      ]
+    }
+  ]
+}

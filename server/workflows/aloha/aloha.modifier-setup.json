@@ -1,0 +1,79 @@
+{
+  "platform": "aloha",
+  "id": "aloha.modifier-setup",
+  "category": "modifiers",
+  "risk": "low",
+  "title": "Define modifiers once, attach deliberately",
+  "summary": "Aloha pattern: modifier definitions live centrally (typo-tape style) and attach to items/sections with forced entry; the workbench mirrors with isolated groups by default.",
+  "inputs": [
+    {
+      "name": "groupName",
+      "type": "string",
+      "required": true,
+      "example": "Steak Doneness"
+    },
+    {
+      "name": "optionName",
+      "type": "string",
+      "required": true,
+      "example": "Medium Rare"
+    },
+    {
+      "name": "maxChoices",
+      "type": "number",
+      "required": false,
+      "example": "1"
+    }
+  ],
+  "steps": [
+    {
+      "id": "s-adm",
+      "kind": "manual",
+      "title": "Create the modifier definition in ADM",
+      "instructions": "Define once in ADM with price deltas and forced-entry flags; attach to items/sections. Do not create per-item duplicates for the same real-world add-on — reuse the definition, but keep per-category items scoped (KB isolation rule).",
+      "citations": [
+        {
+          "doc": "aloha.adm-menu",
+          "section": "modifiers"
+        }
+      ]
+    },
+    {
+      "id": "s-grp",
+      "kind": "auto",
+      "title": "Mirror on the workbench",
+      "skill": "menu.modifier.group.ensure",
+      "args": {
+        "name": "{groupName}",
+        "minChoices": 1,
+        "maxChoices": "{maxChoices}",
+        "shared": false
+      }
+    },
+    {
+      "id": "s-opt",
+      "kind": "auto",
+      "title": "Add the option",
+      "skill": "menu.modifier.option.upsert",
+      "args": {
+        "group": "{groupName}",
+        "name": "{optionName}"
+      }
+    },
+    {
+      "id": "s-guard",
+      "kind": "auto",
+      "title": "Empty-group guard on the new record",
+      "skill": "audit.empty-groups",
+      "args": {},
+      "checks": [
+        {
+          "check": "no-empty-modifier-groups",
+          "args": {
+            "group": "{groupName}"
+          }
+        }
+      ]
+    }
+  ]
+}

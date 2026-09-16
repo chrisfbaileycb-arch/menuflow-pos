@@ -1,0 +1,98 @@
+{
+  "platform": "square",
+  "id": "square.menu-transfer-replace",
+  "category": "import",
+  "risk": "high",
+  "title": "Full menu migration with Replace Item Library (gated, with caveat sweep)",
+  "summary": "Replace deletes the entire library first — Square also does NOT carry display groups, advanced modifier settings, or auto-add across accounts. This flow forces backup, written approval, import, and a settings re-check sweep.",
+  "inputs": [
+    {
+      "name": "file",
+      "type": "string",
+      "required": true,
+      "example": "new-library.csv in data/imports/"
+    },
+    {
+      "name": "approvalRef",
+      "type": "string",
+      "required": true,
+      "example": "client approval email id"
+    }
+  ],
+  "steps": [
+    {
+      "id": "s-backup",
+      "kind": "manual",
+      "title": "Export the current library (rollback = re-import this)",
+      "instructions": "Items > Export > CSV; store the file with the approval ref.",
+      "citations": [
+        {
+          "doc": "square.library-import-export",
+          "section": "export"
+        }
+      ]
+    },
+    {
+      "id": "s-approval",
+      "kind": "gate",
+      "title": "Written approval for REPLACE (library destruction follows)",
+      "instructions": "Replace Item Library deletes ALL existing items before importing. Attach the approval reference, expected item counts, and the list of settings that will need re-doing afterward."
+    },
+    {
+      "id": "s-import",
+      "kind": "auto",
+      "title": "Parse into the workbench with replace semantics",
+      "skill": "io.import.menu",
+      "args": {
+        "file": "{file}",
+        "format": "square-csv",
+        "mode": "replace"
+      },
+      "citations": [
+        {
+          "doc": "square.library-import-export",
+          "section": "import-replace"
+        }
+      ]
+    },
+    {
+      "id": "s-clean",
+      "kind": "auto",
+      "title": "Drop referenced-but-empty modifier groups created by the CSV (fill-or-delete rule)",
+      "skill": "menu.modifier.remove_empty",
+      "args": {}
+    },
+    {
+      "id": "s-audit",
+      "kind": "auto",
+      "title": "Audit the replaced menu",
+      "skill": "audit.full",
+      "args": {}
+    },
+    {
+      "id": "s-settings",
+      "kind": "manual",
+      "title": "Re-apply restaurant-specific settings that do NOT transfer",
+      "instructions": "Recreate display groups, advanced modifier settings, and auto-add-to-check rules in the target account — CSV migration silently drops them.",
+      "citations": [
+        {
+          "doc": "square.transfer-note",
+          "section": "caveat"
+        }
+      ]
+    },
+    {
+      "id": "s-go",
+      "kind": "gate",
+      "title": "Confirm Replace + publish",
+      "instructions": "Only after the counts, audit, and settings sweep look right: Confirm import in Dashboard, then publish from this console."
+    },
+    {
+      "id": "s-pub",
+      "kind": "auto",
+      "title": "Publish the workbench to live",
+      "skill": "publish.apply",
+      "args": {}
+    }
+  ]
+}

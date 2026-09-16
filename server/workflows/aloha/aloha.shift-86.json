@@ -1,0 +1,82 @@
+{
+  "platform": "aloha",
+  "id": "aloha.shift-86",
+  "category": "operations",
+  "risk": "medium",
+  "title": "Run-side 86 (shift scope) + next-open reset",
+  "summary": "Use the POS 86 screen during service — the menu definition stays intact; 86s must be cleared before the next open per the operator reference.",
+  "inputs": [
+    {
+      "name": "item",
+      "type": "string",
+      "required": true,
+      "example": "Scallops"
+    },
+    {
+      "name": "reason",
+      "type": "string",
+      "required": true,
+      "example": "purveyor short — 86 tonight only"
+    }
+  ],
+  "steps": [
+    {
+      "id": "s-cascade",
+      "kind": "auto",
+      "title": "Cascade exposure first",
+      "skill": "audit.86-risk",
+      "args": {},
+      "citations": [
+        {
+          "doc": "heartland.kb.audit-protocol",
+          "section": "never-86"
+        }
+      ]
+    },
+    {
+      "id": "s-86",
+      "kind": "manual",
+      "title": "86 at the terminal",
+      "instructions": "Aloha POS > 86 screen: select the item; it is removed from ordering for the current shift only — menu definitions in ADM are untouched.",
+      "citations": [
+        {
+          "doc": "aloha.pos-86",
+          "section": "86"
+        }
+      ]
+    },
+    {
+      "id": "s-mirror",
+      "kind": "auto",
+      "title": "Mirror on the workbench",
+      "skill": "menu.item.86",
+      "args": {
+        "item": "{item}",
+        "reason": "{reason}"
+      },
+      "fatal": false
+    },
+    {
+      "id": "s-clear",
+      "kind": "manual",
+      "title": "Clear 86s before the next open",
+      "instructions": "During EOD, verify the 86 list is emptied or consciously carried; stale 86s are the #1 \"ghost menu\" complaint.",
+      "citations": [
+        {
+          "doc": "aloha.pos-86",
+          "section": "eod"
+        }
+      ],
+      "checks": [
+        {
+          "check": "item-unavailable",
+          "args": {
+            "item": "{item}"
+          },
+          "fatal": false
+        }
+      ],
+      "fatal": false
+    }
+  ]
+}

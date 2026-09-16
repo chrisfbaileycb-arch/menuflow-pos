@@ -1,0 +1,66 @@
+{
+  "platform": "clover",
+  "id": "clover.price-sync",
+  "category": "pricing",
+  "risk": "low",
+  "title": "Price change with correct sync expectations",
+  "summary": "Prices/availability propagate in ~10 minutes; structural edits (names, modifier groups) in ~4 hours — the workflow forces the sync so verification is meaningful.",
+  "inputs": [
+    {
+      "name": "item",
+      "type": "string",
+      "required": true,
+      "example": "Margherita Pizza"
+    },
+    {
+      "name": "price",
+      "type": "money",
+      "required": true,
+      "example": "13.00"
+    }
+  ],
+  "steps": [
+    {
+      "id": "s-set",
+      "kind": "auto",
+      "title": "Set the price on the workbench",
+      "skill": "menu.item.set_price",
+      "args": {
+        "item": "{item}",
+        "price": "{price}"
+      }
+    },
+    {
+      "id": "s-sync",
+      "kind": "manual",
+      "title": "Force sync before verifying",
+      "instructions": "After structural changes, click \"Sync with Clover\" so data pushes within ~10 minutes instead of the ~4-hour window — then verify on the customer-facing channel.",
+      "citations": [
+        {
+          "doc": "clover.sync",
+          "section": "windows"
+        },
+        {
+          "doc": "clover.sync",
+          "section": "force-sync"
+        }
+      ]
+    },
+    {
+      "id": "s-verify",
+      "kind": "auto",
+      "title": "Verify price",
+      "skill": "menu.channel.list",
+      "args": {},
+      "checks": [
+        {
+          "check": "item-price",
+          "args": {
+            "item": "{item}",
+            "price": "{price}"
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,6 @@
+Type,Name,Category,Price,Description,Modifier Groups,Available
+category,Pizza,,,,,,yes
+item,White Pie,Pizza,13.50,Ricotta base,Crust Style,yes
+item,Four Cheese,Pizza,14.00,,Crust Style,yes
+category,Desserts,,,,,,yes
+item,Lemon Bar,Desserts,5.50,, ,yes

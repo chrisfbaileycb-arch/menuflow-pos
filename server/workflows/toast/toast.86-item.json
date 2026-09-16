@@ -1,0 +1,77 @@
+{
+  "platform": "toast",
+  "id": "toast.86-item",
+  "category": "operations",
+  "risk": "medium",
+  "title": "86 an item on the POS for the run (reversible, not a delete)",
+  "summary": "Run-side 86 removes the item from ordering for the shift only; the menu record stays intact. Paired with the contact-customers protocol.",
+  "inputs": [
+    {
+      "name": "item",
+      "type": "string",
+      "required": true,
+      "example": "Pepperoni Pizza"
+    },
+    {
+      "name": "reason",
+      "type": "string",
+      "required": true,
+      "example": "out of pepperoni — restock 5 PM"
+    }
+  ],
+  "steps": [
+    {
+      "id": "s-cascade",
+      "kind": "auto",
+      "title": "Quantify cascade exposure for shared ingredients",
+      "skill": "audit.86-risk",
+      "args": {},
+      "citations": [
+        {
+          "doc": "heartland.kb.audit-protocol",
+          "section": "never-86"
+        }
+      ]
+    },
+    {
+      "id": "s-pos86",
+      "kind": "manual",
+      "title": "86 on the handheld/Flex",
+      "instructions": "Select the item line (or use the inventory/86 flow on the terminal) and choose 86. This is run-scoped: it hides the item without touching menu setup, and clears with the next open.",
+      "citations": [
+        {
+          "doc": "toast.card-terminal",
+          "section": "86"
+        }
+      ]
+    },
+    {
+      "id": "s-workbench",
+      "kind": "auto",
+      "title": "Mirror the 86 on the workbench with reason + restore plan",
+      "skill": "menu.item.86",
+      "args": {
+        "item": "{item}",
+        "reason": "{reason}"
+      },
+      "fatal": false
+    },
+    {
+      "id": "s-verify",
+      "kind": "auto",
+      "title": "Verify state",
+      "skill": "menu.channel.list",
+      "args": {},
+      "checks": [
+        {
+          "check": "item-unavailable",
+          "args": {
+            "item": "{item}"
+          },
+          "fatal": false
+        }
+      ],
+      "fatal": false
+    }
+  ]
+}

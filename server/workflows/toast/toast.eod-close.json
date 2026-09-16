@@ -1,0 +1,47 @@
+{
+  "platform": "toast",
+  "id": "toast.eod-close",
+  "category": "operations",
+  "risk": "low",
+  "title": "End-of-day close checklist (Day Reporting)",
+  "summary": "Manager close-out: reconcile Day Reporting, void reasons, and next-open resets.",
+  "inputs": [],
+  "steps": [
+    {
+      "id": "s-dayreport",
+      "kind": "manual",
+      "title": "Review Day Reporting before rollover",
+      "instructions": "Terminal close cash drawers, then in Toast Web open Day Reporting: variance per drawer, tips out of sync, and open checks must be zero before the day rolls.",
+      "citations": [
+        {
+          "doc": "toast.day-reporting",
+          "section": "close"
+        }
+      ]
+    },
+    {
+      "id": "s-voids",
+      "kind": "manual",
+      "title": "Sweep void reasons",
+      "instructions": "Filter the day’s voids; every saved-item void should carry a reason code — chase blanks with shift leads.",
+      "citations": [
+        {
+          "doc": "toast.card-terminal",
+          "section": "void"
+        }
+      ]
+    },
+    {
+      "id": "s-86reset",
+      "kind": "manual",
+      "title": "Confirm run-scoped 86s are cleared for tomorrow",
+      "instructions": "Any item still 86’d for restock should either return to menu at open or get a proper availability plan for the day.",
+      "citations": [
+        {
+          "doc": "toast.card-terminal",
+          "section": "86"
+        }
+      ]
+    }
+  ]
+}

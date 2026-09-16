@@ -1,0 +1,60 @@
+{
+  "platform": "toast",
+  "id": "toast.online-sync-check",
+  "category": "integrations",
+  "risk": "low",
+  "title": "Pre-flight before Online Ordering / third-party go-live",
+  "summary": "Everything third-party channels need: no empty groups, everything published, modifier visibility intent set.",
+  "inputs": [],
+  "steps": [
+    {
+      "id": "s-empty",
+      "kind": "auto",
+      "title": "Block on empty modifier groups (known sync breaker)",
+      "skill": "audit.empty-groups",
+      "args": {},
+      "citations": [
+        {
+          "doc": "toast.modifier-groups",
+          "section": "empty-group"
+        }
+      ],
+      "checks": [
+        {
+          "check": "no-empty-modifier-groups"
+        }
+      ]
+    },
+    {
+      "id": "s-publish",
+      "kind": "manual",
+      "title": "Confirm \"Publish all changes\" completed",
+      "instructions": "If any tile shows unpublished edits, publish them — unpubished changes never reach Online Ordering or delivery integrations.",
+      "citations": [
+        {
+          "doc": "toast.modifier-groups",
+          "section": "publish"
+        }
+      ]
+    },
+    {
+      "id": "s-troubleshoot",
+      "kind": "manual",
+      "title": "Missing modifiers on a channel?",
+      "instructions": "Plain Optional groups hide themselves until staff opens them; enable \"Include a POS prompt\" or switch the group Required, then republish.",
+      "citations": [
+        {
+          "doc": "toast.modifier-groups",
+          "section": "troubleshooting"
+        }
+      ]
+    },
+    {
+      "id": "s-list",
+      "kind": "auto",
+      "title": "Snapshot channel state for the ticket",
+      "skill": "menu.channel.list",
+      "args": {}
+    }
+  ]
+}

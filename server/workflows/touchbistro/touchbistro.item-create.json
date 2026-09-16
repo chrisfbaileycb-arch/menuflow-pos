@@ -1,0 +1,88 @@
+{
+  "platform": "touchbistro",
+  "id": "touchbistro.item-create",
+  "category": "menu",
+  "risk": "low",
+  "title": "Add a menu item (sales category, course, tax, printers)",
+  "summary": "RMM/Menu build: sales category, course inheritance from category (override when needed), tax line, and kitchen printer routing — the exact settings the review screen shows.",
+  "inputs": [
+    {
+      "name": "itemName",
+      "type": "string",
+      "required": true,
+      "example": "Carbonara"
+    },
+    {
+      "name": "category",
+      "type": "string",
+      "required": true,
+      "example": "Pasta"
+    },
+    {
+      "name": "price",
+      "type": "money",
+      "required": true,
+      "example": "16.00"
+    },
+    {
+      "name": "course",
+      "type": "number",
+      "required": false,
+      "example": "2"
+    }
+  ],
+  "steps": [
+    {
+      "id": "s-cat",
+      "kind": "auto",
+      "title": "Ensure sales category",
+      "skill": "menu.category.ensure",
+      "args": {
+        "name": "{category}"
+      }
+    },
+    {
+      "id": "s-item",
+      "kind": "auto",
+      "title": "Create item on workbench",
+      "skill": "menu.item.upsert",
+      "args": {
+        "name": "{itemName}",
+        "category": "{category}",
+        "price": "{price}",
+        "course": "{course}"
+      }
+    },
+    {
+      "id": "s-rmm",
+      "kind": "manual",
+      "title": "Configure the item in Menu/RMM",
+      "instructions": "Set: Sales Category; Course (inherit the category’s, override only when needed — e.g. iced coffees on the dessert course); tax setting; kitchen printers for firing. The item review line must read: Category · Visible · Course / Tax / Printers.",
+      "citations": [
+        {
+          "doc": "touchbistro.menu-items",
+          "section": "fields"
+        },
+        {
+          "doc": "touchbistro.menu-items",
+          "section": "course"
+        }
+      ]
+    },
+    {
+      "id": "s-verify",
+      "kind": "auto",
+      "title": "Verify",
+      "skill": "menu.channel.list",
+      "args": {},
+      "checks": [
+        {
+          "check": "item-exists",
+          "args": {
+            "item": "{itemName}"
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MenuFlow POS — Multi-Platform Operations Console</title>
+<link rel="stylesheet" href="styles.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%23101418'/><path d='M7 22V10l9 7 9-7v12' stroke='%2341e0a0' stroke-width='2.6' fill='none' stroke-linecap='round' stroke-linejoin='round'/></svg>">
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">
+    <svg viewBox="0 0 32 32" width="30" height="30" aria-hidden="true"><rect width="32" height="32" rx="7" fill="#0e1b16"/><path d="M7 22V10l9 7 9-7v12" stroke="#41e0a0" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <div>
+      <h1>MenuFlow POS</h1>
+      <span class="tagline">Signal F Holdings · executable, manual-verified workflows</span>
+    </div>
+  </div>
+  <div class="topbar-right">
+    <label class="sel" title="POS platform — identifies every workflow catalog below">
+      <span>POS Platform</span>
+      <select id="platformSelect"></select>
+    </label>
+    <label class="sel" title="Client location / venue profile">
+      <span>Location</span>
+      <select id="locationSelect"></select>
+    </label>
+    <button id="modeChip" class="chip mode" title="Toggle sandbox vs live-API mode"></button>
+  </div>
+</header>
+
+<nav class="tabs" id="tabs">
+  <button data-tab="workflows" class="active">Workflows</button>
+  <button data-tab="menu">Menu &amp; Modifiers</button>
+  <button data-tab="audit">Audit</button>
+  <button data-tab="io">Import / Export</button>
+  <button data-tab="runs">Run History</button>
+  <button data-tab="docs">Owner’s Manuals</button>
+  <button data-tab="skills">Skills Engine</button>
+</nav>
+
+<main>
+  <section id="view-workflows" class="view active">
+    <div class="wf-layout">
+      <aside class="wf-list-pane">
+        <div class="wf-filter">
+          <input id="wfSearch" type="search" placeholder="Search workflows…">
+          <div id="catChips" class="chips"></div>
+        </div>
+        <div id="wfList" class="wf-list"></div>
+        <div class="wf-footer">
+          <button id="verifyAllBtn" class="btn ghost">Verify all workflows</button>
+          <div id="verifyBanner" class="verify-banner"></div>
+        </div>
+      </aside>
+      <div class="wf-detail" id="wfDetail">
+        <div class="empty">Select a workflow to inspect its steps, owner’s-manual citations, inputs and live execution controls.</div>
+      </div>
+    </div>
+  </section>
+
+  <section id="view-menu" class="view">
+    <div class="toolbar">
+      <div id="menuSource" class="chip"></div>
+      <div class="grow"></div>
+      <button class="btn warn" id="discardBtn">Discard staged</button>
+      <button class="btn primary" id="publishBtn">Publish to live</button>
+    </div>
+    <div id="menuBody"></div>
+  </section>
+
+  <section id="view-audit" class="view">
+    <div class="toolbar">
+      <div id="auditMeta" class="muted"></div>
+      <div class="grow"></div>
+      <button class="btn primary" id="runAuditBtn">Run full audit</button>
+    </div>
+    <div id="auditBody"></div>
+  </section>
+
+  <section id="view-io" class="view">
+    <div class="io-grid">
+      <div class="card" id="importCard">
+        <h3>Import <span class="muted">→ lands in staging, audit runs, you publish</span></h3>
+        <div class="field"><label for="impFile">Menu file (CSV from Square/Clover/Lightspeed/Toast exports, or canonical/Heartland JSON)</label>
+          <input type="file" id="impFile" accept=".csv,.json,.txt">
+        </div>
+        <div class="field"><label for="impPaste">…or paste contents</label>
+          <textarea id="impPaste" rows="6" placeholder="Name,Category Name,Price,Description,Modifier Set,Visible&#10;Margherita Pizza,Pizza,12.50,,Pizza Toppings,Y"></textarea>
+        </div>
+        <div class="field-row">
+          <label>Format <select id="impFormat">
+            <option value="auto">auto-detect</option>
+            <option value="canonical-json">canonical JSON</option>
+            <option value="square-csv">Square CSV</option>
+            <option value="clover-csv">Clover CSV</option>
+            <option value="lightspeed-csv">Lightspeed CSV</option>
+            <option value="toast-csv">Toast CSV</option>
+          </select></label>
+          <label>Mode <select id="impMode">
+            <option value="modify">modify (upsert)</option>
+            <option value="replace">replace (clears staging menu)</option>
+          </select></label>
+          <button class="btn primary" id="doImport">Import to staging</button>
+        </div>
+        <div class="field-row">
+          <a class="btn ghost" id="tplSquare" href="/api/import/template?platform=square" download>Square template</a>
+          <a class="btn ghost" id="tplClover" href="/api/import/template?platform=clover" download>Clover template</a>
+          <a class="btn ghost" id="tplLs" href="/api/import/template?platform=lightspeed" download>Lightspeed template</a>
+          <a class="btn ghost" id="tplToast" href="/api/import/template?platform=toast" download>Toast template</a>
+          <a class="btn ghost" id="tplCanon" href="/api/import/template?platform=canonical" download>Canonical JSON</a>
+        </div>
+        <div id="importResult"></div>
+      </div>
+      <div class="card" id="exportCard">
+        <h3>Export</h3>
+        <div class="field-row wrap">
+          <label>Scope <select id="expScope">
+            <option value="live">live menu</option>
+            <option value="staging">staged workbench</option>
+            <option value="workflows">workflow bundle (verified)</option>
+            <option value="project">full project backup</option>
+          </select></label>
+          <label>Format <select id="expFormat">
+            <option value="canonical-json">canonical JSON</option>
+            <option value="square-csv">Square CSV</option>
+            <option value="clover-csv">Clover CSV</option>
+            <option value="lightspeed-csv">Lightspeed CSV</option>
+            <option value="toast-csv">Toast CSV</option>
+            <option value="heartland-json">Heartland flat JSON (python-tool compatible)</option>
+          </select></label>
+          <button class="btn primary" id="doExport">Export file</button>
+        </div>
+        <div id="exportResult"></div>
+        <h4>Generated files <span class="muted">data/exports &amp; data/reports</span></h4>
+        <div id="fileList" class="file-list"></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="view-runs" class="view">
+    <div id="runsBody"></div>
+  </section>
+
+  <section id="view-docs" class="view">
+    <div id="docsBody"></div>
+  </section>
+
+  <section id="view-skills" class="view">
+    <div id="skillsBody"></div>
+  </section>
+</main>
+
+<div id="toast" class="toast"></div>
+
+<div id="gateModal" class="modal hidden">
+  <div class="modal-card">
+    <h3 id="gmTitle">Gate approval</h3>
+    <p id="gmBody" class="muted"></p>
+    <label>Approver / evidence reference
+      <input id="gmActor" placeholder="e.g. c.bailey / signed-form-2026-09-14">
+    </label>
+    <div class="field-row end">
+      <button class="btn ghost" id="gmCancel">Cancel</button>
+      <button class="btn primary" id="gmApprove">Approve &amp; continue run</button>
+    </div>
+  </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,77 @@
+{
+  "platform": "clover",
+  "id": "clover.item-create",
+  "category": "menu",
+  "risk": "low",
+  "title": "Add a menu item (Items / Menu management)",
+  "summary": "Create the item, place it in the menu/group, attach modifier (option) groups, with icons and prices set the way the owner guide describes.",
+  "inputs": [
+    {
+      "name": "itemName",
+      "type": "string",
+      "required": true,
+      "example": "Nashville Hot Chicken Pizza"
+    },
+    {
+      "name": "group",
+      "type": "string",
+      "required": true,
+      "example": "Pizza"
+    },
+    {
+      "name": "price",
+      "type": "money",
+      "required": true,
+      "example": "17.00"
+    }
+  ],
+  "steps": [
+    {
+      "id": "s-cat",
+      "kind": "auto",
+      "title": "Ensure group/category",
+      "skill": "menu.category.ensure",
+      "args": {
+        "name": "{group}"
+      }
+    },
+    {
+      "id": "s-item",
+      "kind": "auto",
+      "title": "Create on workbench",
+      "skill": "menu.item.upsert",
+      "args": {
+        "name": "{itemName}",
+        "category": "{group}",
+        "price": "{price}"
+      }
+    },
+    {
+      "id": "s-portal",
+      "kind": "manual",
+      "title": "Create in Clover menu management",
+      "instructions": "Setup > Menu: add the item under the right group, set price + icon, and attach the modifier (option) groups. Suggested items: up to 3 per category appear next to this item on the customer-facing devices.",
+      "citations": [
+        {
+          "doc": "clover.item-editor",
+          "section": "create"
+        }
+      ]
+    },
+    {
+      "id": "s-verify",
+      "kind": "auto",
+      "title": "Verify",
+      "skill": "menu.channel.list",
+      "args": {},
+      "checks": [
+        {
+          "check": "item-exists",
+          "args": {
+            "item": "{itemName}"
+          }
+        }
+      ]
+    }
+  ]
+}

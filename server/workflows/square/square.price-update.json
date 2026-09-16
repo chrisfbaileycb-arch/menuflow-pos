@@ -1,0 +1,62 @@
+{
+  "platform": "square",
+  "id": "square.price-update",
+  "category": "pricing",
+  "risk": "low",
+  "title": "Update a price (single item, with verification)",
+  "summary": "Single-item price change on the workbench, verified, mirrored via Library edit or a one-row Modify-mode CSV import.",
+  "inputs": [
+    {
+      "name": "item",
+      "type": "string",
+      "required": true,
+      "example": "Caesar"
+    },
+    {
+      "name": "price",
+      "type": "money",
+      "required": true,
+      "example": "10.50"
+    }
+  ],
+  "steps": [
+    {
+      "id": "s-set",
+      "kind": "auto",
+      "title": "Set the new price on the workbench",
+      "skill": "menu.item.set_price",
+      "args": {
+        "item": "{item}",
+        "price": "{price}"
+      }
+    },
+    {
+      "id": "s-portal",
+      "kind": "manual",
+      "title": "Apply in Dashboard (or a Modify-mode CSV)",
+      "instructions": "Library > Items > edit the price — or export, change the one row, re-import with Modify Item Library. Never use Replace for a price tweak.",
+      "citations": [
+        {
+          "doc": "square.library-import-export",
+          "section": "import-modify"
+        }
+      ]
+    },
+    {
+      "id": "s-verify",
+      "kind": "auto",
+      "title": "Verify price landed",
+      "skill": "menu.channel.list",
+      "args": {},
+      "checks": [
+        {
+          "check": "item-price",
+          "args": {
+            "item": "{item}",
+            "price": "{price}"
+          }
+        }
+      ]
+    }
+  ]
+}

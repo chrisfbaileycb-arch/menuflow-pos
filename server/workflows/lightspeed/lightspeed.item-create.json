@@ -1,0 +1,81 @@
+{
+  "platform": "lightspeed",
+  "id": "lightspeed.item-create",
+  "category": "menu",
+  "risk": "low",
+  "title": "Add an item (Back Office > Menu > Item list)",
+  "summary": "Create items in the K-Series Back Office; SKU auto-generates if blank; the item becomes orderable once on the right menu.",
+  "inputs": [
+    {
+      "name": "itemName",
+      "type": "string",
+      "required": true,
+      "example": "Cacio e Pepe"
+    },
+    {
+      "name": "category",
+      "type": "string",
+      "required": true,
+      "example": "Pasta"
+    },
+    {
+      "name": "price",
+      "type": "money",
+      "required": true,
+      "example": "15.50"
+    }
+  ],
+  "steps": [
+    {
+      "id": "s-cat",
+      "kind": "auto",
+      "title": "Ensure category",
+      "skill": "menu.category.ensure",
+      "args": {
+        "name": "{category}"
+      }
+    },
+    {
+      "id": "s-item",
+      "kind": "auto",
+      "title": "Create on workbench",
+      "skill": "menu.item.upsert",
+      "args": {
+        "name": "{itemName}",
+        "category": "{category}",
+        "price": "{price}"
+      }
+    },
+    {
+      "id": "s-bo",
+      "kind": "manual",
+      "title": "Create in the Back Office item list",
+      "instructions": "Back Office > Menu > Item list > Create > Item: name, price, accounting group, allergens/notes. Leave SKU blank to auto-generate. Then add the item to the relevant menus.",
+      "citations": [
+        {
+          "doc": "lightspeed.menus",
+          "section": "structure"
+        },
+        {
+          "doc": "lightspeed.item-list",
+          "section": "table"
+        }
+      ]
+    },
+    {
+      "id": "s-verify",
+      "kind": "auto",
+      "title": "Verify",
+      "skill": "menu.channel.list",
+      "args": {},
+      "checks": [
+        {
+          "check": "item-exists",
+          "args": {
+            "item": "{itemName}"
+          }
+        }
+      ]
+    }
+  ]
+}

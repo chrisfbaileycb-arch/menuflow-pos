@@ -1,0 +1,65 @@
+{
+  "platform": "heartland",
+  "id": "hl.midnight-split",
+  "category": "schedules",
+  "risk": "low",
+  "title": "Fix unsplit midnight-crossing ranges (silent-failure repair)",
+  "summary": "Scans every schedule, pricing-rule window and legacy item range; rewrites crossings as pre-midnight (…–11:59 PM) + post-midnight (12:00 AM–…) on the NEXT calendar day, exactly as the KB midnight rule demands.",
+  "inputs": [],
+  "steps": [
+    {
+      "id": "s-scan",
+      "kind": "auto",
+      "title": "List every midnight violation on this menu",
+      "skill": "audit.midnight",
+      "args": {},
+      "citations": [
+        {
+          "doc": "heartland.kb.midnight-rule",
+          "section": "audit"
+        }
+      ]
+    },
+    {
+      "id": "s-split",
+      "kind": "auto",
+      "title": "Auto-split all crossing ranges (engine enforces the rule)",
+      "skill": "menu.schedule.auto_split_all",
+      "args": {},
+      "citations": [
+        {
+          "doc": "heartland.kb.midnight-rule",
+          "section": "rule"
+        },
+        {
+          "doc": "heartland.kb.midnight-rule",
+          "section": "day-increment"
+        }
+      ]
+    },
+    {
+      "id": "s-portal",
+      "kind": "manual",
+      "title": "Mirror the split entries in the portal",
+      "instructions": "Admin Console: recreate each crossing window as TWO entries — e.g. Sat 9:00 PM–11:59 PM and Sun 12:00 AM–2:00 AM. The post-midnight entry belongs to the NEXT calendar day. Never save a single crossing range.",
+      "citations": [
+        {
+          "doc": "heartland.kb.midnight-rule",
+          "section": "rule"
+        }
+      ]
+    },
+    {
+      "id": "s-verify",
+      "kind": "auto",
+      "title": "Verify zero violations remain",
+      "skill": "audit.midnight",
+      "args": {},
+      "checks": [
+        {
+          "check": "no-midnight-violations"
+        }
+      ]
+    }
+  ]
+}

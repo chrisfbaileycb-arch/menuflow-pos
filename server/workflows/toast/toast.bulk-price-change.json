@@ -1,0 +1,61 @@
+{
+  "platform": "toast",
+  "id": "toast.bulk-price-change",
+  "category": "pricing",
+  "risk": "medium",
+  "title": "Bulk price change via advanced properties (and publish)",
+  "summary": "Menus > Bulk management > Advanced properties for mass edits, then publish. Uses the percentage adjuster on the workbench so the diff is auditable.",
+  "inputs": [
+    {
+      "name": "pct",
+      "type": "number",
+      "required": true,
+      "example": "5 (percent, negative allowed)"
+    },
+    {
+      "name": "category",
+      "type": "string",
+      "required": false,
+      "example": "Pizza"
+    }
+  ],
+  "steps": [
+    {
+      "id": "s-apply",
+      "kind": "auto",
+      "title": "Apply the percentage adjustment to the workbench",
+      "skill": "menu.item.bulk_price_pct",
+      "args": {
+        "pct": "{pct}",
+        "category": "{category}"
+      }
+    },
+    {
+      "id": "s-portal",
+      "kind": "manual",
+      "title": "Mirror via Toast Web bulk management",
+      "instructions": "Menus > Bulk management > Advanced properties: show the Price column, edit inline for the same scope, Save, Publish all changes. Review rows before publishing.",
+      "citations": [
+        {
+          "doc": "toast.bulk-advanced",
+          "section": "advanced-props"
+        }
+      ]
+    },
+    {
+      "id": "s-sanity",
+      "kind": "auto",
+      "title": "Safety floor: menu must not be emptied by an errant scope",
+      "skill": "menu.channel.list",
+      "args": {},
+      "checks": [
+        {
+          "check": "item-count-min",
+          "args": {
+            "min": 5
+          }
+        }
+      ]
+    }
+  ]
+}

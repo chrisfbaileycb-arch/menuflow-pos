@@ -1,0 +1,56 @@
+{
+  "platform": "touchbistro",
+  "id": "touchbistro.online-visibility",
+  "category": "integrations",
+  "risk": "low",
+  "title": "Online Ordering availability toggle (per item, independent of POS)",
+  "summary": "Enable/disable each item for Online Ordering via its drop-down without touching POS visibility — e.g. keep wings POS-only during a rush.",
+  "inputs": [
+    {
+      "name": "item",
+      "type": "string",
+      "required": true,
+      "example": "Buffalo Wings"
+    },
+    {
+      "name": "enabled",
+      "type": "string",
+      "required": true,
+      "example": "true|false"
+    }
+  ],
+  "steps": [
+    {
+      "id": "s-toggle",
+      "kind": "manual",
+      "title": "Set the Online Ordering toggle",
+      "instructions": "Menu > item > Online Ordering drop-down: enable or X it out. This control is independent of the POS X — set both per intent.",
+      "citations": [
+        {
+          "doc": "touchbistro.menu-items",
+          "section": "online"
+        }
+      ]
+    },
+    {
+      "id": "s-mirror",
+      "kind": "auto",
+      "title": "Mirror on the workbench channel visibility",
+      "skill": "menu.item.set_availability",
+      "args": {
+        "item": "{item}",
+        "channels": [
+          "Online"
+        ],
+        "enabled": "{enabled}"
+      }
+    },
+    {
+      "id": "s-verify",
+      "kind": "auto",
+      "title": "Snapshot",
+      "skill": "menu.channel.list",
+      "args": {}
+    }
+  ]
+}

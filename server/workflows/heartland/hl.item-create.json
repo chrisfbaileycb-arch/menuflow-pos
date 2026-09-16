@@ -1,0 +1,122 @@
+{
+  "platform": "heartland",
+  "id": "hl.item-create",
+  "category": "menu",
+  "risk": "low",
+  "title": "Add or update a menu item (Items screen)",
+  "summary": "Create/update an item exactly as the Admin Console Items screen describes: category, price, modifier associations, default ingredients, course.",
+  "inputs": [
+    {
+      "name": "itemName",
+      "type": "string",
+      "required": true,
+      "example": "Truffle Mushroom Pizza"
+    },
+    {
+      "name": "category",
+      "type": "string",
+      "required": true,
+      "example": "Pizza"
+    },
+    {
+      "name": "price",
+      "type": "money",
+      "required": true,
+      "example": "18.50"
+    },
+    {
+      "name": "course",
+      "type": "number",
+      "required": false,
+      "example": "2 (entree)"
+    }
+  ],
+  "steps": [
+    {
+      "id": "s-cat",
+      "kind": "auto",
+      "title": "Ensure category exists",
+      "skill": "menu.category.ensure",
+      "args": {
+        "name": "{category}"
+      }
+    },
+    {
+      "id": "s-upsert",
+      "kind": "auto",
+      "title": "Create/update the item record",
+      "skill": "menu.item.upsert",
+      "args": {
+        "name": "{itemName}",
+        "category": "{category}",
+        "price": "{price}",
+        "course": "{course}"
+      },
+      "citations": [
+        {
+          "doc": "heartland.items-screen",
+          "section": "create"
+        }
+      ]
+    },
+    {
+      "id": "s-mods",
+      "kind": "manual",
+      "title": "Associate modifiers on the Items screen",
+      "instructions": "Admin Console > Menu > Items > select item. In the Modifiers list, pick the modifiers for this item; tap ingredients to store them as order defaults.",
+      "citations": [
+        {
+          "doc": "heartland.items-screen",
+          "section": "modifiers"
+        },
+        {
+          "doc": "heartland.items-screen",
+          "section": "default-ingredients"
+        }
+      ]
+    },
+    {
+      "id": "s-course",
+      "kind": "auto",
+      "title": "Assign course number for kitchen firing",
+      "skill": "menu.item.set_course",
+      "args": {
+        "item": "{itemName}",
+        "course": "{course}"
+      },
+      "citations": [
+        {
+          "doc": "heartland.kb.coursing",
+          "section": "basics"
+        }
+      ]
+    },
+    {
+      "id": "s-half",
+      "kind": "manual",
+      "title": "Set Half & Half pricing behavior where it makes sense",
+      "instructions": "On the item record, set the Half & Half Pricing list (None/pizza-style) — only enable where portion logic applies (pizza, subs), never on pasta/beverages.",
+      "citations": [
+        {
+          "doc": "heartland.items-screen",
+          "section": "half-and-half"
+        }
+      ]
+    },
+    {
+      "id": "s-verify",
+      "kind": "auto",
+      "title": "Verify the item landed on the workbench",
+      "skill": "menu.channel.list",
+      "args": {},
+      "checks": [
+        {
+          "check": "item-exists",
+          "args": {
+            "item": "{itemName}"
+          }
+        }
+      ]
+    }
+  ]
+}

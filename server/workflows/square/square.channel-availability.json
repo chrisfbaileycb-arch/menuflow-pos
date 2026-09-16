@@ -1,0 +1,60 @@
+{
+  "platform": "square",
+  "id": "square.channel-availability",
+  "category": "operations",
+  "risk": "low",
+  "title": "Per-location / per-channel item availability",
+  "summary": "Items carry availability flags for locations and channels (online ordering, pickup, delivery) independently of POS visibility.",
+  "inputs": [
+    {
+      "name": "item",
+      "type": "string",
+      "required": true,
+      "example": "Draft Beer"
+    },
+    {
+      "name": "channels",
+      "type": "string[]",
+      "required": true,
+      "example": "Online, Carry-Out"
+    },
+    {
+      "name": "enabled",
+      "type": "string",
+      "required": false,
+      "example": "true|false"
+    }
+  ],
+  "steps": [
+    {
+      "id": "s-set",
+      "kind": "auto",
+      "title": "Toggle channel visibility on the workbench",
+      "skill": "menu.item.set_availability",
+      "args": {
+        "item": "{item}",
+        "channels": "{channels}",
+        "enabled": "{enabled}"
+      }
+    },
+    {
+      "id": "s-portal",
+      "kind": "manual",
+      "title": "Set it in the Dashboard too",
+      "instructions": "Item record > availability: pick locations and channels explicitly. An item can be visible on POS but hidden from online ordering (and vice-versa) — set both sides deliberately.",
+      "citations": [
+        {
+          "doc": "square.library-items",
+          "section": "fields"
+        }
+      ]
+    },
+    {
+      "id": "s-verify",
+      "kind": "auto",
+      "title": "Confirm the state",
+      "skill": "menu.channel.list",
+      "args": {}
+    }
+  ]
+}

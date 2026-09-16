@@ -1,0 +1,17 @@
+{
+  "name": "menuflow-pos",
+  "version": "1.0.0",
+  "description": "MenuFlow POS — multi-platform restaurant POS operations console. Executable, owner's-manual-verified workflows, menu audit/normalization, import/export. Zero runtime dependencies.",
+  "main": "server/server.js",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node server/server.js",
+    "dev": "node server/server.js",
+    "verify": "node server/verify-cli.js",
+    "test": "node tests/run-all.js",
+    "cli": "node cli/menuflow.js"
+  },
+  "engines": { "node": ">=18" },
+  "license": "UNLICENSED",
+  "author": "Signal F Holdings LLC"
+}

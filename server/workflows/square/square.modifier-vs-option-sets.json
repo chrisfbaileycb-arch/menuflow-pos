@@ -1,0 +1,101 @@
+{
+  "platform": "square",
+  "id": "square.modifier-vs-option-sets",
+  "category": "modifiers",
+  "risk": "low",
+  "title": "Set up Options vs Modifier sets correctly (the classic Square trap)",
+  "summary": "Options = variations of the item itself (size); Modifiers = add-ons at order time. Keeps them in separate groups with correct Y-mapping in the CSV.",
+  "inputs": [
+    {
+      "name": "groupName",
+      "type": "string",
+      "required": true,
+      "example": "Modifier Sets / Extra Toppings"
+    },
+    {
+      "name": "optionName",
+      "type": "string",
+      "required": true,
+      "example": "Add Truffle Oil"
+    },
+    {
+      "name": "priceDelta",
+      "type": "money",
+      "required": false,
+      "example": "2.00"
+    },
+    {
+      "name": "item",
+      "type": "string",
+      "required": false,
+      "example": "Fettuccine Alfredo"
+    }
+  ],
+  "steps": [
+    {
+      "id": "s-split",
+      "kind": "manual",
+      "title": "Create the right KIND of set",
+      "instructions": "Decide first: is it a variation (option: size, milk) or an add-on (modifier)? Mixed sets create CSV import chaos. In Dashboard: Library > Modifier options / Item options.",
+      "citations": [
+        {
+          "doc": "square.library-items",
+          "section": "items-vs-modifiers"
+        }
+      ]
+    },
+    {
+      "id": "s-grp",
+      "kind": "auto",
+      "title": "Create the group on the workbench",
+      "skill": "menu.modifier.group.ensure",
+      "args": {
+        "name": "{groupName}",
+        "shared": false
+      }
+    },
+    {
+      "id": "s-opt",
+      "kind": "auto",
+      "title": "Add the option with its price delta",
+      "skill": "menu.modifier.option.upsert",
+      "args": {
+        "group": "{groupName}",
+        "name": "{optionName}",
+        "priceDelta": "{priceDelta}"
+      }
+    },
+    {
+      "id": "s-link",
+      "kind": "auto",
+      "title": "Attach to the item — mirrors the \"Y\" in the Modifier Set column",
+      "skill": "menu.modifier.link",
+      "args": {
+        "group": "{groupName}",
+        "items": "{item}"
+      },
+      "citations": [
+        {
+          "doc": "square.library-import-export",
+          "section": "modifier-y"
+        }
+      ],
+      "fatal": false
+    },
+    {
+      "id": "s-check",
+      "kind": "auto",
+      "title": "The new set must not be empty",
+      "skill": "audit.empty-groups",
+      "args": {},
+      "checks": [
+        {
+          "check": "no-empty-modifier-groups",
+          "args": {
+            "group": "{groupName}"
+          }
+        }
+      ]
+    }
+  ]
+}

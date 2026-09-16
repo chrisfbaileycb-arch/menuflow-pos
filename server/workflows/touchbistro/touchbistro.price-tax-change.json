@@ -1,0 +1,62 @@
+{
+  "platform": "touchbistro",
+  "id": "touchbistro.price-tax-change",
+  "category": "pricing",
+  "risk": "low",
+  "title": "Price update + tax preset verification",
+  "summary": "After any price edit or import, re-verify the item’s tax line — TouchBistro keeps tax per item/category and it silently follows the wrong preset otherwise.",
+  "inputs": [
+    {
+      "name": "item",
+      "type": "string",
+      "required": true,
+      "example": "Draft Beer"
+    },
+    {
+      "name": "price",
+      "type": "money",
+      "required": true,
+      "example": "7.00"
+    }
+  ],
+  "steps": [
+    {
+      "id": "s-price",
+      "kind": "auto",
+      "title": "Set the price on the workbench",
+      "skill": "menu.item.set_price",
+      "args": {
+        "item": "{item}",
+        "price": "{price}"
+      }
+    },
+    {
+      "id": "s-tax",
+      "kind": "manual",
+      "title": "Re-verify the tax setting after the change",
+      "instructions": "Review screen line 2 is the tax setting — alcohol vs food presets must be re-checked after any price import, not assumed.",
+      "citations": [
+        {
+          "doc": "touchbistro.owner-guide",
+          "section": "tax"
+        }
+      ]
+    },
+    {
+      "id": "s-verify",
+      "kind": "auto",
+      "title": "Verify price",
+      "skill": "menu.channel.list",
+      "args": {},
+      "checks": [
+        {
+          "check": "item-price",
+          "args": {
+            "item": "{item}",
+            "price": "{price}"
+          }
+        }
+      ]
+    }
+  ]
+}

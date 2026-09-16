@@ -1,0 +1,110 @@
+{
+  "platform": "clover",
+  "id": "clover.modifier-groups",
+  "category": "modifiers",
+  "risk": "medium",
+  "title": "Build option groups with min/max + Pop Up Automatically",
+  "summary": "The kiosk/POS-correct modifier setup: min/max selections, auto-pop behavior, and — when serving both staff and kiosk — duplicate the group per interface and disable the unused side.",
+  "inputs": [
+    {
+      "name": "groupName",
+      "type": "string",
+      "required": true,
+      "example": "Crust Style"
+    },
+    {
+      "name": "optionName",
+      "type": "string",
+      "required": false,
+      "example": "Thin Crust"
+    },
+    {
+      "name": "min",
+      "type": "number",
+      "required": false,
+      "example": "1"
+    },
+    {
+      "name": "max",
+      "type": "number",
+      "required": true,
+      "example": "1"
+    },
+    {
+      "name": "popup",
+      "type": "string",
+      "required": false,
+      "example": "yes|no"
+    }
+  ],
+  "steps": [
+    {
+      "id": "s-grp",
+      "kind": "auto",
+      "title": "Create the group with selection rules",
+      "skill": "menu.modifier.group.ensure",
+      "args": {
+        "name": "{groupName}",
+        "minChoices": "{min}",
+        "maxChoices": "{max}"
+      },
+      "citations": [
+        {
+          "doc": "clover.item-editor",
+          "section": "modifier-groups"
+        }
+      ]
+    },
+    {
+      "id": "s-opt",
+      "kind": "auto",
+      "title": "Add the first option (prevents the empty-group sync breaker)",
+      "skill": "menu.modifier.option.upsert",
+      "args": {
+        "group": "{groupName}",
+        "name": "{optionName}"
+      },
+      "fatal": false
+    },
+    {
+      "id": "s-popup",
+      "kind": "manual",
+      "title": "Pop Up Automatically",
+      "instructions": "Set Pop Up Automatically = YES only when the group must be answered (min 1). For kiosk-specific builds: create \"Toppings – Kiosk\", set its popup = NO, and turn OFF the staff-side group in the other interface so the two never drift.",
+      "citations": [
+        {
+          "doc": "clover.item-editor",
+          "section": "popup"
+        }
+      ]
+    },
+    {
+      "id": "s-kiosk",
+      "kind": "manual",
+      "title": "Kiosk duplicate pattern",
+      "instructions": "Menu Modifiers tab: rename the group for kiosk display only, and set min/max per the customer flow. Never share one group across staff + kiosk with conflicting rules.",
+      "citations": [
+        {
+          "doc": "clover.sync",
+          "section": "kiosk-groups"
+        }
+      ],
+      "fatal": false
+    },
+    {
+      "id": "s-guard",
+      "kind": "auto",
+      "title": "The new group must not be empty",
+      "skill": "audit.empty-groups",
+      "args": {},
+      "checks": [
+        {
+          "check": "no-empty-modifier-groups",
+          "args": {
+            "group": "{groupName}"
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,47 @@
+{
+  "platform": "toast",
+  "id": "toast.publish-cycle",
+  "category": "operations",
+  "risk": "low",
+  "title": "Publish cycle only (after manual portal edits)",
+  "summary": "For edits made directly in Toast Web by staff: the gate sequence that makes changes real, with verification.",
+  "inputs": [],
+  "steps": [
+    {
+      "id": "s-save",
+      "kind": "manual",
+      "title": "Save each edited record",
+      "instructions": "Every editor must show \"Saved\" before publishing — saves stage changes at the account level.",
+      "citations": [
+        {
+          "doc": "toast.modifier-groups",
+          "section": "publish"
+        }
+      ]
+    },
+    {
+      "id": "s-publish",
+      "kind": "manual",
+      "title": "Publish all changes",
+      "instructions": "Menus > Publish all changes. Wait for the POS tiles to confirm the new revision.",
+      "citations": [
+        {
+          "doc": "toast.modifier-groups",
+          "section": "publish"
+        }
+      ]
+    },
+    {
+      "id": "s-confirm",
+      "kind": "manual",
+      "title": "Confirm on a terminal",
+      "instructions": "Add the edited item to a test check, cancel the check, verify name/price/modifiers and the printed ticket.",
+      "citations": [
+        {
+          "doc": "toast.online-ordering",
+          "section": "visibility"
+        }
+      ]
+    }
+  ]
+}

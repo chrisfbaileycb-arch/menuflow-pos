@@ -1,0 +1,89 @@
+{
+  "platform": "toast",
+  "id": "toast.item-create",
+  "category": "menu",
+  "risk": "low",
+  "title": "Add a menu item (Toast Web) and reach the POS via Publish",
+  "summary": "Create the item under Menus, attach modifier groups, then the mandatory Save → Publish all changes cycle — unpublished edits never reach the POS.",
+  "inputs": [
+    {
+      "name": "itemName",
+      "type": "string",
+      "required": true,
+      "example": "Truffle Wings"
+    },
+    {
+      "name": "group",
+      "type": "string",
+      "required": true,
+      "example": "Appetizers"
+    },
+    {
+      "name": "price",
+      "type": "money",
+      "required": true,
+      "example": "13.50"
+    }
+  ],
+  "steps": [
+    {
+      "id": "s-cat",
+      "kind": "auto",
+      "title": "Ensure the menu group exists",
+      "skill": "menu.category.ensure",
+      "args": {
+        "name": "{group}"
+      }
+    },
+    {
+      "id": "s-item",
+      "kind": "auto",
+      "title": "Create the item on the workbench",
+      "skill": "menu.item.upsert",
+      "args": {
+        "name": "{itemName}",
+        "category": "{group}",
+        "price": "{price}"
+      }
+    },
+    {
+      "id": "s-portal",
+      "kind": "manual",
+      "title": "Create the item in Toast Web and attach modifier groups",
+      "instructions": "Toast Web > Menus > Groups & items > Add item. Set name/price, choose the menu group, and attach the modifier groups this item needs. A new item with no attached groups will order without prompts.",
+      "citations": [
+        {
+          "doc": "toast.menu-items",
+          "section": "add"
+        }
+      ]
+    },
+    {
+      "id": "s-publish",
+      "kind": "manual",
+      "title": "Save, then Publish all changes",
+      "instructions": "Click Save, then Publish all changes — edits do NOT reach the POS or third-party channels until published.",
+      "citations": [
+        {
+          "doc": "toast.modifier-groups",
+          "section": "publish"
+        }
+      ]
+    },
+    {
+      "id": "s-verify",
+      "kind": "auto",
+      "title": "Verify item on the workbench",
+      "skill": "menu.channel.list",
+      "args": {},
+      "checks": [
+        {
+          "check": "item-exists",
+          "args": {
+            "item": "{itemName}"
+          }
+        }
+      ]
+    }
+  ]
+}

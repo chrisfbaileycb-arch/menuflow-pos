@@ -1,0 +1,87 @@
+{
+  "platform": "lightspeed",
+  "id": "lightspeed.archive-item",
+  "category": "menu",
+  "risk": "high",
+  "title": "Archive an item — multi-location blast-radius gate",
+  "summary": "Archive removes the record from ALL menus at ALL locations at once. The gate forces a scope check first; delete is not offered for menu records.",
+  "inputs": [
+    {
+      "name": "item",
+      "type": "string",
+      "required": true,
+      "example": "Discontinued Special"
+    },
+    {
+      "name": "reason",
+      "type": "string",
+      "required": true,
+      "example": "retired after tasting-menu experiment"
+    }
+  ],
+  "steps": [
+    {
+      "id": "s-scope",
+      "kind": "gate",
+      "title": "Confirm scope across locations/menus (blast radius)",
+      "instructions": "List every menu/location referencing this item. Archive is account-wide — a second menu in another venue disappears at the same instant. Written confirmation of the exact scope is mandatory."
+    },
+    {
+      "id": "s-check",
+      "kind": "auto",
+      "title": "Cascade check before removal",
+      "skill": "audit.86-risk",
+      "args": {},
+      "citations": [
+        {
+          "doc": "heartland.kb.audit-protocol",
+          "section": "never-86"
+        }
+      ]
+    },
+    {
+      "id": "s-archive",
+      "kind": "auto",
+      "title": "Archive on the workbench (record retained, recoverable)",
+      "skill": "menu.item.archive",
+      "args": {
+        "item": "{item}",
+        "reason": "{reason}"
+      },
+      "citations": [
+        {
+          "doc": "lightspeed.item-list",
+          "section": "archive"
+        }
+      ],
+      "fatal": false
+    },
+    {
+      "id": "s-bo",
+      "kind": "manual",
+      "title": "Archive in the Back Office",
+      "instructions": "Menu > Item list > three-dot menu beside the item > Archive. Un-archive later from the same menu if needed.",
+      "citations": [
+        {
+          "doc": "lightspeed.item-list",
+          "section": "archive"
+        }
+      ]
+    },
+    {
+      "id": "s-floor",
+      "kind": "auto",
+      "title": "Safety floor: menu still substantial",
+      "skill": "menu.channel.list",
+      "args": {},
+      "checks": [
+        {
+          "check": "item-count-min",
+          "args": {
+            "min": 10
+          }
+        }
+      ]
+    }
+  ]
+}

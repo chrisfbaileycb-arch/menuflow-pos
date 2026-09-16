@@ -1,0 +1,36 @@
+{
+  "platform": "aloha",
+  "id": "aloha.adm-menu-structure-audit",
+  "category": "audit",
+  "risk": "medium",
+  "title": "Menu structure audit (blocks → sections → items)",
+  "summary": "Legacy-manual platform: confirm the ADM hierarchy before automated scans; then run the full canonical audit against the exported menu.",
+  "inputs": [],
+  "steps": [
+    {
+      "id": "s-confirm",
+      "kind": "manual",
+      "title": "Confirm ADM hierarchy matches the running POS build",
+      "instructions": "ADM: menu = ordered blocks; blocks contain sections; sections hold items with attached modifiers. Export the menu (or use the latest export) and confirm revision/date matches the terminals — Aloha config drifts across versions; re-verify against the client’s manual revision.",
+      "citations": [
+        {
+          "doc": "aloha.adm-menu",
+          "section": "structure"
+        }
+      ]
+    },
+    {
+      "id": "s-audit",
+      "kind": "auto",
+      "title": "Full canonical audit on the workbench",
+      "skill": "audit.full",
+      "args": {}
+    },
+    {
+      "id": "s-review",
+      "kind": "gate",
+      "title": "Findings review with the client",
+      "instructions": "Present HIGH/MEDIUM findings (86-cascade, cross-contamination, midnight ranges). Written scope decision follows before edits."
+    }
+  ]
+}

@@ -1,0 +1,151 @@
+{
+  "platform": "heartland",
+  "id": "hl.modifier-create",
+  "category": "modifiers",
+  "risk": "low",
+  "title": "Create a modifier group with choices, prices, and assigned items",
+  "summary": "Builds a modifier per the Modifiers screen: Name, Show Modifier Name, Minimum/Maximum Choices, Number of Included Ingredients, ingredient Default Prices, Assigned Items, Available Online.",
+  "inputs": [
+    {
+      "name": "groupName",
+      "type": "string",
+      "required": true,
+      "example": "Pizza Toppings"
+    },
+    {
+      "name": "minChoices",
+      "type": "number",
+      "required": false,
+      "example": "0"
+    },
+    {
+      "name": "maxChoices",
+      "type": "number",
+      "required": true,
+      "example": "8"
+    },
+    {
+      "name": "included",
+      "type": "number",
+      "required": false,
+      "example": "0"
+    },
+    {
+      "name": "optionName",
+      "type": "string",
+      "required": true,
+      "example": "Jalapeños"
+    },
+    {
+      "name": "optionPrice",
+      "type": "money",
+      "required": false,
+      "example": "1.00"
+    },
+    {
+      "name": "items",
+      "type": "string[]",
+      "required": false,
+      "example": "Margherita Pizza, Meat Lovers Pizza"
+    }
+  ],
+  "steps": [
+    {
+      "id": "s-grp",
+      "kind": "auto",
+      "title": "Create the group with choice rules",
+      "skill": "menu.modifier.group.ensure",
+      "args": {
+        "name": "{groupName}",
+        "minChoices": "{minChoices}",
+        "maxChoices": "{maxChoices}",
+        "included": "{included}",
+        "shared": false,
+        "availableOnline": true
+      },
+      "citations": [
+        {
+          "doc": "heartland.modifiers-screen",
+          "section": "access"
+        },
+        {
+          "doc": "heartland.modifiers-screen",
+          "section": "min-choices"
+        },
+        {
+          "doc": "heartland.modifiers-screen",
+          "section": "max-choices"
+        },
+        {
+          "doc": "heartland.modifiers-screen",
+          "section": "included"
+        }
+      ]
+    },
+    {
+      "id": "s-opt",
+      "kind": "auto",
+      "title": "Add the ingredient with its Default Price",
+      "skill": "menu.modifier.option.upsert",
+      "args": {
+        "group": "{groupName}",
+        "name": "{optionName}",
+        "priceDelta": "{optionPrice}"
+      },
+      "citations": [
+        {
+          "doc": "heartland.modifiers-screen",
+          "section": "ingredient-price"
+        }
+      ]
+    },
+    {
+      "id": "s-link",
+      "kind": "auto",
+      "title": "Assign to items (Assigned Items list)",
+      "skill": "menu.modifier.link",
+      "args": {
+        "group": "{groupName}",
+        "items": "{items}"
+      },
+      "citations": [
+        {
+          "doc": "heartland.modifiers-screen",
+          "section": "assigned-items"
+        }
+      ],
+      "fatal": false
+    },
+    {
+      "id": "s-show",
+      "kind": "manual",
+      "title": "Set Show Modifier Name + Available Online",
+      "instructions": "On the modifier record, enable display on POS screen, KDS and printed slips as required, and tick Available Online so the Online Ordering website exposes it.",
+      "citations": [
+        {
+          "doc": "heartland.modifiers-screen",
+          "section": "show-name"
+        },
+        {
+          "doc": "heartland.modifiers-screen",
+          "section": "available-online"
+        }
+      ]
+    },
+    {
+      "id": "s-empty",
+      "kind": "auto",
+      "title": "Guard: the new group must have options (sync-blocker rule)",
+      "skill": "audit.empty-groups",
+      "args": {},
+      "checks": [
+        {
+          "check": "no-empty-modifier-groups",
+          "args": {
+            "group": "{groupName}"
+          }
+        }
+      ]
+    }
+  ]
+}
