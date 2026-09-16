@@ -23,6 +23,10 @@
         {
           "doc": "heartland.kb.shadow-build",
           "section": "checklist"
+        },
+        {
+          "doc": "heartland.manual",
+          "section": "admin-vs-pos"
         }
       ]
     },

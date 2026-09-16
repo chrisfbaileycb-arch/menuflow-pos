@@ -28,7 +28,7 @@
       "name": "item",
       "type": "string",
       "required": false,
-      "example": "Cacio e Pepe"
+      "example": "Garlic Knots"
     }
   ],
   "steps": [
@@ -45,6 +45,10 @@
         {
           "doc": "lightspeed.item-list",
           "section": "create"
+        },
+        {
+          "doc": "lightspeed.manual",
+          "section": "min-max-for-groups"
         }
       ]
     },
@@ -88,6 +92,12 @@
           "args": {
             "group": "{groupName}"
           }
+        }
+      ],
+      "citations": [
+        {
+          "doc": "lightspeed.manual",
+          "section": "extra-price"
         }
       ]
     }

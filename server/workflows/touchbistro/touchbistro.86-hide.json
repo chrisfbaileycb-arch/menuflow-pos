@@ -46,6 +46,10 @@
         {
           "doc": "touchbistro.menu-items",
           "section": "online"
+        },
+        {
+          "doc": "touchbistro.manual",
+          "section": "pos-86-is-not-delete"
         }
       ]
     },

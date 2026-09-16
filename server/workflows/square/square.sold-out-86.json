@@ -42,6 +42,10 @@
         {
           "doc": "square.library-items",
           "section": "sold-out"
+        },
+        {
+          "doc": "square.manual",
+          "section": "audit-checklist"
         }
       ]
     },

@@ -1,0 +1,95 @@
+{
+  "platform": "heartland",
+  "id": "hl.menu-json-import",
+  "category": "import",
+  "risk": "medium",
+  "title": "Import a menu JSON into the shadow build (Heartland has no CSV path)",
+  "summary": "Heartland menu edits are Admin Console fields and terminal state - there is no owner-facing CSV. This workflow takes canonical or heartland-flat JSON into staging, audits it, and stops at the portal-side entry with the field checklist.",
+  "inputs": [
+    {
+      "name": "file",
+      "type": "string",
+      "required": true,
+      "example": "heartland-flat.json",
+      "description": "canonical JSON or the legacy flat array from the heartland-pos tooling (fixtures resolve as a fallback)"
+    }
+  ],
+  "steps": [
+    {
+      "id": "s-source",
+      "kind": "manual",
+      "title": "Confirm what the source file actually is",
+      "instructions": "A bare JSON array of {name, category, price, modifiers, time_ranges} is the legacy flat export the audit scripts consume: no pricing-rule stack, no channels, no group limits. Never treat it as a backup - take the canonical export for that.",
+      "citations": [
+        {
+          "doc": "heartland.manual",
+          "section": "json-shape"
+        },
+        {
+          "doc": "heartland.manual",
+          "section": "no-csv-import"
+        }
+      ]
+    },
+    {
+      "id": "s-import",
+      "kind": "auto",
+      "title": "Stage the file into the workbench (normalization runs on import)",
+      "skill": "io.import.menu",
+      "args": {
+        "file": "{file}",
+        "format": "canonical-json",
+        "mode": "modify"
+      },
+      "citations": [
+        {
+          "doc": "heartland.manual",
+          "section": "menuflow-format"
+        }
+      ]
+    },
+    {
+      "id": "s-audit",
+      "kind": "auto",
+      "title": "Audit the staged menu before it can be approved",
+      "skill": "audit.full",
+      "args": {},
+      "citations": [
+        {
+          "doc": "heartland.manual",
+          "section": "audit-checklist"
+        }
+      ]
+    },
+    {
+      "id": "s-scope",
+      "kind": "gate",
+      "title": "Client approves the scope before any portal entry starts",
+      "instructions": "Walk the findings and the diff summary. Modifier isolation changes ordering UX, so it needs explicit sign-off - audit before action."
+    },
+    {
+      "id": "s-portal",
+      "kind": "manual",
+      "title": "Enter the fields in the Admin Console; read back the terminal state",
+      "instructions": "Admin Console > Menu > Items and > Modifiers for names, prices, Assigned Items, Min/Max Choices, Number of Included Ingredients, per-ingredient Default Price and Available Online. Stock limits and 86 state live on the terminal (long-press the item, or Manager > Item Stock Management) and never appear in a portal export.",
+      "citations": [
+        {
+          "doc": "heartland.manual",
+          "section": "items-screen"
+        },
+        {
+          "doc": "heartland.manual",
+          "section": "modifiers-screen"
+        },
+        {
+          "doc": "heartland.manual",
+          "section": "admin-vs-pos"
+        },
+        {
+          "doc": "signalF.csv-matrix",
+          "section": "menuflow-divergence"
+        }
+      ]
+    }
+  ]
+}

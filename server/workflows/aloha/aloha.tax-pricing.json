@@ -52,6 +52,10 @@
         {
           "doc": "aloha.adm-menu",
           "section": "tax"
+        },
+        {
+          "doc": "aloha.manual",
+          "section": "price-methods-and-building-blocks"
         }
       ]
     }

@@ -10,7 +10,7 @@
       "name": "item",
       "type": "string",
       "required": true,
-      "example": "Scallops"
+      "example": "Buffalo Wings"
     },
     {
       "name": "reason",
@@ -42,6 +42,10 @@
         {
           "doc": "aloha.pos-86",
           "section": "86"
+        },
+        {
+          "doc": "aloha.manual",
+          "section": "no-csv-import-86-and-roll"
         }
       ]
     },

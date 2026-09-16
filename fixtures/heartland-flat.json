@@ -1,0 +1,56 @@
+[
+  {
+    "name": "Margherita Pizza",
+    "category": "Pizza",
+    "price": 1450,
+    "description": "House dough, San Marzano, fresh mozzarella",
+    "modifiers": [
+      { "name": "Extra Cheese", "group": "Toppings", "price": 200 },
+      { "name": "Mushrooms", "group": "Toppings", "price": 150 }
+    ],
+    "time_ranges": [[660, 1260]]
+  },
+  {
+    "name": "Pepperoni Pizza",
+    "category": "Pizza",
+    "price": 1650,
+    "description": "House dough, mozzarella, pepperoni",
+    "modifiers": [
+      { "name": "Pepperoni", "group": "Toppings", "price": 200 },
+      { "name": "Extra Cheese", "group": "Toppings", "price": 200 }
+    ],
+    "time_ranges": [[660, 1260]]
+  },
+  {
+    "name": "Caesar Salad",
+    "category": "Salads",
+    "price": 1100,
+    "description": "Romaine, dressing, croutons",
+    "modifiers": [
+      { "name": "Pepperoni", "group": "Toppings", "price": 200 },
+      { "name": "Grilled Chicken", "group": "Protein Add-ons", "price": 400 }
+    ],
+    "time_ranges": []
+  },
+  {
+    "name": "Late Night Slices",
+    "category": "Pizza",
+    "price": 650,
+    "description": "Two slices, sold after the dinner rush",
+    "modifiers": [
+      { "name": "Pepperoni", "group": "Toppings", "price": 200 }
+    ],
+    "time_ranges": [[1320, 120]]
+  },
+  {
+    "name": "Garlic Knots",
+    "category": "Appetizers",
+    "price": 750,
+    "description": "Four per order, butter and garlic",
+    "modifiers": [
+      { "name": "Marinara", "group": "Knot Sauce", "price": 0 },
+      { "name": "Alfredo", "group": "Knot Sauce", "price": 100 }
+    ],
+    "time_ranges": [[660, 1320]]
+  }
+]

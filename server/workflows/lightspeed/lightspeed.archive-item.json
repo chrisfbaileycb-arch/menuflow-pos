@@ -10,7 +10,7 @@
       "name": "item",
       "type": "string",
       "required": true,
-      "example": "Discontinued Special"
+      "example": "Sausage Pizza"
     },
     {
       "name": "reason",
@@ -65,6 +65,10 @@
         {
           "doc": "lightspeed.item-list",
           "section": "archive"
+        },
+        {
+          "doc": "lightspeed.manual",
+          "section": "no-delete-and-no-undo"
         }
       ]
     },

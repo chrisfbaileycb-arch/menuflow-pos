@@ -39,6 +39,14 @@
         {
           "doc": "toast.bulk-advanced",
           "section": "advanced-props"
+        },
+        {
+          "doc": "toast.manual",
+          "section": "price-string-rules"
+        },
+        {
+          "doc": "toast.manual",
+          "section": "irreversibility"
         }
       ]
     },

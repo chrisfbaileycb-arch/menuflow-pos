@@ -20,6 +20,7 @@
     <label class="sel" title="POS platform — identifies every workflow catalog below">
       <span>POS Platform</span>
       <select id="platformSelect"></select>
+      <span class="platmeta" id="platMeta"></span>
     </label>
     <label class="sel" title="Client location / venue profile">
       <span>Location</span>
@@ -96,6 +97,7 @@
             <option value="clover-csv">Clover CSV</option>
             <option value="lightspeed-csv">Lightspeed CSV</option>
             <option value="toast-csv">Toast CSV</option>
+            <option value="touchbistro-csv">TouchBistro CSV</option>
           </select></label>
           <label>Mode <select id="impMode">
             <option value="modify">modify (upsert)</option>
@@ -127,6 +129,7 @@
             <option value="clover-csv">Clover CSV</option>
             <option value="lightspeed-csv">Lightspeed CSV</option>
             <option value="toast-csv">Toast CSV</option>
+            <option value="touchbistro-csv">TouchBistro CSV</option>
             <option value="heartland-json">Heartland flat JSON (python-tool compatible)</option>
           </select></label>
           <button class="btn primary" id="doExport">Export file</button>

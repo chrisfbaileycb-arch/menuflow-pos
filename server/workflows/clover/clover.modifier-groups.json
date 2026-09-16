@@ -75,6 +75,10 @@
         {
           "doc": "clover.item-editor",
           "section": "popup"
+        },
+        {
+          "doc": "clover.manual",
+          "section": "modifier-group-model"
         }
       ]
     },
@@ -87,6 +91,10 @@
         {
           "doc": "clover.sync",
           "section": "kiosk-groups"
+        },
+        {
+          "doc": "clover.manual",
+          "section": "kiosk-duplicate-groups"
         }
       ],
       "fatal": false

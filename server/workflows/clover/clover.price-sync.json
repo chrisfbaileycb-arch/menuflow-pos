@@ -43,6 +43,10 @@
         {
           "doc": "clover.sync",
           "section": "force-sync"
+        },
+        {
+          "doc": "clover.manual",
+          "section": "sync-timing"
         }
       ]
     },

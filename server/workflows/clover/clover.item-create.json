@@ -55,6 +55,10 @@
         {
           "doc": "clover.item-editor",
           "section": "create"
+        },
+        {
+          "doc": "clover.manual",
+          "section": "item-association"
         }
       ]
     },

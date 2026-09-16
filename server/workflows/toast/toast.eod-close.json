@@ -16,6 +16,10 @@
         {
           "doc": "toast.day-reporting",
           "section": "close"
+        },
+        {
+          "doc": "toast.manual",
+          "section": "publish-cycle"
         }
       ]
     },

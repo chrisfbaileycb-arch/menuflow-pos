@@ -59,6 +59,10 @@
         {
           "doc": "lightspeed.item-list",
           "section": "table"
+        },
+        {
+          "doc": "lightspeed.manual",
+          "section": "required-columns"
         }
       ]
     },

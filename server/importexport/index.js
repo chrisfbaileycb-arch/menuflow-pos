@@ -8,15 +8,20 @@
  *   - Clover menu CSV (Name/Price/Modifier Groups/Min/Max layout)
  *   - Lightspeed K-Series menu import CSV (Category/Name/Price/Available/Mod groups)
  *   - Toast menu-items CSV (Group/Name/Price/Modifiers)
+ *   - TouchBistro bulk-upload CSV (new items only; tax/kitchen lines are reported,
+ *     not applied — the vendor path does not accept them, see docs/manuals/touchbistro.md)
  *   Normalization always runs on import: trim/case fold, money re-types,
  *   duplicate option folding, ghost modifier dedup (the ×22 pepperoni fix).
  *
  * EXPORT (menu → files in data/exports/):
  *   - canonical-json (lossless round-trip with import)
- *   - square-csv / clover-csv / lightspeed-csv / toast-csv (upload-ready shapes)
+ *   - square-csv / clover-csv / lightspeed-csv / toast-csv / touchbistro-csv —
+ *     MenuFlow REVIEW shapes, deliberately simplified and human-diffable. They are
+ *     NOT vendor-uploadable files; each platform's mapping table and the reason live in
+ *     docs/manuals/<platform>.md § "menuflow-format", and the export workflows carry a
+ *     manual caveat step citing it.
  *   - heartland-json (the flat menu-items shape the heartland-pos python audit
- *     scripts consume — interop kept intact)
- *   - workflow bundle + full project backup.
+ *     scripts consume — interop kept intact, and contractually verified by a parity test)
  */
 const fs = require('fs');
 const path = require('path');
@@ -69,10 +74,14 @@ function detectFormat(filename, text, platform) {
   if (t.startsWith('{') || t.startsWith('[')) return 'canonical-json';
   const head = t.split('\n')[0].toLowerCase();
   if (head.includes('modifier set') || (head.includes('item name') && head.includes('option list'))) return 'square-csv';
-  if (head.includes('option groups') || (head.includes('price') && head.includes('min'))) return 'clover-csv';
+  if (head.includes('sales category')) return 'touchbistro-csv';
+  // K-Series item files carry a Type column per row (Item/Group/category); Square's does not.
+  if (head.includes('type') && head.includes('modifier groups')) return 'lightspeed-csv';
+  if (head.includes('option groups') || head.includes('modifiers in group') || (head.includes('price') && head.includes('min selections'))) return 'clover-csv';
   if (head.includes('available from') || (head.includes('category') && head.includes('purchase price'))) return 'lightspeed-csv';
   if (head.includes('group name') && head.includes('item name')) return 'toast-csv';
-  return platform === 'clover' ? 'clover-csv' : platform === 'lightspeed' ? 'lightspeed-csv' : platform === 'toast' ? 'toast-csv' : 'square-csv';
+  return platform === 'clover' ? 'clover-csv' : platform === 'lightspeed' ? 'lightspeed-csv'
+    : platform === 'toast' ? 'toast-csv' : platform === 'touchbistro' ? 'touchbistro-csv' : 'square-csv';
 }
 
 // ───────────────────────────────── parsers per platform ─────────────────────────────────
@@ -208,6 +217,55 @@ function parseToast(rows) {
   return out;
 }
 
+/**
+ * TouchBistro bulk upload is an ADD-NEW-ITEMS path: the vendor file carries the item lines
+ * that RMM accepts on upload, and deliberately not the settings RMM owns (tax, images,
+ * deletes — docs/manuals/touchbistro.md § bulk-upload-new-only). The parser mirrors that
+ * contract: those columns are read, reported as warnings, and NOT applied, so a MenuFlow
+ * file never looks more capable than the portal it came from.
+ */
+function parseTouchbistro(rows) {
+  const out = { categories: [], items: [], groups: [] };
+  const groupMap = new Map();
+  let ignoredTax = 0, ignoredPrinter = 0;
+  for (const r of rows) {
+    const name = r['item_name'] || r['name'];
+    if (!name) continue;
+    const cat = r['sales_category'] || r['menu_category'] || r['category'] || 'Uncategorized';
+    out.categories.push(cat);
+    const mgRaw = r['modifier_groups'] || r['modifier_sets'] || '';
+    const modifierGroupNames = mgRaw ? mgRaw.split(/[;|]/).map(s => s.trim()).filter(Boolean) : [];
+    if ((r['tax'] || r['tax_rate'] || '').trim()) ignoredTax++;
+    if ((r['kitchen_printer'] || r['printer_group'] || '').trim()) ignoredPrinter++;
+    const course = String(r['course'] || '').trim();
+    out.items.push({
+      name, category: cat, price: M.money(r['price'] || '0') || 0,
+      description: r['description'] || '', modifierGroupNames,
+      course: /^\d+$/.test(course) ? Number(course) : 0,
+      // Hidden=Yes means not orderable at the POS; an 86 on the POS is a different thing
+      available: !/^(y|yes|true|hidden)$/i.test(r['hidden'] || '') && !/^(n|no|false)$/i.test(r['visible'] || 'y'),
+    });
+    for (const gname of modifierGroupNames) {
+      if (!groupMap.has(M.normName(gname))) {
+        const g = {
+          name: gname,
+          min: Number(r['modifier_min'] || r['min'] || '0') || 0,
+          max: Number(r['modifier_max'] || r['max'] || '0') || 0,
+          options: (r['modifier_options'] || r['options'] || '').split(/[;|]/).map(s => s.trim()).filter(Boolean)
+            .map(o => ({ name: o, priceDelta: 0 })),
+        };
+        groupMap.set(M.normName(gname), g);
+        out.groups.push(g);
+      }
+    }
+  }
+  out.categories = [...new Set(out.categories)];
+  out.warnings = [];
+  if (ignoredTax) out.warnings.push(`${ignoredTax} row(s) carried a Tax column: TouchBistro's bulk upload cannot set tax — apply it per item in RMM, then re-verify (manual §2/§4)`);
+  if (ignoredPrinter) out.warnings.push(`${ignoredPrinter} row(s) carried a kitchen printer column: printer routing is RMM-only and must be read back on the item (manual §5)`);
+  return out;
+}
+
 function parseCanonical(text) {
   const data = JSON.parse(text);
   const menu = Array.isArray(data) ? { items: data } : (data.menu || data);
@@ -319,7 +377,10 @@ function importRaw(content, filename, { format = 'auto', platform = 'heartland',
     parsed = fmt === 'square-csv' ? parseSquare(rows)
       : fmt === 'clover-csv' ? parseClover(rows)
         : fmt === 'lightspeed-csv' ? parseLightspeed(rows)
-          : parseToast(rows);
+          : fmt === 'touchbistro-csv' ? parseTouchbistro(rows)
+            : parseToast(rows);
+    for (const w of parsed.warnings || []) warnings.push(w);
+    delete parsed.warnings;
   }
   const normalized = applyPieces(menu, parsed, warnings);
   if (warnings.length > 20) warnings.length = 20;
@@ -394,6 +455,16 @@ function exportMenu(menu, format, platform, dryRun = false) {
     for (const it of menu.items.filter(i => !i.archived)) {
       const mods = (it.modifierGroups || []).map(gid => menu.modifierGroups.find(g => g.id === gid)?.name).filter(Boolean).join('; ');
       rows.push(['item', csvCell(it.name), csvCell(it.category), (it.price / 100).toFixed(2), csvCell(it.description || ''), csvCell(mods), it.unavailable ? 'no' : 'yes'].join(','));
+    }
+    content = rows.join('\n');
+  } else if (format === 'touchbistro-csv') {
+    // TouchBistro's bulk path is add-new-items only, so no tax/printer/image columns are emitted.
+    filename = `${base}.touchbistro.csv`;
+    const head = ['Item Name', 'Sales Category', 'Price', 'Description', 'Course', 'Hidden', 'Modifier Groups'];
+    const rows = [head.join(',')];
+    for (const it of menu.items.filter(i => !i.archived)) {
+      const mods = (it.modifierGroups || []).map(gid => menu.modifierGroups.find(g => g.id === gid)?.name).filter(Boolean).join('; ');
+      rows.push([csvCell(it.name), csvCell(it.category), (it.price / 100).toFixed(2), csvCell(it.description || ''), it.course || '', it.unavailable ? 'Y' : 'N', csvCell(mods)].join(','));
     }
     content = rows.join('\n');
   } else if (format === 'toast-csv') {

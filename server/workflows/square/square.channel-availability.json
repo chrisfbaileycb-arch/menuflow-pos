@@ -46,6 +46,10 @@
         {
           "doc": "square.library-items",
           "section": "fields"
+        },
+        {
+          "doc": "square.manual",
+          "section": "location-columns"
         }
       ]
     },

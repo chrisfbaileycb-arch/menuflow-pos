@@ -1,0 +1,106 @@
+{
+  "platform": "touchbistro",
+  "id": "touchbistro.bulk-menu-upload",
+  "category": "import",
+  "risk": "medium",
+  "title": "Bulk menu upload (new items only - no updates, no tax, no deletes)",
+  "summary": "Menu Management / RMM batch upload. The engine stages the file and mirrors the vendor limits: a Tax or kitchen-printer column is reported, not applied, because TouchBistro bulk upload cannot set them.",
+  "inputs": [
+    {
+      "name": "file",
+      "type": "string",
+      "required": true,
+      "example": "touchbistro-menu.csv",
+      "description": "a file under data/imports/ (a repo fixture is resolved as a fallback so the example runs)"
+    }
+  ],
+  "steps": [
+    {
+      "id": "s-scope",
+      "kind": "manual",
+      "title": "Scope the work first: bulk creates items, it does not change them",
+      "instructions": "The documented limits are: no batch updates to existing items, no menu image/thumbnail, tax cannot be set, and there is no batch delete. A price change or retirement is per-item work in RMM - never present it as a CSV.",
+      "citations": [
+        {
+          "doc": "touchbistro.manual",
+          "section": "bulk-upload-new-only"
+        },
+        {
+          "doc": "touchbistro.manual",
+          "section": "access-and-caveats"
+        }
+      ]
+    },
+    {
+      "id": "s-import",
+      "kind": "auto",
+      "title": "Stage the upload file (tax and printer columns are reported, not applied)",
+      "skill": "io.import.menu",
+      "args": {
+        "file": "{file}",
+        "format": "touchbistro-csv",
+        "mode": "modify"
+      },
+      "citations": [
+        {
+          "doc": "touchbistro.manual",
+          "section": "menuflow-format"
+        }
+      ]
+    },
+    {
+      "id": "s-audit",
+      "kind": "auto",
+      "title": "Audit the staged workbench",
+      "skill": "audit.full",
+      "args": {},
+      "fatal": false,
+      "checks": [
+        {
+          "check": "no-empty-modifier-groups"
+        },
+        {
+          "check": "no-midnight-violations"
+        }
+      ]
+    },
+    {
+      "id": "s-rmm",
+      "kind": "manual",
+      "title": "Upload inside the target category, then set modifier groups and taxes there",
+      "instructions": "Menu Options > Categories, pick the category (e.g. Mains) and complete Modifier Groups and Taxes on the same screen. Category choice matters: items inherit course, printers and tax defaults from it.",
+      "citations": [
+        {
+          "doc": "touchbistro.manual",
+          "section": "rmm-upload-flow"
+        },
+        {
+          "doc": "touchbistro.manual",
+          "section": "category-inheritance"
+        }
+      ]
+    },
+    {
+      "id": "s-review",
+      "kind": "manual",
+      "title": "Read the review lines on every item created",
+      "instructions": "Sales category, visible/hidden, course, tax, kitchen printers - the settings continue off screen, so scroll. An item with no printer assignment rings fine and never prints.",
+      "citations": [
+        {
+          "doc": "touchbistro.manual",
+          "section": "item-review-lines"
+        },
+        {
+          "doc": "signalF.csv-matrix",
+          "section": "menuflow-divergence"
+        }
+      ]
+    },
+    {
+      "id": "s-confirm",
+      "kind": "gate",
+      "title": "Confirm with the owner before the dining room sees it",
+      "instructions": "Confirm the item count, that no update was expected from this path, and that tax was set per item afterwards."
+    }
+  ]
+}

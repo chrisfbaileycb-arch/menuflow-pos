@@ -11,8 +11,8 @@
  *   node cli/menuflow.js menu [--location id] [--which live|staging]
  *   node cli/menuflow.js audit [--location id] [--md]
  *   node cli/menuflow.js quick <skill> [--arg k=v ...] [--location id]
- *   node cli/menuflow.js import <file> [--format auto|square-csv|clover-csv|lightspeed-csv|toast-csv|canonical-json] [--mode modify|replace]
- *   node cli/menuflow.js export [--format canonical-json|square-csv|clover-csv|lightspeed-csv|toast-csv|heartland-json] [--scope live|staging|workflows|project]
+ *   node cli/menuflow.js import <file> [--format auto|square-csv|clover-csv|lightspeed-csv|toast-csv|touchbistro-csv|canonical-json] [--mode modify|replace]
+ *   node cli/menuflow.js export [--format canonical-json|square-csv|clover-csv|lightspeed-csv|toast-csv|touchbistro-csv|heartland-json] [--scope live|staging|workflows|project]
  *   node cli/menuflow.js publish [--yes] | discard
  *   node cli/menuflow.js skills
  */

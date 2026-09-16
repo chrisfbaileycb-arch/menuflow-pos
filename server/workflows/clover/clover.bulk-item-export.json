@@ -1,0 +1,59 @@
+{
+  "platform": "clover",
+  "id": "clover.bulk-item-export",
+  "category": "export",
+  "risk": "low",
+  "title": "Export items for backup or transfer (full list only; IDs are account-local)",
+  "summary": "Writes clover-csv from the live menu and states Clover-specific transfer rules: Clover exports the whole item list only, and the Clover ID column must be blanked before importing into another merchant.",
+  "inputs": [],
+  "steps": [
+    {
+      "id": "s-export",
+      "kind": "auto",
+      "title": "Write clover-csv to data/exports/",
+      "skill": "io.export.menu",
+      "args": {
+        "format": "clover-csv",
+        "scope": "live"
+      },
+      "citations": [
+        {
+          "doc": "clover.manual",
+          "section": "menuflow-format"
+        }
+      ]
+    },
+    {
+      "id": "s-scope",
+      "kind": "manual",
+      "title": "Know that the vendor export is all-or-nothing",
+      "instructions": "Items > Item list > vertical menu > Export gives CloverItemDownload.csv for the full item list; a partial export is not supported, so trim it yourself and keep the original as the backup.",
+      "citations": [
+        {
+          "doc": "clover.manual",
+          "section": "export-full-list-only"
+        }
+      ]
+    },
+    {
+      "id": "s-ids",
+      "kind": "manual",
+      "title": "Blank the identifier column before importing elsewhere",
+      "instructions": "Into a different merchant account, delete the Clover ID values or the import targets records that do not exist there. Then rebuild the workbook tabs per object type.",
+      "citations": [
+        {
+          "doc": "clover.manual",
+          "section": "delete-the-id-column"
+        },
+        {
+          "doc": "clover.manual",
+          "section": "import-mechanism"
+        },
+        {
+          "doc": "signalF.csv-matrix",
+          "section": "menuflow-divergence"
+        }
+      ]
+    }
+  ]
+}

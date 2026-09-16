@@ -15,7 +15,13 @@
       "args": {
         "format": "canonical-json",
         "scope": "live"
-      }
+      },
+      "citations": [
+        {
+          "doc": "heartland.manual",
+          "section": "no-csv-import"
+        }
+      ]
     },
     {
       "id": "s-hl",
@@ -39,7 +45,17 @@
       "kind": "auto",
       "title": "Full project backup (credentials stripped)",
       "skill": "io.export.project",
-      "args": {}
+      "args": {},
+      "citations": [
+        {
+          "doc": "heartland.manual",
+          "section": "menuflow-format"
+        },
+        {
+          "doc": "signalF.csv-matrix",
+          "section": "menuflow-divergence"
+        }
+      ]
     }
   ]
 }

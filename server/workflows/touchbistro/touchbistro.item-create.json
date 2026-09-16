@@ -66,6 +66,10 @@
         {
           "doc": "touchbistro.menu-items",
           "section": "course"
+        },
+        {
+          "doc": "touchbistro.manual",
+          "section": "rmm-upload-flow"
         }
       ]
     },

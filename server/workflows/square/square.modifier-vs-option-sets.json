@@ -28,7 +28,7 @@
       "name": "item",
       "type": "string",
       "required": false,
-      "example": "Fettuccine Alfredo"
+      "example": "Garlic Knots"
     }
   ],
   "steps": [
@@ -41,6 +41,10 @@
         {
           "doc": "square.library-items",
           "section": "items-vs-modifiers"
+        },
+        {
+          "doc": "square.manual",
+          "section": "not-exported"
         }
       ]
     },

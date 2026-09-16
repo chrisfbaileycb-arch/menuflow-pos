@@ -47,7 +47,9 @@ function main() {
           else if (inp.type === 'string[]') inputs[inp.name] = String(ex).split(',').map(s => s.trim()).filter(Boolean);
           else if (inp.type === 'number[]') inputs[inp.name] = String(ex).replace(/[^0-9,]/g, '').split(',').filter(x => x !== '').map(Number);
           else if (inp.type === 'boolean') inputs[inp.name] = !/^no|false/i.test(String(ex));
-          else inputs[inp.name] = firstToken(ex);
+          // strings pass through LITERALLY: the UI pre-fills `example` verbatim, so a dry run
+          // with firstToken() would certify a value no operator can actually submit.
+          else inputs[inp.name] = String(ex);
         }
         const run = engine.run({ platform: wf.platform, workflowId: wf.id, locationId: useLoc, mode: 'dry', inputs, approvals: allGates(wf), actor: 'verify-cli' });
         execTotal++;
@@ -90,12 +92,6 @@ function main() {
 function allGates(wf) {
   return wf.steps.filter(s => s.kind === 'gate').map(s => s.id)
     .concat(wf.steps.filter(s => s.kind === 'manual').map(s => s.id));
-}
-function firstToken(ex) {
-  const s = String(ex);
-  const f = s.match(/[\w.'-]+\.(csv|json|xlsx|txt|md)\b/i);
-  if (f) return f[0];
-  return s.split(/\s+—\s+|\s+\(/)[0].trim();
 }
 function firstFailure(run) {
   const f = (run.steps || []).filter(s => ['failed', 'blocked', 'exception'].includes(s.status)).pop();

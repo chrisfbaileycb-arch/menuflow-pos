@@ -29,6 +29,10 @@
         {
           "doc": "touchbistro.menu-items",
           "section": "online"
+        },
+        {
+          "doc": "touchbistro.manual",
+          "section": "online-toggle-independent"
         }
       ]
     },

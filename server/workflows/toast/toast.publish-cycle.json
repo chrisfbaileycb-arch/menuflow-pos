@@ -16,6 +16,10 @@
         {
           "doc": "toast.modifier-groups",
           "section": "publish"
+        },
+        {
+          "doc": "toast.manual",
+          "section": "publish-cycle"
         }
       ]
     },
@@ -28,6 +32,10 @@
         {
           "doc": "toast.modifier-groups",
           "section": "publish"
+        },
+        {
+          "doc": "toast.manual",
+          "section": "publish-cycle"
         }
       ]
     },
@@ -40,6 +48,10 @@
         {
           "doc": "toast.online-ordering",
           "section": "visibility"
+        },
+        {
+          "doc": "toast.manual",
+          "section": "publish-cycle"
         }
       ]
     }

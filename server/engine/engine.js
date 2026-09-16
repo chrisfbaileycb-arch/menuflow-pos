@@ -160,6 +160,23 @@ function validateWorkflow(wf, opts = {}) {
  *  - gates/acks: if an approval for that step isn't in `approvals`, execution
  *    pauses there and the run returns status awaiting_approval / awaiting_ack.
  */
+/**
+ * A list-typed skill param can arrive as a single string from a workflow input, a CLI `--input`,
+ * or the UI's comma-separated field. Splitting at this boundary is deliberate: `for (const ref of
+ * 'Hamburger; Cheeseburger')` would otherwise iterate characters, and the step would read as a soft
+ * no-op instead of the broken contract it is.
+ */
+function coerceListArgs(skill, args) {
+  if (!skill || !skill.params || !args) return args;
+  for (const p of skill.params) {
+    const v = args[p.name];
+    if (typeof v !== 'string') continue;
+    if (p.type === 'string[]') args[p.name] = v.split(/[,;]/).map(x => x.trim()).filter(Boolean);
+    else if (p.type === 'number[]') args[p.name] = v.split(/[,;]/).map(x => parseFloat(x.trim())).filter(n => Number.isFinite(n));
+  }
+  return args;
+}
+
 function run(opts) {
   const { platform, workflowId, locationId, mode = 'dry', inputs = {}, approvals = [], actor = 'operator' } = opts;
   const wf = getWorkflow(platform, workflowId);
@@ -242,7 +259,7 @@ function run(opts) {
       } else {
         // auto
         const skill = REG.get(st.skill);
-        const args = resolveValue(st.args || {}, resolvedInputs);
+        const args = coerceListArgs(skill, resolveValue(st.args || {}, resolvedInputs));
         let r;
         try {
           r = skill.handler(ctx, args, workbench);
@@ -329,9 +346,18 @@ function validateAll(opts = {}) {
     const plat = platforms[wf.platform];
     if (!plat) { report.ok = false; report.platforms[wf.platform] = { error: 'unknown platform' }; continue; }
     const v = validateWorkflow(wf, { docPrefixes: plat.docPrefixes });
+    // Bulk-file workflows carry an extra obligation: they must cite the platform manual that
+    // defines the format they parse or emit. Without it, an operator diffing a MenuFlow CSV
+    // against the vendor's real upload file has no documented basis for the difference.
+    const extra = [];
+    if ((wf.category === 'import' || wf.category === 'export') && SOURCES[`${wf.platform}.manual`]) {
+      const cited = (wf.steps || []).some(s => (s.citations || []).some(ci => ci.doc === `${wf.platform}.manual`));
+      if (!cited) extra.push(`${wf.id}: ${wf.category} workflow must cite ${wf.platform}.manual so its file format stays traceable to the owner's manual`);
+    }
+    const errors = v.errors.concat(extra);
     const p = (report.platforms[wf.platform] = report.platforms[wf.platform] || { workflows: 0, verified: 0, failures: [] });
     p.workflows++;
-    if (v.ok) p.verified++; else { p.failures.push({ id: wf.id, errors: v.errors }); report.ok = false; report.totals.errors += v.errors.length; }
+    if (errors.length === 0) p.verified++; else { p.failures.push({ id: wf.id, errors }); report.ok = false; report.totals.errors += errors.length; }
     report.totals.workflows++;
     report.totals.steps += wf.steps.length;
     report.totals.auto += wf.steps.filter(s => s.kind === 'auto').length;

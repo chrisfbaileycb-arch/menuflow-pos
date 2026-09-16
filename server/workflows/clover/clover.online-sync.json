@@ -20,6 +20,10 @@
         {
           "doc": "clover.sync",
           "section": "windows"
+        },
+        {
+          "doc": "clover.manual",
+          "section": "sync-timing"
         }
       ]
     },

@@ -1,0 +1,161 @@
+{
+  "platform": "aloha",
+  "id": "aloha.item-modifier-record-build",
+  "category": "modifiers",
+  "risk": "medium",
+  "title": "Build a modifier group the Aloha way (groups are items; 10 per item, 54 per group)",
+  "summary": "Creates the group and its limits in the workbench, then mirrors Aloha record construction: modifier items exist first, the group collects them, and the item attaches up to ten groups on its Modifier tab. Menu-wide sharing stays confined to exception modifier groups.",
+  "inputs": [
+    {
+      "name": "groupName",
+      "type": "string",
+      "required": true,
+      "example": "Extras"
+    },
+    {
+      "name": "memberItem",
+      "type": "string",
+      "required": true,
+      "example": "Extra Cheese",
+      "description": "first member only — an Aloha group is a collection of item records, so a group with no members is not a real record; add the rest in Maintenance > Menu > Modifier Groups"
+    },
+    {
+      "name": "minChoices",
+      "type": "number",
+      "required": false,
+      "example": "0"
+    },
+    {
+      "name": "maxChoices",
+      "type": "number",
+      "required": false,
+      "example": "3"
+    },
+    {
+      "name": "items",
+      "type": "string",
+      "required": false,
+      "example": "Pepperoni Pizza, Veggie Pizza",
+      "description": "comma- or semicolon-separated; each must be an item on this location's menu"
+    }
+  ],
+  "steps": [
+    {
+      "id": "s-group",
+      "kind": "auto",
+      "title": "Create or update the modifier group with its selection limits",
+      "skill": "menu.modifier.group.ensure",
+      "args": {
+        "name": "{groupName}",
+        "minChoices": "{minChoices}",
+        "maxChoices": "{maxChoices}"
+      },
+      "citations": [
+        {
+          "doc": "aloha.manual",
+          "section": "group-limits-and-prompting"
+        }
+      ]
+    },
+    {
+      "id": "s-member",
+      "kind": "auto",
+      "title": "Give the group its first member item",
+      "skill": "menu.modifier.option.upsert",
+      "args": {
+        "group": "{groupName}",
+        "name": "{memberItem}",
+        "priceDelta": 0
+      },
+      "citations": [
+        {
+          "doc": "aloha.manual",
+          "section": "modifier-groups-central"
+        }
+      ]
+    },
+    {
+      "id": "s-link",
+      "kind": "auto",
+      "title": "Attach the group to its items in the workbench",
+      "skill": "menu.modifier.link",
+      "args": {
+        "group": "{groupName}",
+        "items": "{items}"
+      },
+      "fatal": false,
+      "notes": [
+        "soft by design: items that do not exist in this menu are a no-op, not a failure"
+      ],
+      "citations": [
+        {
+          "doc": "aloha.manual",
+          "section": "modifier-tab-ten-groups"
+        }
+      ]
+    },
+    {
+      "id": "s-items",
+      "kind": "manual",
+      "title": "Create the modifier items first, then collect them into the group",
+      "instructions": "Maintenance > Menu > Items defines the items (cheese, lettuce, pickles); Maintenance > Menu > Modifier Groups collects them (Extras) and the item attaches them back. A group that is never assigned to an item on its Modifier tab does not appear at the terminal - and an item can take at most ten groups (Modifier 1 through Modifier 10, Standard type only).",
+      "citations": [
+        {
+          "doc": "aloha.manual",
+          "section": "modifier-groups-central"
+        },
+        {
+          "doc": "aloha.manual",
+          "section": "modifier-tab-ten-groups"
+        }
+      ]
+    },
+    {
+      "id": "s-layout",
+      "kind": "manual",
+      "title": "Set the layout, prompting and free allowance",
+      "instructions": "Up to 54 modifiers per group; buttons show the short name, item number and price. Choose whether the group appears automatically or via the Modify button, set min/max (1/1 for a forced single choice), and set Free for the number of no-charge selections.",
+      "citations": [
+        {
+          "doc": "aloha.manual",
+          "section": "group-limits-and-prompting"
+        }
+      ]
+    },
+    {
+      "id": "s-exception",
+      "kind": "manual",
+      "title": "Keep menu-wide sharing inside an exception modifier group",
+      "instructions": "For things like hot sauce or cheese sauce that modify anything on the submenu, use Maintenance > Menu > Exception Modifiers (reached at the POS via Modify > Special). That is the documented, intentional sharing mechanism - it is not the cross-contamination defect, and the audit allowlist treats it as designed sharing.",
+      "citations": [
+        {
+          "doc": "aloha.manual",
+          "section": "exception-modifier-groups"
+        }
+      ]
+    },
+    {
+      "id": "s-counts",
+      "kind": "auto",
+      "title": "Confirm the group this run built is actually populated",
+      "skill": "menu.normalize",
+      "args": {
+        "dryPreview": true
+      },
+      "citations": [
+        {
+          "doc": "aloha.manual",
+          "section": "audit-checklist"
+        }
+      ],
+      "checks": [
+        {
+          "check": "group-has-members",
+          "args": {
+            "group": "{groupName}"
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -30,6 +30,10 @@
         {
           "doc": "heartland.kb.audit-protocol",
           "section": "protocol"
+        },
+        {
+          "doc": "heartland.manual",
+          "section": "json-shape"
         }
       ]
     },

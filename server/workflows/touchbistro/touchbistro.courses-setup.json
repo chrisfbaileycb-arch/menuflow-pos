@@ -17,6 +17,10 @@
         {
           "doc": "heartland.kb.coursing",
           "section": "audit"
+        },
+        {
+          "doc": "touchbistro.manual",
+          "section": "category-inheritance"
         }
       ]
     },
@@ -26,7 +30,7 @@
       "title": "Resolve a Rush+Hold conflict on the workbench",
       "skill": "menu.item.set_course",
       "args": {
-        "item": "Buffalo Wings (10pc)",
+        "item": "Buffalo Wings",
         "course": 1,
         "rush": false,
         "hold": false
@@ -36,8 +40,7 @@
           "doc": "touchbistro.owner-guide",
           "section": "courses"
         }
-      ],
-      "fatal": false
+      ]
     },
     {
       "id": "s-verify",

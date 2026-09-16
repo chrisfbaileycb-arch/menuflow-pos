@@ -9,6 +9,17 @@ const M = require('./menu');
 const A = require('./audit');
 
 module.exports = {
+  'group-has-members': {
+    title: 'The modifier group this step touched has at least one member option',
+    args: 'group',
+    fn(menu, args) {
+      const want = M.normName(args.group);
+      const g = (menu.modifierGroups || []).find(x => M.normName(x.name) === want);
+      if (!g) return { pass: false, detail: `no modifier group named "${args.group}"` };
+      const n = (g.options || []).length;
+      return { pass: n > 0, detail: `"${g.name}" has ${n} option(s)` + (n ? '' : ' — a group with no members never appears at the POS and breaks third-party menu syncs') };
+    },
+  },
   'item-exists': {
     title: 'An item with this name exists on the workbench',
     fn(menu, args) {

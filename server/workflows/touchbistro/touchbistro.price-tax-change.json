@@ -39,6 +39,10 @@
         {
           "doc": "touchbistro.owner-guide",
           "section": "tax"
+        },
+        {
+          "doc": "touchbistro.manual",
+          "section": "bulk-upload-new-only"
         }
       ]
     },

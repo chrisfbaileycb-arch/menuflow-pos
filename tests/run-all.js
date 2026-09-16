@@ -9,7 +9,7 @@ const os = require('os');
 const path = require('path');
 
 const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'menuflow-test-'));
-const suites = ['engine.test.js', 'audit.test.js', 'workflows.test.js', 'io.test.js', 'api.test.js'];
+const suites = ['engine.test.js', 'audit.test.js', 'workflows.test.js', 'io.test.js', 'manuals.test.js', 'api.test.js'];
 if (!fs.existsSync(path.join(tmp, 'fixtures'))) {
   // tests read fixtures through require paths relative to the repo — nothing to copy
 }

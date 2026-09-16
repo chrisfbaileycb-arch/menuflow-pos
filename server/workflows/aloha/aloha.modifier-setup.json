@@ -35,6 +35,14 @@
         {
           "doc": "aloha.adm-menu",
           "section": "modifiers"
+        },
+        {
+          "doc": "aloha.manual",
+          "section": "modifier-tab-ten-groups"
+        },
+        {
+          "doc": "aloha.manual",
+          "section": "group-limits-and-prompting"
         }
       ]
     },

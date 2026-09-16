@@ -69,6 +69,10 @@
         {
           "doc": "toast.modifier-groups",
           "section": "behavior"
+        },
+        {
+          "doc": "toast.manual",
+          "section": "required-vs-optional-prompts"
         }
       ]
     },
@@ -81,6 +85,10 @@
         {
           "doc": "toast.modifier-display",
           "section": "priority"
+        },
+        {
+          "doc": "toast.manual",
+          "section": "empty-modifier-groups"
         }
       ],
       "fatal": false

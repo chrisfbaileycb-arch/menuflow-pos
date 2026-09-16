@@ -129,6 +129,10 @@
         {
           "doc": "heartland.modifiers-screen",
           "section": "available-online"
+        },
+        {
+          "doc": "heartland.manual",
+          "section": "modifiers-screen"
         }
       ]
     },

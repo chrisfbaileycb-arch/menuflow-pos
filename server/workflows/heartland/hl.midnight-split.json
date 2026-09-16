@@ -46,6 +46,10 @@
         {
           "doc": "heartland.kb.midnight-rule",
           "section": "rule"
+        },
+        {
+          "doc": "heartland.manual",
+          "section": "legacy-time-ranges"
         }
       ]
     },

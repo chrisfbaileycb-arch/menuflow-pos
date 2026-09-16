@@ -1,0 +1,47 @@
+{
+  "platform": "touchbistro",
+  "id": "touchbistro.menu-export",
+  "category": "export",
+  "risk": "low",
+  "title": "Export the menu for audit and handoff (review format, per-item changes follow)",
+  "summary": "Writes touchbistro-csv (Item Name, Sales Category, Price, Description, Course, Hidden, Modifier Groups) for diffing and audit input. Every change it implies still has to be applied item-by-item in RMM.",
+  "inputs": [],
+  "steps": [
+    {
+      "id": "s-export",
+      "kind": "auto",
+      "title": "Write touchbistro-csv to data/exports/",
+      "skill": "io.export.menu",
+      "args": {
+        "format": "touchbistro-csv",
+        "scope": "live"
+      },
+      "citations": [
+        {
+          "doc": "touchbistro.manual",
+          "section": "menuflow-format"
+        }
+      ]
+    },
+    {
+      "id": "s-apply",
+      "kind": "manual",
+      "title": "Apply changes per item in RMM; do not expect this file to upload",
+      "instructions": "The vendor bulk path accepts new items only, so a diff of this file is a work order, not a deployment artifact. Record which rows need an update, a tax fix or a retirement, and do those in RMM.",
+      "citations": [
+        {
+          "doc": "touchbistro.manual",
+          "section": "bulk-upload-new-only"
+        },
+        {
+          "doc": "touchbistro.manual",
+          "section": "item-review-lines"
+        },
+        {
+          "doc": "signalF.csv-matrix",
+          "section": "menuflow-divergence"
+        }
+      ]
+    }
+  ]
+}

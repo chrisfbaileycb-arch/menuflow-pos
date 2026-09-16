@@ -1,0 +1,47 @@
+{
+  "platform": "toast",
+  "id": "toast.items-database-export",
+  "category": "export",
+  "risk": "low",
+  "title": "Export the menu for handoff (review format - not a Toast upload file)",
+  "summary": "Writes toast-csv (Group Name, Item Name, Price, Description, Modifier Groups, Modifiers, Available) from the live menu for audit, diffing and third-party handoff, with the mapping to the operation-row template stated on the step.",
+  "inputs": [],
+  "steps": [
+    {
+      "id": "s-export",
+      "kind": "auto",
+      "title": "Write toast-csv to data/exports/",
+      "skill": "io.export.menu",
+      "args": {
+        "format": "toast-csv",
+        "scope": "live"
+      },
+      "citations": [
+        {
+          "doc": "toast.manual",
+          "section": "menuflow-format"
+        }
+      ]
+    },
+    {
+      "id": "s-map",
+      "kind": "manual",
+      "title": "If this feeds the import tool, re-emit as operation rows",
+      "instructions": "One row per item is a review shape, not a Toast import. Convert to Operation / Entity type / Operation ID rows, and remember the upload cannot be reversed - take a fresh Items Database export of the destination first.",
+      "citations": [
+        {
+          "doc": "toast.manual",
+          "section": "operation-rows"
+        },
+        {
+          "doc": "toast.manual",
+          "section": "irreversibility"
+        },
+        {
+          "doc": "signalF.csv-matrix",
+          "section": "menuflow-divergence"
+        }
+      ]
+    }
+  ]
+}

@@ -132,4 +132,89 @@ test('CSV parser handles quoted commas/newlines and the Y/N modifier flag', () =
   eq((n.modifierGroups || []).length, 0, 'modifier column "N" = off');
 });
 
+/* ── per-platform bulk-file formats (docs/manuals/<platform>.md) ───────────────────── */
+
+test('TouchBistro bulk-upload shape: export re-imports through auto-detection', () => {
+  const live = store.menuFor('loc_marios_touchbistro', 'live');
+  const out = IE.exportMenu(live, 'touchbistro-csv', 'touchbistro');
+  const text = fs.readFileSync(out.path, 'utf8');
+  eq(IE.detectFormat(out.filename, text, 'touchbistro'), 'touchbistro-csv',
+    'our own TouchBistro file must auto-detect as TouchBistro, not Square or Clover');
+  const fresh = M.newMenu('tb-roundtrip');
+  const r = IE.importRaw(text, out.filename, { format: 'auto', platform: 'touchbistro', menu: fresh });
+  eq(r.format, 'touchbistro-csv');
+  // TouchBistro rows are item-centric: a group travels only if some item lists it, so the
+  // expected group count is the set of group names actually referenced by non-archived items.
+  const liveById = new Map((live.modifierGroups || []).map(g => [g.id, g.name]));
+  const referenced = new Set(live.items.filter(i => !i.archived)
+    .flatMap(i => (i.modifierGroups || []).map(id => liveById.get(id)).filter(Boolean)));
+  eq(r.summary.items, live.items.filter(i => !i.archived).length, 'items preserved');
+  eq(r.summary.groups, referenced.size, 'groups travel via the item rows that reference them');
+  ok(fresh.items.every(i => i.price > 0), 'prices must survive as cents');
+  fs.rmSync(out.path);
+});
+
+test('TouchBistro: Tax and Kitchen Printer columns are reported, not written', () => {
+  const text = fs.readFileSync(path.join(__dirname, '..', 'fixtures', 'touchbistro-menu.csv'), 'utf8');
+  const fresh = M.newMenu('tb-fixture');
+  const r = IE.importRaw(text, 'touchbistro-menu.csv', { format: 'auto', platform: 'touchbistro', menu: fresh });
+  eq(r.format, 'touchbistro-csv', 'the Sales Category header must win over the Clover min/max rule');
+  ok(r.warnings.some(w => /tax/i.test(w)), 'tax is set per item in RMM, so the importer must say it is skipping it');
+  ok(r.warnings.some(w => /kitchen|printer/i.test(w)), 'kitchen-printer routing has no canonical equivalent');
+  ok(!fresh.items.some(i => i.taxRates || i.tax || i.printerGroup || i.kitchenPrinter),
+    'ignored columns must not leak half-formed fields into the menu');
+  ok(fresh.items.length >= 3, `rows imported: ${fresh.items.length}`);
+});
+
+test('vendor fixtures parse into the shapes their manuals describe', () => {
+  const F = f => fs.readFileSync(path.join(__dirname, '..', 'fixtures', f), 'utf8');
+
+  // Toast: one row per item here (the real tool uses one row per OPERATION), groups carry |
+  const toast = M.newMenu('t');
+  const rt = IE.importRaw(F('toast-menu.csv'), 'toast-menu.csv', { format: 'auto', platform: 'toast', menu: toast });
+  eq(rt.format, 'toast-csv');
+  eq(toast.items[0].price, 1450, 'price string 14.50 -> 1450 cents');
+  ok(toast.modifierGroups.length >= 2, `toast groups: ${toast.modifierGroups.length}`);
+  ok(toast.modifierGroups.every(g => (g.options || []).length > 0),
+    'an empty modifier group is what hides a Toast menu in third-party syncs');
+
+  // Clover: Min/Max selections drive the group cardinality the kiosk fix depends on
+  const clover = M.newMenu('c');
+  const rc = IE.importRaw(F('clover-items.csv'), 'clover-items.csv', { format: 'auto', platform: 'clover', menu: clover });
+  eq(rc.format, 'clover-csv');
+  const size = clover.modifierGroups.find(g => g.name === 'Pizza Size');
+  eq([size.minChoices, size.maxChoices, size.options.length], [0, 1, 3], 'Clover Min/Max must map onto canonical cardinality');
+  const wing = clover.modifierGroups.find(g => g.name === 'Wing Sauce');
+  eq([wing.minChoices, wing.maxChoices, wing.options.length], [1, 1, 4], 'forced single-select survives the round trip');
+
+  // Heartland: the legacy flat array the client's python tooling produced
+  const hl = M.newMenu('h');
+  const rh = IE.importRaw(F('heartland-flat.json'), 'heartland-flat.json', { format: 'auto', platform: 'heartland', menu: hl });
+  eq(rh.format, 'canonical-json');
+  eq([rh.summary.items, rh.summary.groups, rh.summary.categories], [5, 3, 3], 'flat heartland export counts');
+});
+
+test('our own Lightspeed export auto-detects back (regression: it read as Square)', () => {
+  const live = store.menuFor('loc_marios_lightspeed', 'live');
+  const out = IE.exportMenu(live, 'lightspeed-csv', 'lightspeed');
+  const text = fs.readFileSync(out.path, 'utf8');
+  eq(IE.detectFormat(out.filename, text, 'lightspeed'), 'lightspeed-csv',
+    'the Type + Modifier Groups header is what distinguishes a Lightspeed file');
+  const fresh = M.newMenu('ls');
+  IE.importRaw(text, out.filename, { format: 'auto', platform: 'lightspeed', menu: fresh });
+  ok(fresh.modifierGroups.length > 0, 'groups=0 meant the file was parsed with the wrong grammar');
+  ok(fresh.items.length === live.items.filter(i => !i.archived).length, 'item count');
+  fs.rmSync(out.path);
+});
+
+test('detection order: a Square header is never read as TouchBistro and vice versa', () => {
+  const sq = fs.readFileSync(path.join(__dirname, '..', 'fixtures', 'square-export.csv'), 'utf8');
+  eq(IE.detectFormat('square-export.csv', sq, 'square'), 'square-csv', 'Square keeps its own header');
+  eq(IE.detectFormat('new-library.csv', sq, 'touchbistro'), 'square-csv',
+    'platform fallback must not hijack a file that already matches the Square grammar');
+  const tb = fs.readFileSync(path.join(__dirname, '..', 'fixtures', 'touchbistro-menu.csv'), 'utf8');
+  eq(IE.detectFormat('anything.csv', tb, 'heartland'), 'touchbistro-csv',
+    'Sales Category is the only reliable TouchBistro signal, so it must not be diluted with Item Name/Visible');
+});
+
 report();

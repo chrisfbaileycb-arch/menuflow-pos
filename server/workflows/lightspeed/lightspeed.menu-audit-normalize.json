@@ -24,6 +24,10 @@
         {
           "doc": "heartland.kb.audit-protocol",
           "section": "protocol"
+        },
+        {
+          "doc": "lightspeed.manual",
+          "section": "audit-checklist"
         }
       ]
     },

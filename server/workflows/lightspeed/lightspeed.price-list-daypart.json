@@ -68,6 +68,10 @@
         {
           "doc": "lightspeed.menus",
           "section": "price-lists"
+        },
+        {
+          "doc": "lightspeed.manual",
+          "section": "extra-price"
         }
       ]
     },

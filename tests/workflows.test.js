@@ -6,6 +6,8 @@
  *   4. Signature behaviors asserted end-to-end (pepperoni isolation, midnight split,
  *      shadow cutover lifecycle, CSV import)
  */
+const path = require('path');
+const { execFileSync } = require('child_process');
 const { test, eq, ok, report } = require('./harness');
 const engine = require('../server/engine/engine');
 const store = require('../server/store');
@@ -32,7 +34,9 @@ const examples = (wf) => {
     else if (inp.type === 'string[]') inputs[inp.name] = String(ex).split(',').map(s => s.trim()).filter(Boolean);
     else if (inp.type === 'number[]') inputs[inp.name] = String(ex).replace(/[^0-9,]/g, '').split(',').filter(x => x !== '').map(Number);
     else if (inp.type === 'boolean') inputs[inp.name] = !/^no|false/i.test(String(ex));
-    else inputs[inp.name] = String(ex).match(/[\w.'-]+\.(csv|json|xlsx|txt|md)\b/i)?.[0] || String(ex).split(/\s+—\s+|\s+\(/)[0].trim();
+    // literal strings, exactly as the UI pre-fills them — a certified run must use the value an
+    // operator can actually submit, not a token pulled out of a prose example
+    else inputs[inp.name] = String(ex);
   }
   return inputs;
 };
@@ -68,6 +72,21 @@ test('every workflow APPLIES cleanly to staging, then discard (no residue)', () 
     ok(!failedCheck, `${wf.id}: check failed: ${failedCheck && failedCheck.check} — ${failedCheck && failedCheck.detail}`);
     store.discardStaging(loc);
   }
+});
+
+test('no workflow relies on a vacuous step (every auto step actually does something)', () => {
+  // A soft-skipped step and a real one look identical in a green run. With example inputs now
+  // passed literally (as the UI pre-fills them), any "not found" means the example names
+  // something absent from that location — so the certified run would prove nothing.
+  const vacuous = [];
+  for (const wf of engine.listWorkflows()) {
+    const run = engine.run({ platform: wf.platform, workflowId: wf.id, locationId: locFor(wf.platform), mode: 'dry', inputs: examples(wf), approvals: approvalsFor(wf), actor: 'test' });
+    for (const st of run.steps || []) {
+      if (st.kind !== 'auto') continue;
+      if (/not found|Skipped \(soft\)|no item matching/i.test(st.message || '')) vacuous.push(`${wf.id}/${st.id}: ${st.message}`);
+    }
+  }
+  eq(vacuous, [], `vacuous steps found:\n    ${vacuous.join('\n    ')}`);
 });
 
 test('S1 pepperoni isolation end-to-end: dirty → workflow → isolated + report improved', () => {
@@ -155,6 +174,17 @@ test('publish gate blocks a live write while HIGH integrity blockers exist (then
   } catch (e) { threw = true; }
   ok(threw, 'API publish would 409 with blockers present');
   store.discardStaging(loc);
+});
+
+test('generated artifacts match their builders (no stale or hand-edited JSON)', () => {
+  // both generators run in --check mode: manuals → citation registry → workflow artifacts
+  for (const script of ['build-workflows.js', 'build-manual-sources.js']) {
+    try {
+      execFileSync(process.execPath, [path.join(__dirname, '..', 'fixtures', script), '--check'], { stdio: 'pipe' });
+    } catch (e) {
+      ok(false, `${script} --check failed: ${(e.stderr || e.stdout || '').toString().trim().split('\n').slice(0, 3).join(' | ')}`);
+    }
+  }
 });
 
 test('every workflow id matches platform folder & file name', () => {

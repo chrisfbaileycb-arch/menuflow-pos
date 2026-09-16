@@ -70,6 +70,10 @@
         {
           "doc": "heartland.modifiers-screen",
           "section": "assigned-items"
+        },
+        {
+          "doc": "heartland.manual",
+          "section": "modifiers-screen"
         }
       ]
     },

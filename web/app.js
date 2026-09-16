@@ -57,6 +57,11 @@ function renderModeChip() {
   const l = state.locations.find(x => x.id === state.location);
   const p = state.platforms.find(x => x.id === (l?.platform || state.platform));
   chip.innerHTML = `<span class="dot" style="background:${p?.color || '#888'}"></span> ${esc(p?.short || '')} · <b>${esc(state.mode || 'SANDBOX')}</b>`;
+  const meta = $('#platMeta');
+  if (meta) {
+    meta.textContent = p?.bulkFile ? `bulk file: ${p.bulkFile}` : '';
+    meta.title = p ? `modifiers — ${p.modifierEncoding}\nowner's manual — ${p.manual}` : '';
+  }
 }
 async function refreshMode() {
   const s = await api('/api/health'); state.mode = (s.mode || 'sandbox').toUpperCase(); renderModeChip();
@@ -170,8 +175,9 @@ function renderSteps(wf, run) {
     const rs = stepState[st.id];
     const cls = rs ? `st-${rs.status}` : '';
     const kindLbl = st.kind === 'auto' ? 'executable' : st.kind === 'gate' ? 'client gate' : 'manual portal';
+    const srcBadge = v => ({ 'official-doc': ' · verified', 'client-kb': ' · Signal F KB', 'legacy-manual': ' · legacy revision — confirm', 'access-limited': ' · login-gated source', 'compiled': ' · compiled mapping' })[v] || (v ? ` · ${v}` : '');
     const cites = (st.citations || []).map(c => `
-      <a class="cite" href="${esc(c.url || '#')}" target="_blank" rel="noopener" title="${esc(c.excerpt || '')}">📖 ${esc(c.docId || c.doc)} § ${esc(c.section)}${c.verified === 'official-doc' ? ' · verified' : ''}</a>`).join('');
+      <a class="cite" href="${esc(c.url || '#')}" target="_blank" rel="noopener" title="${esc(c.excerpt || '')}${c.manual ? esc('\n\nlocal manual: ' + c.manual) : ''}">📖 ${esc(c.docId || c.doc)} § ${esc(c.section)}${srcBadge(c.verified)}</a>`).join('');
     const msg = rs ? `<div class="msg ${rs.status === 'failed' || rs.status === 'blocked' ? 'err' : (rs.status === 'awaiting_approval' || rs.status === 'awaiting_ack' || rs.status === 'soft-warning') ? 'warn' : 'good'}">${esc(rs.message || '')}</div>` : '';
     const findings = rs && rs.findings && rs.findings.length ? `<div class="findings">${rs.findings.slice(0, 8).map(f => `<div class="f"><span class="sev ${esc(f.severity || '')}">${esc(f.severity || '')}</span>${esc(f['86_risk'] || f.explanation || f.recommendation || f.type || '')}</div>`).join('')}${rs.findings.length > 8 ? `<span class="mini">+ ${rs.findings.length - 8} more</span>` : ''}</div>` : '';
     const checks = st.checks && st.checks.length ? `<div class="checks">✓ verifies: ${st.checks.map(c => esc(c.check)).join(' · ')}</div>` : '';
@@ -428,13 +434,16 @@ async function loadRuns() {
 /* ───────────────── docs ───────────────── */
 async function loadDocs() {
   const { sources } = await api('/api/sources');
-  const plats = state.platforms.map(p => `
+  const plats = state.platforms.map(p => { const md = sources[`${p.id}.manual`] || {}; return `
     <div class="plat-card"><b>${esc(p.name)}</b><div class="mini muted">${esc(p.vendor)}</div>
       <div class="bar" style="background:${esc(p.color)}"></div>
       <div class="mini">Portal: ${esc(p.portal)}</div>
+      <div class="mini">Bulk file: ${esc(p.bulkFile || '—')}</div>
+      <div class="mini">Modifiers: ${esc(p.modifierEncoding || '—')}</div>
+      <div class="mini"><a href="${esc(md.url || '#')}" target="_blank" rel="noopener">manual: ${esc((md.title || "owner's manual").split('—')[0].trim())} ↗</a> · repo copy <code>${esc(p.manual || '—')}</code> · ${esc(md.verified || '')}${md.checked ? ' · ' + esc(String(md.checked).slice(0, 10)) : ''}</div>
       <div class="mini muted">${esc(p.notes)}</div>
       <div class="mini" style="margin-top:6px">${Object.entries(p.capabilities || {}).filter(([, v]) => v).map(([k]) => `<span class="tag">${esc(k)}</span>`).join('')}</div>
-    </div>`).join('');
+    </div>`; }).join('');
   const docs = Object.entries(sources).map(([id, d]) => `
     <div class="src-card">
       <div class="hbar"><b>${esc(d.title)}</b><span class="badge verify-${d.verified}">${esc(d.verified)}</span>

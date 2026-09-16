@@ -1,0 +1,63 @@
+{
+  "platform": "aloha",
+  "id": "aloha.menu-export",
+  "category": "export",
+  "risk": "low",
+  "title": "Export the menu as a specification (Aloha has no owner-facing file import)",
+  "summary": "Writes canonical JSON from the live menu for audit, shadow build and change specification. On Aloha this is a work order for Maintenance > Menu records - there is no CSV to upload.",
+  "inputs": [],
+  "steps": [
+    {
+      "id": "s-export",
+      "kind": "auto",
+      "title": "Write canonical JSON to data/exports/",
+      "skill": "io.export.menu",
+      "args": {
+        "format": "canonical-json",
+        "scope": "live"
+      },
+      "citations": [
+        {
+          "doc": "aloha.manual",
+          "section": "menuflow-format"
+        }
+      ]
+    },
+    {
+      "id": "s-records",
+      "kind": "manual",
+      "title": "Apply as item-database records, then distribute by ownership",
+      "instructions": "Create or patch the records under Maintenance > Menu (Items, Modifier Groups, Categories, Taxes, Item Routing); an item needs tax, category and printer group to be complete. The ownership level on the record is what controls distribution to stores.",
+      "citations": [
+        {
+          "doc": "aloha.manual",
+          "section": "item-maintenance-path"
+        },
+        {
+          "doc": "aloha.manual",
+          "section": "mandatory-assignments"
+        },
+        {
+          "doc": "aloha.manual",
+          "section": "item-number-ranges"
+        }
+      ]
+    },
+    {
+      "id": "s-bulk",
+      "kind": "manual",
+      "title": "If the change set is genuinely bulk, raise an NCR data-service task",
+      "instructions": "Bulk edits to the item database are an NCR data-service activity, not an owner upload. Send the export as the specification and get the revision and scope confirmed in writing before anything is pushed.",
+      "citations": [
+        {
+          "doc": "aloha.manual",
+          "section": "no-csv-import-86-and-roll"
+        },
+        {
+          "doc": "signalF.csv-matrix",
+          "section": "menuflow-divergence"
+        }
+      ]
+    }
+  ]
+}

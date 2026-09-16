@@ -1,0 +1,8 @@
+Name,Group,Price,Description,Modifier Groups,Modifiers in group,Min,Max,Available
+Margherita Pizza,Pizza,14.50,House dough; San Marzano; fresh mozzarella,Pizza Size,Small; Large; Gluten Free,0,1,true
+Pepperoni Pizza,Pizza,16.50,House dough; mozzarella; pepperoni,Pizza Toppings,Extra Cheese; Mushrooms; Peppers,0,3,true
+Caesar Salad,Salads,11.00,Romaine; dressing; croutons,Salad Toppings,Grilled Chicken; Shrimp; Bacon,0,2,true
+House Red Glass,Beverages,9.00,Pinot Noir; Washington,,,0,0,true
+Sparkling Water,Beverages,3.50,750ml bottle,Ice Level,None; Light; Full,0,1,true
+Garlic Knots,Appetizers,7.50,Four per order; butter and garlic,Knot Sauce,Marinara; Alfredo; Ranch,1,2,true
+Buffalo Wings,Appetizers,13.00,Ten pieces; ranch or blue cheese,Wing Sauce,Mild; Medium; Hot; Buffalo,1,1,true

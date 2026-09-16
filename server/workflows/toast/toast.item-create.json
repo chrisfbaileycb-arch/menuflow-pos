@@ -67,6 +67,10 @@
         {
           "doc": "toast.modifier-groups",
           "section": "publish"
+        },
+        {
+          "doc": "toast.manual",
+          "section": "publish-cycle"
         }
       ]
     },

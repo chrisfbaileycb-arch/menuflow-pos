@@ -357,6 +357,19 @@ const SOURCES = {
   },
 };
 
+// ───────────────────── platform manuals (generated from docs/manuals/*.md) ─────────────────────
+/**
+ * Per-platform bulk-file / modifier manuals live as prose in docs/manuals/ and are compiled
+ * into this registry by `fixtures/build-manual-sources.js`. Editing a manual's section heading
+ * or opening paragraph therefore changes the citation text a workflow resolves to — the manual
+ * is the single source of truth, and tests/manuals.test.js fails if the two drift apart.
+ */
+const MANUAL_SOURCES = require('./sources.manuals.generated');
+for (const [id, doc] of Object.entries(MANUAL_SOURCES)) {
+  if (SOURCES[id]) throw new Error(`sources.js: manual docId "${id}" collides with a hand-registered source`);
+  SOURCES[id] = doc;
+}
+
 function hasCitation(docId, section) {
   const doc = SOURCES[docId];
   return Boolean(doc && section && doc.sections && Object.prototype.hasOwnProperty.call(doc.sections, section));
@@ -371,6 +384,7 @@ function getCitation(docId, section) {
     publisher: doc.publisher,
     url: doc.url,
     verified: doc.verified,
+    manual: doc.manual || null,
     section,
     excerpt: doc.sections && doc.sections[section] ? doc.sections[section] : null,
   };

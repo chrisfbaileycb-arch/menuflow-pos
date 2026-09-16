@@ -10,7 +10,8 @@
       "name": "file",
       "type": "string",
       "required": true,
-      "example": "new-library.csv in data/imports/"
+      "example": "new-library.csv",
+      "description": "a file under data/imports/ (a repo fixture is resolved as a fallback so the example runs)"
     },
     {
       "name": "approvalRef",
@@ -29,6 +30,10 @@
         {
           "doc": "square.library-import-export",
           "section": "export"
+        },
+        {
+          "doc": "square.manual",
+          "section": "modify-vs-replace"
         }
       ]
     },
@@ -78,6 +83,14 @@
         {
           "doc": "square.transfer-note",
           "section": "caveat"
+        },
+        {
+          "doc": "square.manual",
+          "section": "not-exported"
+        },
+        {
+          "doc": "signalF.csv-matrix",
+          "section": "menuflow-divergence"
         }
       ]
     },

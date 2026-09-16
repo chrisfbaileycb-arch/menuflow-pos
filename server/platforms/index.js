@@ -14,6 +14,9 @@ const PLATFORMS = {
     portal: 'Heartland Admin Console + POS (Genius)',
     docPrefixes: ['heartland', 'signalF'],
     capabilities: { csvImport: false, jsonImport: true, itemStockLimits: true, onlineOrdering: true, kds: true, apiAdapter: 'pocketsuite-rest' },
+    bulkFile: 'no owner-facing CSV — canonical JSON (lossless) + heartland-json (legacy flat array for the python audit scripts)',
+    modifierEncoding: 'Admin Console > Menu > Modifiers record: Name, Show Modifier Name, Min/Max Choices, Number of Included Ingredients, per-ingredient Default Price, Assigned Items, Available Online',
+    manual: 'docs/manuals/heartland.md',
     notes: 'Signal F Holdings primary platform; ships with the full KB-derived audit suite and shadow-build doctrine.',
   },
   toast: {
@@ -24,7 +27,10 @@ const PLATFORMS = {
     color: '#ff5339',
     portal: 'Toast Web (Back Office) + Toast Handheld/Flex',
     docPrefixes: ['toast', 'heartland.kb', 'signalF'],
-    capabilities: { csvImport: false, jsonImport: true, inventory: true, onlineOrdering: true, kds: true, apiAdapter: 'toast-live-api' },
+    capabilities: { csvImport: true, jsonImport: true, inventory: true, onlineOrdering: true, kds: true, irreversibleImport: true, bulkImportPaidModule: true, apiAdapter: 'toast-live-api' },
+    bulkFile: 'Google-Sheets template downloaded from the bulk import tool, filled, saved as CSV — one row per OPERATION, not per item',
+    modifierEncoding: 'MODIFIER_GROUP + MODIFIER rows parented by Toast GUID or file-local Operation ID; group pricing BASE (group price) vs PRICED_BY_MODIFIERS (per-modifier prices, group Price cell empty)',
+    manual: 'docs/manuals/toast.md',
     notes: 'All edits require Save + "Publish all changes"; empty modifier groups break third-party syncs — the engine blocks them.',
   },
   square: {
@@ -36,6 +42,9 @@ const PLATFORMS = {
     portal: 'Square Dashboard (Library/Items) + Square POS',
     docPrefixes: ['square', 'heartland.kb', 'signalF'],
     capabilities: { csvImport: true, csvExport: true, jsonImport: true, soldOutAutoReturn: true, onlineOrdering: true, apiAdapter: 'square-catalog-api', undoImport: true },
+    bulkFile: 'Dashboard Items > Actions > Export/Import Library template (CSV or XLSX); Modify vs Replace modes',
+    modifierEncoding: 'one "Modifier set [Name]" Y/N column per set that already exists — the set definition (options, prices, min/max) is never in the file',
+    manual: 'docs/manuals/square.md',
     notes: 'CSV import has Modify vs Replace modes; Replace deletes the library first — the engine gates it. Undo Catalogue is wired as a recovery step.',
   },
   clover: {
@@ -46,7 +55,10 @@ const PLATFORMS = {
     color: '#00b049',
     portal: 'Clover Dashboard (Menu/Items) + Clover Station',
     docPrefixes: ['clover', 'heartland.kb', 'signalF'],
-    capabilities: { csvImport: true, jsonImport: true, inventory: true, onlineOrdering: true, kds: true, apiAdapter: 'clover-menu-api' },
+    capabilities: { csvImport: false, xlsxImport: true, jsonImport: true, inventory: true, onlineOrdering: true, kds: true, apiAdapter: 'clover-menu-api' },
+    bulkFile: 'inventory-template .xls/.xlsx workbook (≤5 MB), one tab per object type — Clover does not accept a CSV for item import',
+    modifierEncoding: 'modifier-group rows on their own tab plus item association; minRequired / maxAllowed / showByDefault; modifier price in integer cents',
+    manual: 'docs/manuals/clover.md',
     notes: 'Sync semantics enforced in workflow guidance: price/availability ~10 min; structural changes ~4 h — force-sync before verification.',
   },
   lightspeed: {
@@ -58,6 +70,9 @@ const PLATFORMS = {
     portal: 'Lightspeed Back Office + K-Series POS',
     docPrefixes: ['lightspeed', 'heartland.kb', 'signalF'],
     capabilities: { csvImport: true, jsonImport: true, priceLists: true, archiveSemantics: true, onlineOrdering: true, kds: true, apiAdapter: 'lightspeed-urban-api' },
+    bulkFile: 'CSV or XLSX with a manual column-mapping step (SKU and Type must be mapped); menu placement is a separate import',
+    modifierEncoding: 'rows typed Type=Group with Min - Max as one cell (e.g. 2-5); member price delta as Extra price; hierarchy by Parent SKU',
+    manual: 'docs/manuals/lightspeed.md',
     notes: 'Archive removes from ALL menus at ALL locations — destructive gate applied.',
   },
   touchbistro: {
@@ -68,7 +83,10 @@ const PLATFORMS = {
     color: '#7a4bdb',
     portal: 'TouchBistro Menu/RMM + iPad POS',
     docPrefixes: ['touchbistro', 'heartland.kb', 'signalF'],
-    capabilities: { jsonImport: true, hidePerChannel: true, courses: true, onlineOrdering: true, apiAdapter: null },
+    capabilities: { csvImport: true, csvAddsOnly: true, jsonImport: true, hidePerChannel: true, courses: true, onlineOrdering: true, apiAdapter: null },
+    bulkFile: 'bulk upload creates NEW items only — no updates to existing items, no tax, no images, no batch delete',
+    modifierEncoding: 'option groups configured per item in RMM, never in the upload file; hidden-at-POS and 86-at-POS are different states',
+    manual: 'docs/manuals/touchbistro.md',
     notes: 'POS-hidden and Online-hidden toggles are independent per item — mapped 1:1 onto canonical channel visibility.',
   },
   aloha: {
@@ -79,7 +97,10 @@ const PLATFORMS = {
     color: '#b31942',
     portal: 'Aloha ADM (back office) + Aloha POS',
     docPrefixes: ['aloha', 'heartland.kb', 'signalF'],
-    capabilities: { jsonImport: true, perShift86: true, eodReports: true, apiAdapter: null },
+    capabilities: { csvImport: false, jsonImport: true, perShift86: true, eodReports: true, apiAdapter: null },
+    bulkFile: 'none for owners — records in Maintenance > Menu, distributed to stores by ownership level; a bulk change is an NCR data-service task',
+    modifierEncoding: 'modifiers ARE items: a group collects items (≤54 buttons) and an item attaches ≤10 groups on its Modifier tab; min/max/Free, included modifiers with substitution charges, and exception modifier groups for menu-wide sharing',
+    manual: 'docs/manuals/aloha.md',
     notes: 'Legacy-manual platform: sections cite the ADM/EASE owner manual family; re-confirm against the client’s exact revision before portal work.',
   },
 };
@@ -87,7 +108,7 @@ const PLATFORMS = {
 function listPlatforms() {
   return Object.values(PLATFORMS).map(p => ({
     id: p.id, name: p.name, short: p.short, vendor: p.vendor, color: p.color,
-    portal: p.portal, capabilities: p.capabilities, notes: p.notes,
+    portal: p.portal, capabilities: p.capabilities, bulkFile: p.bulkFile, modifierEncoding: p.modifierEncoding, manual: p.manual, notes: p.notes,
   }));
 }
 

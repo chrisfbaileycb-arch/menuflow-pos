@@ -1,0 +1,7 @@
+Item Name,Sales Category,Price,Description,Course,Hidden,Modifier Groups,Modifier Options,Modifier Min,Modifier Max,Tax,Kitchen Printer
+Margherita Pizza,Pizza,14.50,House dough; San Marzano; fresh mozzarella,1,N,Pizza Size,Small|Large|Gluten Free,0,1,Food Tax 4.75%,Hot Line
+Pepperoni Pizza,Pizza,16.50,House dough; mozzarella; pepperoni,1,N,Pizza Size; Pizza Toppings,Hand Tossed|Thin Crust,0,1,Food Tax 4.75%,Hot Line
+Caesar Salad,Salads,11.00,Romaine; dressing; croutons,1,N,Salad Toppings,Grilled Chicken|Shrimp|Bacon,0,2,Food Tax 4.75%,Garde Manger
+House Red Glass,Wine,9.00,Pinot Noir; Washington,0,N,,,0,0,Alcohol Tax 9.5%,Bar
+Sparkling Water,Beverages,3.50,750ml bottle,0,N,Ice Level,None|Light|Full,0,1,Food Tax 4.75%,Bar
+Garlic Knots,Appetizers,7.50,Four per order; butter and garlic,1,N,Knot Sauce,Marinara|Alfredo|Ranch,1,2,Food Tax 4.75%,Hot Line

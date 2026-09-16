@@ -10,7 +10,8 @@
       "name": "file",
       "type": "string",
       "required": true,
-      "example": "square-export.csv (place under data/imports/)"
+      "example": "square-export.csv",
+      "description": "a file under data/imports/ (a repo fixture is resolved as a fallback so the example runs)"
     }
   ],
   "steps": [
@@ -23,6 +24,10 @@
         {
           "doc": "square.library-import-export",
           "section": "export"
+        },
+        {
+          "doc": "square.manual",
+          "section": "template-source"
         }
       ]
     },
@@ -65,6 +70,14 @@
         {
           "doc": "square.library-import-export",
           "section": "undo"
+        },
+        {
+          "doc": "square.manual",
+          "section": "undo-catalogue"
+        },
+        {
+          "doc": "signalF.csv-matrix",
+          "section": "menuflow-divergence"
         }
       ]
     }

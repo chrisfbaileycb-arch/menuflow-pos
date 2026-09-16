@@ -1,0 +1,67 @@
+{
+  "platform": "lightspeed",
+  "id": "lightspeed.menu-export",
+  "category": "export",
+  "risk": "low",
+  "title": "Export items for backup or bulk update (reformat before any re-import)",
+  "summary": "Writes lightspeed-csv (Type, Name, Category, Price, Description, Modifier Groups, Available) for handoff and diffing, with the K-Series warnings that matter: some exported columns are not valid for re-import, and updates cannot be reversed.",
+  "inputs": [],
+  "steps": [
+    {
+      "id": "s-export",
+      "kind": "auto",
+      "title": "Write lightspeed-csv to data/exports/",
+      "skill": "io.export.menu",
+      "args": {
+        "format": "lightspeed-csv",
+        "scope": "live"
+      },
+      "citations": [
+        {
+          "doc": "lightspeed.manual",
+          "section": "menuflow-format"
+        }
+      ]
+    },
+    {
+      "id": "s-reformat",
+      "kind": "manual",
+      "title": "Re-format before re-import and never trust the automatic mapping",
+      "instructions": "Back Office export columns are not all import-safe; SKU and Type must be mapped by hand on the import screen, and unused optional columns should be deleted rather than left blank.",
+      "citations": [
+        {
+          "doc": "lightspeed.manual",
+          "section": "export-reimport-trap"
+        },
+        {
+          "doc": "lightspeed.manual",
+          "section": "column-mapping"
+        },
+        {
+          "doc": "lightspeed.manual",
+          "section": "row-limits"
+        }
+      ]
+    },
+    {
+      "id": "s-irreversible",
+      "kind": "manual",
+      "title": "Accept that updates cannot be reversed and items cannot be deleted",
+      "instructions": "Retirement here means disable, not delete; there is no Undo Catalogue. Confirm the accounting group spelling too - a near-miss silently creates a duplicate with its own tax and production-center settings.",
+      "citations": [
+        {
+          "doc": "lightspeed.manual",
+          "section": "no-delete-and-no-undo"
+        },
+        {
+          "doc": "lightspeed.manual",
+          "section": "accounting-group-autocreate"
+        },
+        {
+          "doc": "signalF.csv-matrix",
+          "section": "menuflow-divergence"
+        }
+      ]
+    }
+  ]
+}

@@ -39,6 +39,10 @@
         {
           "doc": "square.library-import-export",
           "section": "import-modify"
+        },
+        {
+          "doc": "square.manual",
+          "section": "price-and-variable"
         }
       ]
     },

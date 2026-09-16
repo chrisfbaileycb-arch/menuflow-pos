@@ -1,0 +1,132 @@
+{
+  "platform": "toast",
+  "id": "toast.bulk-menu-import",
+  "category": "import",
+  "risk": "high",
+  "title": "Bulk menu change through the Toast import tool (operation rows; irreversible)",
+  "summary": "Menus > Bulk management > Bulk import tool. Stages a toast-csv change set, audits it (empty modifier groups break third-party syncs on Toast), then the operator re-emits it as operation rows before the irreversible upload. Save, then Publish all changes.",
+  "inputs": [
+    {
+      "name": "file",
+      "type": "string",
+      "required": true,
+      "example": "toast-menu.csv",
+      "description": "a file under data/imports/ (a repo fixture is resolved as a fallback so the example runs)"
+    }
+  ],
+  "steps": [
+    {
+      "id": "s-package",
+      "kind": "manual",
+      "title": "Confirm the package entitlement before quoting a bulk change",
+      "instructions": "The bulk import tool needs Restaurant Management Essentials, Pro or Enterprise, or the multi-location module. On a base package the same work is manual entry in Toast Web - price the engagement that way.",
+      "citations": [
+        {
+          "doc": "toast.manual",
+          "section": "access-requirement"
+        }
+      ]
+    },
+    {
+      "id": "s-backup",
+      "kind": "manual",
+      "title": "Export the current menu and file it with the approval reference",
+      "instructions": "Menu management > Bulk management > Advanced properties is where you export, archive and restore. Toast states that bulk-import changes are not reversible, so this export is the entire rollback plan.",
+      "citations": [
+        {
+          "doc": "toast.manual",
+          "section": "irreversibility"
+        },
+        {
+          "doc": "toast.manual",
+          "section": "items-database-exports"
+        }
+      ]
+    },
+    {
+      "id": "s-import",
+      "kind": "auto",
+      "title": "Stage the change set from the MenuFlow review file",
+      "skill": "io.import.menu",
+      "args": {
+        "file": "{file}",
+        "format": "toast-csv",
+        "mode": "modify"
+      },
+      "citations": [
+        {
+          "doc": "toast.manual",
+          "section": "menuflow-format"
+        }
+      ]
+    },
+    {
+      "id": "s-audit",
+      "kind": "auto",
+      "title": "Audit the staged workbench before anything can be confirmed",
+      "skill": "audit.full",
+      "args": {},
+      "fatal": false,
+      "notes": "findings are advisory here: the gate is where the human decides",
+      "checks": [
+        {
+          "check": "no-empty-modifier-groups"
+        }
+      ]
+    },
+    {
+      "id": "s-empty",
+      "kind": "auto",
+      "title": "Clear empty modifier groups (they break delivery integrations on Toast)",
+      "skill": "menu.modifier.remove_empty",
+      "args": {},
+      "fatal": false
+    },
+    {
+      "id": "s-confirm",
+      "kind": "gate",
+      "title": "Approve the rebuild plan - Toast cannot undo this upload",
+      "instructions": "Confirm the counts against the backup export and record that the client accepts the irreversibility before any row is submitted."
+    },
+    {
+      "id": "s-rows",
+      "kind": "manual",
+      "title": "Re-emit as operation rows on a copy of the template",
+      "instructions": "Copy the template inside the tool (the validation lists live in the copy), then one row per operation: Operation=CREATE, Entity type=MENU_ITEM / MODIFIER_GROUP / MODIFIER, a unique Operation ID, and the parent named with Parent entity type + Parent version ID or operation ID (the Toast GUID if it already exists, otherwise the Operation ID of the row that creates it). Group pricing: BASE charges the group price; PRICED_BY_MODIFIERS puts prices on the modifier rows and leaves the group Price cell empty. Prices are strings - no currency symbol, and (1.00) means a reduction.",
+      "citations": [
+        {
+          "doc": "toast.manual",
+          "section": "operation-rows"
+        },
+        {
+          "doc": "toast.manual",
+          "section": "parent-attach"
+        },
+        {
+          "doc": "toast.manual",
+          "section": "pricing-strategies"
+        },
+        {
+          "doc": "toast.manual",
+          "section": "price-string-rules"
+        }
+      ]
+    },
+    {
+      "id": "s-publish",
+      "kind": "manual",
+      "title": "Save, then Publish all changes, then verify on a device",
+      "instructions": "An un-published edit never reaches the terminals. Ring the edited item into a test check on a POS/Flex and read the printed ticket before closing.",
+      "citations": [
+        {
+          "doc": "toast.manual",
+          "section": "publish-cycle"
+        },
+        {
+          "doc": "signalF.csv-matrix",
+          "section": "menuflow-divergence"
+        }
+      ]
+    }
+  ]
+}

@@ -10,7 +10,8 @@
       "name": "file",
       "type": "string",
       "required": true,
-      "example": "lightspeed-menu.csv in data/imports/"
+      "example": "lightspeed-menu.csv",
+      "description": "a file under data/imports/ (a repo fixture is resolved as a fallback so the example runs)"
     }
   ],
   "steps": [
@@ -27,6 +28,18 @@
         {
           "doc": "lightspeed.item-list",
           "section": "table"
+        },
+        {
+          "doc": "lightspeed.manual",
+          "section": "column-mapping"
+        },
+        {
+          "doc": "lightspeed.manual",
+          "section": "export-reimport-trap"
+        },
+        {
+          "doc": "signalF.csv-matrix",
+          "section": "menuflow-divergence"
         }
       ]
     },

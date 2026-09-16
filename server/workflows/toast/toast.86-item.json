@@ -42,6 +42,10 @@
         {
           "doc": "toast.card-terminal",
           "section": "86"
+        },
+        {
+          "doc": "toast.manual",
+          "section": "publish-cycle"
         }
       ]
     },

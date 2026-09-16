@@ -1,13 +1,14 @@
 {
   "name": "menuflow-pos",
-  "version": "1.1.0",
-  "description": "MenuFlow POS — multi-platform restaurant POS operations console. Executable, owner's-manual-verified workflows, menu audit/normalization, import/export. Zero runtime dependencies.",
+  "version": "1.2.0",
+  "description": "MenuFlow POS \u2014 multi-platform restaurant POS operations console. Executable, owner's-manual-verified workflows, menu audit/normalization, import/export. Zero runtime dependencies.",
   "main": "server/server.js",
   "type": "commonjs",
   "scripts": {
     "start": "node server/server.js",
     "dev": "node server/server.js",
     "verify": "node server/verify-cli.js",
+    "check:artifacts": "node fixtures/build-workflows.js --check && node fixtures/build-manual-sources.js --check",
     "test": "node tests/run-all.js",
     "cli": "node cli/menuflow.js",
     "push": "bash scripts/push-to-github.sh"

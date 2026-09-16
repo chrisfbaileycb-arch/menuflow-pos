@@ -17,6 +17,10 @@
         {
           "doc": "heartland.kb.pricing-rules",
           "section": "audit-conflicts"
+        },
+        {
+          "doc": "heartland.manual",
+          "section": "discounts-vs-adjustments"
         }
       ]
     },

@@ -48,6 +48,10 @@
         {
           "doc": "heartland.mini-manager-guide",
           "section": "item-stock"
+        },
+        {
+          "doc": "heartland.manual",
+          "section": "admin-vs-pos"
         }
       ]
     },

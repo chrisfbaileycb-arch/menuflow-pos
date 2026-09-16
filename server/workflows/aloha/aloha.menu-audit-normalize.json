@@ -93,6 +93,10 @@
         {
           "doc": "aloha.adm-menu",
           "section": "structure"
+        },
+        {
+          "doc": "aloha.manual",
+          "section": "audit-checklist"
         }
       ]
     }

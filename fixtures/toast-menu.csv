@@ -1,0 +1,7 @@
+Group Name,Item Name,Price,Description,Modifier Groups,Modifiers,Available
+Pizza,Margherita Pizza,14.50,House dough; San Marzano; fresh mozzarella,Pizza Size,Small|Large|Gluten Free,true
+Pizza,Pepperoni Pizza,16.50,House dough; mozzarella; pepperoni,Pizza Toppings,Extra Cheese|Mushrooms|Peppers,true
+Salads,Caesar Salad,11.00,Romaine; dressing; croutons,Salad Toppings,Grilled Chicken|Shrimp,true
+Beverages,House Red Glass,9.00,Pinot Noir; Washington,,false
+Beverages,Sparkling Water,3.50,750ml bottle,Ice Level,None|Light|Full,true
+Appetizers,Garlic Knots,7.50,Four per order; butter and garlic,Knot Sauce,Marinara|Alfredo|Ranch,true

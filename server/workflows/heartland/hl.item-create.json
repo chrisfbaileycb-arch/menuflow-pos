@@ -72,6 +72,10 @@
         {
           "doc": "heartland.items-screen",
           "section": "default-ingredients"
+        },
+        {
+          "doc": "heartland.manual",
+          "section": "items-screen"
         }
       ]
     },

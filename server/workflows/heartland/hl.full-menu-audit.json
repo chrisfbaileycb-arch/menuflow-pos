@@ -21,6 +21,10 @@
         {
           "doc": "heartland.kb.modifier-architecture",
           "section": "pepperoni-problem"
+        },
+        {
+          "doc": "heartland.manual",
+          "section": "audit-checklist"
         }
       ]
     },

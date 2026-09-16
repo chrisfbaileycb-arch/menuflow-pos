@@ -389,7 +389,7 @@ def('square', {
   title: 'Import the item library from CSV (Modify mode) with review gate',
   summary: 'Dashboard > Items > Actions > Import Library > Modify Item Library. The engine parses the real Square export shape, then a mandatory review gate mirrors "Review your changes and click Confirm". Undo Catalogue documented as the escape hatch.',
   inputs: [
-    { name: 'file', type: 'string', required: true, example: 'square-export.csv (place under data/imports/)' },
+    { name: 'file', type: 'string', required: true, example: 'square-export.csv', description: 'a file under data/imports/ (a repo fixture is resolved as a fallback so the example runs)' },
   ],
   steps: [
     manual('s-backup', 'Export the current library first',
@@ -408,7 +408,7 @@ def('square', {
 def('square', {
   id: 'square.csv-export', category: 'export', risk: 'low',
   title: 'Export the library to a Square-shaped CSV',
-  summary: 'Produces the exact importable shape (Name, Category Name, Price, Description, Modifier Set, Visible) that Dashboard > Items > Export yields, for handoff or bulk editing.',
+  summary: 'Writes the MenuFlow review shape (Name, Category Name, Price, Description, Modifier Set, Visible) for handoff, diffing and audit input. The real Square template adds Token/Reference/Variation columns and one Y/N column per existing modifier set, so this file is a spec for the Dashboard sheet, not a drop-in upload (docs/manuals/square.md # menuflow-format).',
   inputs: [],
   steps: [
     auto('s-export', 'Write square-csv to data/exports/', 'io.export.menu', { format: 'square-csv', scope: 'live' }, { citations: [c('square.library-import-export', 'export')] }),
@@ -423,7 +423,7 @@ def('square', {
     { name: 'groupName', type: 'string', required: true, example: 'Modifier Sets / Extra Toppings' },
     { name: 'optionName', type: 'string', required: true, example: 'Add Truffle Oil' },
     { name: 'priceDelta', type: 'money', required: false, example: '2.00' },
-    { name: 'item', type: 'string', required: false, example: 'Fettuccine Alfredo' },
+    { name: 'item', type: 'string', required: false, example: 'Garlic Knots' },
   ],
   steps: [
     manual('s-split', 'Create the right KIND of set',
@@ -494,7 +494,7 @@ def('square', {
   title: 'Full menu migration with Replace Item Library (gated, with caveat sweep)',
   summary: 'Replace deletes the entire library first — Square also does NOT carry display groups, advanced modifier settings, or auto-add across accounts. This flow forces backup, written approval, import, and a settings re-check sweep.',
   inputs: [
-    { name: 'file', type: 'string', required: true, example: 'new-library.csv in data/imports/' },
+    { name: 'file', type: 'string', required: true, example: 'new-library.csv', description: 'a file under data/imports/ (a repo fixture is resolved as a fallback so the example runs)' },
     { name: 'approvalRef', type: 'string', required: true, example: 'client approval email id' },
   ],
   steps: [
@@ -647,7 +647,7 @@ def('lightspeed', {
     { name: 'groupName', type: 'string', required: true, example: 'Extra sauces' },
     { name: 'optionName', type: 'string', required: true, example: 'Extra garlic sauce' },
     { name: 'priceDelta', type: 'money', required: false, example: '1.50' },
-    { name: 'item', type: 'string', required: false, example: 'Cacio e Pepe' },
+    { name: 'item', type: 'string', required: false, example: 'Garlic Knots' },
   ],
   steps: [
     auto('s-grp', 'Create/reuse the group (name-search semantics)', 'menu.modifier.group.ensure', { name: '{groupName}', shared: false }, { citations: [c('lightspeed.item-list', 'create')] }),
@@ -662,7 +662,7 @@ def('lightspeed', {
   title: 'Archive an item — multi-location blast-radius gate',
   summary: 'Archive removes the record from ALL menus at ALL locations at once. The gate forces a scope check first; delete is not offered for menu records.',
   inputs: [
-    { name: 'item', type: 'string', required: true, example: 'Discontinued Special' },
+    { name: 'item', type: 'string', required: true, example: 'Sausage Pizza' },
     { name: 'reason', type: 'string', required: true, example: 'retired after tasting-menu experiment' },
   ],
   steps: [
@@ -700,7 +700,7 @@ def('lightspeed', {
   title: 'Bulk menu import (CSV) with audit + publish gate',
   summary: 'Load menu structure via the Back Office import utilities; the workbench parses the same CSV shape this console exports for Lightspeed, audits it, and gates publication.',
   inputs: [
-    { name: 'file', type: 'string', required: true, example: 'lightspeed-menu.csv in data/imports/' },
+    { name: 'file', type: 'string', required: true, example: 'lightspeed-menu.csv', description: 'a file under data/imports/ (a repo fixture is resolved as a fallback so the example runs)' },
   ],
   steps: [
     manual('s-prepare', 'Prepare the CSV from an exported template',
@@ -793,7 +793,7 @@ def('touchbistro', {
   inputs: [],
   steps: [
     auto('s-scan', 'Find course-0 full-service items and flag conflicts', 'audit.coursing', {}, { citations: [c('heartland.kb.coursing', 'audit')] }),
-    auto('s-fix', 'Resolve a Rush+Hold conflict on the workbench', 'menu.item.set_course', { item: 'Buffalo Wings (10pc)', course: 1, rush: false, hold: false }, { citations: [c('touchbistro.owner-guide', 'courses')], fatal: false }),
+    auto('s-fix', 'Resolve a Rush+Hold conflict on the workbench', 'menu.item.set_course', { item: 'Buffalo Wings', course: 1, rush: false, hold: false }, { citations: [c('touchbistro.owner-guide', 'courses')] }),
     auto('s-verify', 'Verify no conflicts remain', 'audit.coursing', {}, { checks: [{ check: 'no-rush-hold-conflict' }] }),
   ],
 });
@@ -871,7 +871,7 @@ def('aloha', {
   title: 'Run-side 86 (shift scope) + next-open reset',
   summary: 'Use the POS 86 screen during service — the menu definition stays intact; 86s must be cleared before the next open per the operator reference.',
   inputs: [
-    { name: 'item', type: 'string', required: true, example: 'Scallops' },
+    { name: 'item', type: 'string', required: true, example: 'Buffalo Wings' },
     { name: 'reason', type: 'string', required: true, example: 'purveyor short — 86 tonight only' },
   ],
   steps: [
@@ -927,15 +927,375 @@ def('aloha', {
   ],
 });
 
+// ──────────────────── bulk-file coverage: one import/export contract per platform ────────────────────
+// Every system encodes a menu differently in its bulk file - most of all the modifiers. These
+// workflows make that difference executable rather than a footnote: name the vendor surface,
+// stage into the workbench, audit it, gate it, then finish on the portal-side manual step with
+// the citation from docs/manuals/<platform>.md that justifies it.
+
+def('toast', {
+  id: 'toast.bulk-menu-import', category: 'import', risk: 'high',
+  title: 'Bulk menu change through the Toast import tool (operation rows; irreversible)',
+  summary: 'Menus > Bulk management > Bulk import tool. Stages a toast-csv change set, audits it (empty modifier groups break third-party syncs on Toast), then the operator re-emits it as operation rows before the irreversible upload. Save, then Publish all changes.',
+  inputs: [
+    { name: 'file', type: 'string', required: true, example: 'toast-menu.csv', description: 'a file under data/imports/ (a repo fixture is resolved as a fallback so the example runs)' },
+  ],
+  steps: [
+    manual('s-package', 'Confirm the package entitlement before quoting a bulk change',
+      'The bulk import tool needs Restaurant Management Essentials, Pro or Enterprise, or the multi-location module. On a base package the same work is manual entry in Toast Web - price the engagement that way.',
+      [c('toast.manual', 'access-requirement')]),
+    manual('s-backup', 'Export the current menu and file it with the approval reference',
+      'Menu management > Bulk management > Advanced properties is where you export, archive and restore. Toast states that bulk-import changes are not reversible, so this export is the entire rollback plan.',
+      [c('toast.manual', 'irreversibility'), c('toast.manual', 'items-database-exports')]),
+    auto('s-import', 'Stage the change set from the MenuFlow review file', 'io.import.menu',
+      { file: '{file}', format: 'toast-csv', mode: 'modify' }, { citations: [c('toast.manual', 'menuflow-format')] }),
+    auto('s-audit', 'Audit the staged workbench before anything can be confirmed', 'audit.full', {},
+      { fatal: false, notes: 'findings are advisory here: the gate is where the human decides',
+        checks: [{ check: 'no-empty-modifier-groups' }] }),
+    auto('s-empty', 'Clear empty modifier groups (they break delivery integrations on Toast)', 'menu.modifier.remove_empty', {}, { fatal: false }),
+    gate('s-confirm', 'Approve the rebuild plan - Toast cannot undo this upload',
+      'Confirm the counts against the backup export and record that the client accepts the irreversibility before any row is submitted.'),
+    manual('s-rows', 'Re-emit as operation rows on a copy of the template',
+      'Copy the template inside the tool (the validation lists live in the copy), then one row per operation: Operation=CREATE, Entity type=MENU_ITEM / MODIFIER_GROUP / MODIFIER, a unique Operation ID, and the parent named with Parent entity type + Parent version ID or operation ID (the Toast GUID if it already exists, otherwise the Operation ID of the row that creates it). Group pricing: BASE charges the group price; PRICED_BY_MODIFIERS puts prices on the modifier rows and leaves the group Price cell empty. Prices are strings - no currency symbol, and (1.00) means a reduction.',
+      [c('toast.manual', 'operation-rows'), c('toast.manual', 'parent-attach'), c('toast.manual', 'pricing-strategies'), c('toast.manual', 'price-string-rules')]),
+    manual('s-publish', 'Save, then Publish all changes, then verify on a device',
+      'An un-published edit never reaches the terminals. Ring the edited item into a test check on a POS/Flex and read the printed ticket before closing.',
+      [c('toast.manual', 'publish-cycle')]),
+  ],
+});
+
+def('toast', {
+  id: 'toast.items-database-export', category: 'export', risk: 'low',
+  title: 'Export the menu for handoff (review format - not a Toast upload file)',
+  summary: 'Writes toast-csv (Group Name, Item Name, Price, Description, Modifier Groups, Modifiers, Available) from the live menu for audit, diffing and third-party handoff, with the mapping to the operation-row template stated on the step.',
+  inputs: [],
+  steps: [
+    auto('s-export', 'Write toast-csv to data/exports/', 'io.export.menu', { format: 'toast-csv', scope: 'live' },
+      { citations: [c('toast.manual', 'menuflow-format')] }),
+    manual('s-map', 'If this feeds the import tool, re-emit as operation rows',
+      'One row per item is a review shape, not a Toast import. Convert to Operation / Entity type / Operation ID rows, and remember the upload cannot be reversed - take a fresh Items Database export of the destination first.',
+      [c('toast.manual', 'operation-rows'), c('toast.manual', 'irreversibility')]),
+  ],
+});
+
+def('clover', {
+  id: 'clover.bulk-item-import', category: 'import', risk: 'medium',
+  title: 'Bulk item import via the Clover workbook (tabs, not a CSV upload)',
+  summary: 'Items > Item list > Download template. Clover takes an .xls/.xlsx workbook with one tab per object type and reports validation by sheet and row; the engine stages the equivalent clover-csv, audits it, and hands the operator the association + popup-flag checklist.',
+  inputs: [
+    { name: 'file', type: 'string', required: true, example: 'clover-items.csv', description: 'the exported inventory workbook flattened to CSV; a file under data/imports/ (fixtures resolve as a fallback)' },
+  ],
+  steps: [
+    manual('s-workbook', 'Build the workbook - Clover will not take a CSV',
+      'Items > Item list > Download template gives inventory-template.xls with an Instructions tab and an Items tab; the same affordance exists on Categories, Modifier Groups and Printer Labels. The file must be .xls/.xlsx and 5 MB or smaller.',
+      [c('clover.manual', 'import-mechanism'), c('clover.manual', 'template-tabs')]),
+    auto('s-import', 'Stage the change set from the MenuFlow review file', 'io.import.menu',
+      { file: '{file}', format: 'clover-csv', mode: 'modify' }, { citations: [c('clover.manual', 'menuflow-format')] }),
+    auto('s-audit', 'Audit the staged workbench', 'audit.full', {},
+      { fatal: false, checks: [{ check: 'no-empty-modifier-groups' }] }),
+    auto('s-empty', 'Drop modifier groups that would import with no options', 'menu.modifier.remove_empty', {}, { fatal: false }),
+    manual('s-attach', 'Attach every group to its items - orphans import cleanly and stay invisible',
+      'A group with no item association is valid data that never appears at order entry. Check the association count, not just the group count.',
+      [c('clover.manual', 'item-association')]),
+    gate('s-confirm', 'Read the per-tab counts on the To be added to inventory page, then Continue',
+      'Nothing is written until Continue, so this is the last free exit. Compare the counts to the workbook rows and resolve any Review Error by sheet and row first.'),
+    manual('s-sync', 'Force Sync with Clover, then verify on the customer-facing device',
+      'Price and availability land within about 10 minutes; structural changes (new items, new or edited modifier groups) can take up to 4 hours. Force the sync from the integration panel rather than waiting.',
+      [c('clover.manual', 'sync-timing'), c('clover.manual', 'review-error-by-sheet-row')]),
+  ],
+});
+
+def('clover', {
+  id: 'clover.bulk-item-export', category: 'export', risk: 'low',
+  title: 'Export items for backup or transfer (full list only; IDs are account-local)',
+  summary: 'Writes clover-csv from the live menu and states Clover-specific transfer rules: Clover exports the whole item list only, and the Clover ID column must be blanked before importing into another merchant.',
+  inputs: [],
+  steps: [
+    auto('s-export', 'Write clover-csv to data/exports/', 'io.export.menu', { format: 'clover-csv', scope: 'live' },
+      { citations: [c('clover.manual', 'menuflow-format')] }),
+    manual('s-scope', 'Know that the vendor export is all-or-nothing',
+      'Items > Item list > vertical menu > Export gives CloverItemDownload.csv for the full item list; a partial export is not supported, so trim it yourself and keep the original as the backup.',
+      [c('clover.manual', 'export-full-list-only')]),
+    manual('s-ids', 'Blank the identifier column before importing elsewhere',
+      'Into a different merchant account, delete the Clover ID values or the import targets records that do not exist there. Then rebuild the workbook tabs per object type.',
+      [c('clover.manual', 'delete-the-id-column'), c('clover.manual', 'import-mechanism')]),
+  ],
+});
+
+def('touchbistro', {
+  id: 'touchbistro.bulk-menu-upload', category: 'import', risk: 'medium',
+  title: 'Bulk menu upload (new items only - no updates, no tax, no deletes)',
+  summary: 'Menu Management / RMM batch upload. The engine stages the file and mirrors the vendor limits: a Tax or kitchen-printer column is reported, not applied, because TouchBistro bulk upload cannot set them.',
+  inputs: [
+    { name: 'file', type: 'string', required: true, example: 'touchbistro-menu.csv', description: 'a file under data/imports/ (a repo fixture is resolved as a fallback so the example runs)' },
+  ],
+  steps: [
+    manual('s-scope', 'Scope the work first: bulk creates items, it does not change them',
+      'The documented limits are: no batch updates to existing items, no menu image/thumbnail, tax cannot be set, and there is no batch delete. A price change or retirement is per-item work in RMM - never present it as a CSV.',
+      [c('touchbistro.manual', 'bulk-upload-new-only'), c('touchbistro.manual', 'access-and-caveats')]),
+    auto('s-import', 'Stage the upload file (tax and printer columns are reported, not applied)', 'io.import.menu',
+      { file: '{file}', format: 'touchbistro-csv', mode: 'modify' }, { citations: [c('touchbistro.manual', 'menuflow-format')] }),
+    auto('s-audit', 'Audit the staged workbench', 'audit.full', {},
+      { fatal: false, checks: [{ check: 'no-empty-modifier-groups' }, { check: 'no-midnight-violations' }] }),
+    manual('s-rmm', 'Upload inside the target category, then set modifier groups and taxes there',
+      'Menu Options > Categories, pick the category (e.g. Mains) and complete Modifier Groups and Taxes on the same screen. Category choice matters: items inherit course, printers and tax defaults from it.',
+      [c('touchbistro.manual', 'rmm-upload-flow'), c('touchbistro.manual', 'category-inheritance')]),
+    manual('s-review', 'Read the review lines on every item created',
+      'Sales category, visible/hidden, course, tax, kitchen printers - the settings continue off screen, so scroll. An item with no printer assignment rings fine and never prints.',
+      [c('touchbistro.manual', 'item-review-lines')]),
+    gate('s-confirm', 'Confirm with the owner before the dining room sees it',
+      'Confirm the item count, that no update was expected from this path, and that tax was set per item afterwards.'),
+  ],
+});
+
+def('touchbistro', {
+  id: 'touchbistro.menu-export', category: 'export', risk: 'low',
+  title: 'Export the menu for audit and handoff (review format, per-item changes follow)',
+  summary: 'Writes touchbistro-csv (Item Name, Sales Category, Price, Description, Course, Hidden, Modifier Groups) for diffing and audit input. Every change it implies still has to be applied item-by-item in RMM.',
+  inputs: [],
+  steps: [
+    auto('s-export', 'Write touchbistro-csv to data/exports/', 'io.export.menu', { format: 'touchbistro-csv', scope: 'live' },
+      { citations: [c('touchbistro.manual', 'menuflow-format')] }),
+    manual('s-apply', 'Apply changes per item in RMM; do not expect this file to upload',
+      'The vendor bulk path accepts new items only, so a diff of this file is a work order, not a deployment artifact. Record which rows need an update, a tax fix or a retirement, and do those in RMM.',
+      [c('touchbistro.manual', 'bulk-upload-new-only'), c('touchbistro.manual', 'item-review-lines')]),
+  ],
+});
+
+def('lightspeed', {
+  id: 'lightspeed.menu-export', category: 'export', risk: 'low',
+  title: 'Export items for backup or bulk update (reformat before any re-import)',
+  summary: 'Writes lightspeed-csv (Type, Name, Category, Price, Description, Modifier Groups, Available) for handoff and diffing, with the K-Series warnings that matter: some exported columns are not valid for re-import, and updates cannot be reversed.',
+  inputs: [],
+  steps: [
+    auto('s-export', 'Write lightspeed-csv to data/exports/', 'io.export.menu', { format: 'lightspeed-csv', scope: 'live' },
+      { citations: [c('lightspeed.manual', 'menuflow-format')] }),
+    manual('s-reformat', 'Re-format before re-import and never trust the automatic mapping',
+      'Back Office export columns are not all import-safe; SKU and Type must be mapped by hand on the import screen, and unused optional columns should be deleted rather than left blank.',
+      [c('lightspeed.manual', 'export-reimport-trap'), c('lightspeed.manual', 'column-mapping'), c('lightspeed.manual', 'row-limits')]),
+    manual('s-irreversible', 'Accept that updates cannot be reversed and items cannot be deleted',
+      'Retirement here means disable, not delete; there is no Undo Catalogue. Confirm the accounting group spelling too - a near-miss silently creates a duplicate with its own tax and production-center settings.',
+      [c('lightspeed.manual', 'no-delete-and-no-undo'), c('lightspeed.manual', 'accounting-group-autocreate')]),
+  ],
+});
+
+def('aloha', {
+  id: 'aloha.menu-export', category: 'export', risk: 'low',
+  title: 'Export the menu as a specification (Aloha has no owner-facing file import)',
+  summary: 'Writes canonical JSON from the live menu for audit, shadow build and change specification. On Aloha this is a work order for Maintenance > Menu records - there is no CSV to upload.',
+  inputs: [],
+  steps: [
+    auto('s-export', 'Write canonical JSON to data/exports/', 'io.export.menu', { format: 'canonical-json', scope: 'live' },
+      { citations: [c('aloha.manual', 'menuflow-format')] }),
+    manual('s-records', 'Apply as item-database records, then distribute by ownership',
+      'Create or patch the records under Maintenance > Menu (Items, Modifier Groups, Categories, Taxes, Item Routing); an item needs tax, category and printer group to be complete. The ownership level on the record is what controls distribution to stores.',
+      [c('aloha.manual', 'item-maintenance-path'), c('aloha.manual', 'mandatory-assignments'), c('aloha.manual', 'item-number-ranges')]),
+    manual('s-bulk', 'If the change set is genuinely bulk, raise an NCR data-service task',
+      'Bulk edits to the item database are an NCR data-service activity, not an owner upload. Send the export as the specification and get the revision and scope confirmed in writing before anything is pushed.',
+      [c('aloha.manual', 'no-csv-import-86-and-roll')]),
+  ],
+});
+
+def('aloha', {
+  id: 'aloha.item-modifier-record-build', category: 'modifiers', risk: 'medium',
+  title: 'Build a modifier group the Aloha way (groups are items; 10 per item, 54 per group)',
+  summary: 'Creates the group and its limits in the workbench, then mirrors Aloha record construction: modifier items exist first, the group collects them, and the item attaches up to ten groups on its Modifier tab. Menu-wide sharing stays confined to exception modifier groups.',
+  inputs: [
+    { name: 'groupName', type: 'string', required: true, example: 'Extras' },
+    { name: 'memberItem', type: 'string', required: true, example: 'Extra Cheese',
+      description: 'first member only — an Aloha group is a collection of item records, so a group with no members is not a real record; add the rest in Maintenance > Menu > Modifier Groups' },
+    { name: 'minChoices', type: 'number', required: false, example: '0' },
+    { name: 'maxChoices', type: 'number', required: false, example: '3' },
+    { name: 'items', type: 'string', required: false, example: 'Pepperoni Pizza, Veggie Pizza',
+      description: 'comma- or semicolon-separated; each must be an item on this location\'s menu' },
+  ],
+  steps: [
+    auto('s-group', 'Create or update the modifier group with its selection limits', 'menu.modifier.group.ensure',
+      { name: '{groupName}', minChoices: '{minChoices}', maxChoices: '{maxChoices}' },
+      { citations: [c('aloha.manual', 'group-limits-and-prompting')] }),
+    auto('s-member', 'Give the group its first member item', 'menu.modifier.option.upsert',
+      { group: '{groupName}', name: '{memberItem}', priceDelta: 0 },
+      { citations: [c('aloha.manual', 'modifier-groups-central')] }),
+    auto('s-link', 'Attach the group to its items in the workbench', 'menu.modifier.link', { group: '{groupName}', items: '{items}' },
+      { fatal: false, notes: ['soft by design: items that do not exist in this menu are a no-op, not a failure'],
+        citations: [c('aloha.manual', 'modifier-tab-ten-groups')] }),
+    manual('s-items', 'Create the modifier items first, then collect them into the group',
+      'Maintenance > Menu > Items defines the items (cheese, lettuce, pickles); Maintenance > Menu > Modifier Groups collects them (Extras) and the item attaches them back. A group that is never assigned to an item on its Modifier tab does not appear at the terminal - and an item can take at most ten groups (Modifier 1 through Modifier 10, Standard type only).',
+      [c('aloha.manual', 'modifier-groups-central'), c('aloha.manual', 'modifier-tab-ten-groups')]),
+    manual('s-layout', 'Set the layout, prompting and free allowance',
+      'Up to 54 modifiers per group; buttons show the short name, item number and price. Choose whether the group appears automatically or via the Modify button, set min/max (1/1 for a forced single choice), and set Free for the number of no-charge selections.',
+      [c('aloha.manual', 'group-limits-and-prompting')]),
+    manual('s-exception', 'Keep menu-wide sharing inside an exception modifier group',
+      'For things like hot sauce or cheese sauce that modify anything on the submenu, use Maintenance > Menu > Exception Modifiers (reached at the POS via Modify > Special). That is the documented, intentional sharing mechanism - it is not the cross-contamination defect, and the audit allowlist treats it as designed sharing.',
+      [c('aloha.manual', 'exception-modifier-groups')]),
+    auto('s-counts', 'Confirm the group this run built is actually populated', 'menu.normalize', { dryPreview: true },
+      { citations: [c('aloha.manual', 'audit-checklist')],
+        // scoped to the object this run created: a client menu may hold unrelated empty groups
+        // (the seeded Kiosk Extras dirt does), and asserting global cleanliness here would be noise
+        checks: [{ check: 'group-has-members', args: { group: '{groupName}' } }] }),
+  ],
+});
+
+def('heartland', {
+  id: 'hl.menu-json-import', category: 'import', risk: 'medium',
+  title: 'Import a menu JSON into the shadow build (Heartland has no CSV path)',
+  summary: 'Heartland menu edits are Admin Console fields and terminal state - there is no owner-facing CSV. This workflow takes canonical or heartland-flat JSON into staging, audits it, and stops at the portal-side entry with the field checklist.',
+  inputs: [
+    { name: 'file', type: 'string', required: true, example: 'heartland-flat.json', description: 'canonical JSON or the legacy flat array from the heartland-pos tooling (fixtures resolve as a fallback)' },
+  ],
+  steps: [
+    manual('s-source', 'Confirm what the source file actually is',
+      'A bare JSON array of {name, category, price, modifiers, time_ranges} is the legacy flat export the audit scripts consume: no pricing-rule stack, no channels, no group limits. Never treat it as a backup - take the canonical export for that.',
+      [c('heartland.manual', 'json-shape'), c('heartland.manual', 'no-csv-import')]),
+    auto('s-import', 'Stage the file into the workbench (normalization runs on import)', 'io.import.menu',
+      { file: '{file}', format: 'canonical-json', mode: 'modify' }, { citations: [c('heartland.manual', 'menuflow-format')] }),
+    auto('s-audit', 'Audit the staged menu before it can be approved', 'audit.full', {},
+      { citations: [c('heartland.manual', 'audit-checklist')] }),
+    gate('s-scope', 'Client approves the scope before any portal entry starts',
+      'Walk the findings and the diff summary. Modifier isolation changes ordering UX, so it needs explicit sign-off - audit before action.'),
+    manual('s-portal', 'Enter the fields in the Admin Console; read back the terminal state',
+      'Admin Console > Menu > Items and > Modifiers for names, prices, Assigned Items, Min/Max Choices, Number of Included Ingredients, per-ingredient Default Price and Available Online. Stock limits and 86 state live on the terminal (long-press the item, or Manager > Item Stock Management) and never appear in a portal export.',
+      [c('heartland.manual', 'items-screen'), c('heartland.manual', 'modifiers-screen'), c('heartland.manual', 'admin-vs-pos')]),
+  ],
+});
+
+
+// ─────────────────────────── manual links for existing workflows ───────────────────────────
+// Ties each already-written step to the platform-manual section that justifies it, so a citation
+// is a pointer into docs/manuals/ rather than a generic vendor-doc reference. `target` is a step
+// id, or first/last/all over the workflow's manual steps.
+const MANUAL_LINKS = {
+  'hl.item-create': { first: ['items-screen'] },
+  'hl.modifier-create': { all: ['modifiers-screen'] },
+  'hl.modifier-isolate': { first: ['modifiers-screen'] },
+  'hl.86-stock-limit': { first: ['admin-vs-pos'] },
+  'hl.backup-export': { first: ['no-csv-import'], last: ['menuflow-format'] },
+  'hl.menu-rebuild-normalized': { first: ['json-shape'] },
+  'hl.midnight-split': { first: ['legacy-time-ranges'] },
+  'hl.full-menu-audit': { first: ['audit-checklist'] },
+  'hl.shadow-build-cutover': { first: ['admin-vs-pos'] },
+  'hl.pricing-stack-fix': { first: ['discounts-vs-adjustments'] },
+  'toast.item-create': { last: ['publish-cycle'] },
+  'toast.modifier-group-setup': { first: ['required-vs-optional-prompts'], last: ['empty-modifier-groups'] },
+  'toast.bulk-price-change': { first: ['price-string-rules'], last: ['irreversibility'] },
+  'toast.86-item': { first: ['publish-cycle'] },
+  'toast.online-sync-check': { first: ['empty-modifier-groups'] },
+  'toast.menu-audit-normalize': { first: ['items-database-exports'] },
+  'toast.eod-close': { first: ['publish-cycle'] },
+  'toast.publish-cycle': { all: ['publish-cycle'] },
+  'square.csv-import': { first: ['template-source'], last: ['undo-catalogue'] },
+  'square.csv-export': { last: ['menuflow-format'] },
+  'square.menu-transfer-replace': { first: ['modify-vs-replace'], last: ['not-exported'] },
+  'square.modifier-vs-option-sets': { first: ['not-exported'] },
+  'square.price-update': { first: ['price-and-variable'] },
+  'square.channel-availability': { first: ['location-columns'] },
+  'square.sold-out-86': { first: ['audit-checklist'] },
+  'clover.item-create': { first: ['item-association'] },
+  'clover.modifier-groups': { first: ['modifier-group-model'], last: ['kiosk-duplicate-groups'] },
+  'clover.price-sync': { first: ['sync-timing'] },
+  'clover.online-sync': { first: ['sync-timing'] },
+  'clover.inventory-86': { first: ['price-in-cents'] },
+  'clover.menu-audit-normalize': { first: ['audit-checklist'] },
+  'lightspeed.menu-import': { first: ['column-mapping'], last: ['export-reimport-trap'] },
+  'lightspeed.item-create': { first: ['required-columns'] },
+  'lightspeed.modifier-group-create': { first: ['min-max-for-groups'], last: ['extra-price'] },
+  'lightspeed.archive-item': { first: ['no-delete-and-no-undo'] },
+  'lightspeed.price-list-daypart': { first: ['extra-price'] },
+  'lightspeed.menu-audit-normalize': { first: ['audit-checklist'] },
+  'touchbistro.item-create': { first: ['rmm-upload-flow'] },
+  'touchbistro.86-hide': { first: ['pos-86-is-not-delete'] },
+  'touchbistro.online-visibility': { first: ['online-toggle-independent'] },
+  'touchbistro.price-tax-change': { first: ['bulk-upload-new-only'] },
+  'touchbistro.courses-setup': { first: ['category-inheritance'] },
+  'touchbistro.menu-audit-normalize': { first: ['item-review-lines'] },
+  'aloha.modifier-setup': { first: ['modifier-tab-ten-groups'], last: ['group-limits-and-prompting'] },
+  'aloha.shift-86': { first: ['no-csv-import-86-and-roll'] },
+  'aloha.eod-close': { first: ['no-csv-import-86-and-roll'] },
+  'aloha.adm-menu-structure-audit': { first: ['mandatory-assignments'] },
+  'aloha.menu-audit-normalize': { first: ['audit-checklist'] },
+  'aloha.tax-pricing': { first: ['price-methods-and-building-blocks'] },
+};
+
+const CHECK = process.argv.includes('--check');
+(function applyManualLinks() {
+  const byId = new Map(WF.map(w => [w.id, w]));
+  let added = 0, misses = [];
+  for (const [wfId, spec] of Object.entries(MANUAL_LINKS)) {
+    const wf = byId.get(wfId);
+    if (!wf) { misses.push(`workflow ${wfId} not found`); continue; }
+    const docId = `${wf.platform}.manual`;
+    // Audit/export workflows can be all-auto; citations are legal on auto steps too, so fall
+    // back to those rather than silently skipping the link.
+    const manuals = wf.steps.filter(s => s.kind === 'manual').length
+      ? wf.steps.filter(s => s.kind === 'manual')
+      : wf.steps.filter(s => s.kind === 'auto');
+    for (const [target, sections] of Object.entries(spec)) {
+      const steps = target === 'all' ? manuals
+        : target === 'first' ? manuals.slice(0, 1)
+          : target === 'last' ? manuals.slice(-1)
+            : manuals.filter(s => s.id === target);
+      if (!steps.length) { misses.push(`${wfId}: no manual step for target "${target}"`); continue; }
+      for (const st of steps) {
+        st.citations = st.citations || [];
+        for (const sec of sections) {
+          if (!st.citations.some(x => x.doc === docId && x.section === sec)) { st.citations.push(c(docId, sec)); added++; }
+        }
+      }
+    }
+  }
+  // Every import/export workflow ends up carrying the cross-platform divergence statement, so the
+  // "this file is not the vendor upload file" warning is part of the certified run record.
+  for (const wf of WF) {
+    if (wf.category !== 'import' && wf.category !== 'export') continue;
+    const st = [...wf.steps].reverse().find(s => s.kind === 'manual') || wf.steps[wf.steps.length - 1];
+    st.citations = st.citations || [];
+    if (!st.citations.some(x => x.doc === 'signalF.csv-matrix' && x.section === 'menuflow-divergence')) {
+      st.citations.push(c('signalF.csv-matrix', 'menuflow-divergence')); added++;
+    }
+  }
+  if (misses.length) throw new Error('MANUAL_LINKS errors:\n  ' + misses.join('\n  '));
+  if (!CHECK) console.log(`manual links applied: ${added} citations attached to bulk-file steps`);
+})();
+
 // ────────────────────────────────────────── emit ──────────────────────────────────────────
-let count = 0;
+// --check compares the builder's output against what is on disk instead of writing it. The
+// generated workflow JSONs are never hand-edited, so drift here means either an unrun generator
+// or someone editing an artifact directly — both must fail the gate, not silently ship.
+const ROOT = path.join(__dirname, '..');
+let count = 0, stale = [];
 for (const wf of WF) {
   const dir = path.join(OUT, wf.platform);
-  fs.mkdirSync(dir, { recursive: true });
   const doc = wf;
   const file = path.join(dir, `${doc.id}.json`);
-  fs.writeFileSync(file, JSON.stringify(doc, null, 2) + '\n');
+  const payload = JSON.stringify(doc, null, 2) + '\n';
+  if (CHECK) {
+    const onDisk = fs.existsSync(file) ? fs.readFileSync(file, 'utf8') : null;
+    if (onDisk === null) stale.push(`${path.relative(ROOT, file)}: missing`);
+    else if (onDisk !== payload) stale.push(`${path.relative(ROOT, file)}: differs from the builder output`);
+    count++;
+    continue;
+  }
+  fs.mkdirSync(dir, { recursive: true });
+  fs.writeFileSync(file, payload);
   count++;
+}
+if (CHECK) {
+  // files on disk that the builder no longer produces are just as stale
+  for (const plat of fs.readdirSync(OUT)) {
+    const pd = path.join(OUT, plat);
+    if (!fs.statSync(pd).isDirectory()) continue;
+    for (const f of fs.readdirSync(pd)) {
+      const id = f.replace(/\.json$/, '');
+      if (!WF.some(w => w.id === id)) stale.push(`server/workflows/${plat}/${f}: not produced by the builder`);
+    }
+  }
+  if (stale.length) {
+    console.error(`workflow artifacts are stale (${stale.length}):\n  ${stale.join('\n  ')}`);
+    console.error('run: node fixtures/build-workflows.js');
+    process.exit(1);
+  }
+  console.log(`workflow artifacts are current (${count} files match the builder)`);
+  process.exit(0);
 }
 console.log(`Wrote ${count} workflow files to ${OUT}`);
 const perPlat = {};

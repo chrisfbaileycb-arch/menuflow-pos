@@ -170,3 +170,5 @@ code{background:#141d29;border-radius:5px;padding:1px 5px;font-family:var(--mono
 .hbar{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
 .stat{border:1px solid var(--line);border-radius:10px;background:var(--panel);padding:8px 14px;font-size:12px;color:var(--muted)}
 .stat b{display:block;font-size:19px;color:var(--txt)}
+
+.platmeta{display:block;max-width:340px;font-size:10.5px;line-height:1.35;color:var(--muted,#93a0ad);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:help}

@@ -61,9 +61,39 @@ Step `args` support `{inputName}` templates (whole-value or interpolated; arrays
 - every citation resolves in `sources.js`; every citation belongs to the platform (or the shared Signal F docs)
 - manual steps have instructions + ≥1 citation; gates have instructions
 - high-risk or destructive-skill workflows must contain a gate
+- every `import`/`export` workflow must cite its own `<platform>.manual` — a file format with no
+  documented vendor basis is not a verified format
 - then a **dry-run execution of every workflow** with example-derived inputs and pre-approvals; exit code 0 only if all pass.
 
-`npm test` additionally executes all 49 workflows in **apply mode** with real checks and asserts state transitions (isolation, midnight-split, cutover lifecycle, CSV import idempotence), python parity of the ported audit scripts, IO round-trips, and HTTP API behaviors (pause/resume, publish blocker, staging isolation).
+`npm test` additionally executes all 59 workflows in **apply mode** with real checks and asserts state transitions (isolation, midnight-split, cutover lifecycle, CSV import idempotence), python parity of the ported audit scripts, IO round-trips, and HTTP API behaviors (pause/resume, publish blocker, staging isolation).
+
+### Where the citations come from
+
+The per-platform owner's manuals in `docs/manuals/*.md` are the human-facing source of truth; no
+workflow can cite a section that does not exist as a heading in one of them:
+
+```
+docs/manuals/<platform>.md          front matter (docId, url, verified, checked, scope)
+   │  fixtures/build-manual-sources.js      + "## N. key — Title" sections
+   ▼
+server/sources.manuals.generated.js  { sections: { key: first-paragraph excerpt }, manual: path }
+   │  merged + collision-checked by server/sources.js
+   ▼
+engine.validateWorkflow / validateAll  every {doc, section} must resolve (else FAIL)
+   │
+   ▼  getCitation() at run time
+run record · GET /api/runs/:id · UI step card · exported bundle (offline re-verifiable)
+```
+
+`npm run check:artifacts` re-runs both generators in `--check` mode, so a manual edited without
+regenerating — or a generated workflow JSON hand-edited — fails the build rather than shipping.
+`tests/manuals.test.js` additionally asserts heading ↔ registry symmetry in both directions and
+that the importer honours what the manuals claim (see `docs/SOURCES.md`).
+
+**Direction of accountability:** when a vendor's documented behaviour and our code disagree, the
+code is extended (e.g. `touchbistro-csv` became a real parser) or the divergence is written into
+that platform's `menuflow-format` section. The prose is never softened to match an
+implementation, and no MenuFlow CSV is described as vendor-uploadable.
 
 ## Delivery & certification path
 
@@ -76,9 +106,10 @@ credential-free `origin` is written only after success. Branch names are resolve
 never assumed.
 
 `.github/workflows/verify.yml` re-runs the same two gates on node 18/20/22 for every push and PR,
-re-asserts `RESULT: PASS` from the verifier's own output, and guards the two invariants that would
-be invisible in a diff: no `data/`, `.env`, key or credential path may be tracked, and the platform
-catalog must still expose the dropdown's entries.
+re-asserts `RESULT: PASS` from the verifier's own output, and guards the three invariants that would
+be invisible in a diff: no `data/`, `.env`, key or credential path may be tracked; the platform
+catalog must still expose the dropdown's entries; and the generated registry and workflow JSONs
+must match their generators.
 
 ## Extension points
 

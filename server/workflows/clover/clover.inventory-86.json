@@ -46,6 +46,10 @@
         {
           "doc": "clover.inventory",
           "section": "86"
+        },
+        {
+          "doc": "clover.manual",
+          "section": "price-in-cents"
         }
       ]
     },

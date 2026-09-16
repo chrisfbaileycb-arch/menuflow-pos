@@ -16,6 +16,10 @@
         {
           "doc": "aloha.pos-86",
           "section": "eod"
+        },
+        {
+          "doc": "aloha.manual",
+          "section": "no-csv-import-86-and-roll"
         }
       ]
     },

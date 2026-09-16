@@ -4,7 +4,7 @@
   "category": "export",
   "risk": "low",
   "title": "Export the library to a Square-shaped CSV",
-  "summary": "Produces the exact importable shape (Name, Category Name, Price, Description, Modifier Set, Visible) that Dashboard > Items > Export yields, for handoff or bulk editing.",
+  "summary": "Writes the MenuFlow review shape (Name, Category Name, Price, Description, Modifier Set, Visible) for handoff, diffing and audit input. The real Square template adds Token/Reference/Variation columns and one Y/N column per existing modifier set, so this file is a spec for the Dashboard sheet, not a drop-in upload (docs/manuals/square.md # menuflow-format).",
   "inputs": [],
   "steps": [
     {
@@ -20,6 +20,14 @@
         {
           "doc": "square.library-import-export",
           "section": "export"
+        },
+        {
+          "doc": "square.manual",
+          "section": "menuflow-format"
+        },
+        {
+          "doc": "signalF.csv-matrix",
+          "section": "menuflow-divergence"
         }
       ]
     }

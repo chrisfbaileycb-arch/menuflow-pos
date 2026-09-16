@@ -41,7 +41,7 @@ echo "==> branch   : $BRANCH"
 echo "==> workspace: $ROOT"
 
 # --- preflight: the shipped artifact must be green before it leaves the machine ---
-echo "==> verify (49 workflows, citations, dry-runs)"
+echo "==> verify (every workflow: schema, citations, dry-runs)"
 node server/verify-cli.js >/tmp/menuflow-push-verify.log 2>&1 \
   || { echo "verify FAILED — see /tmp/menuflow-push-verify.log"; tail -20 /tmp/menuflow-push-verify.log; exit 1; }
 grep -q "RESULT: PASS" /tmp/menuflow-push-verify.log \
@@ -101,7 +101,8 @@ fi
 # so there is nothing to scrub even if the push is interrupted
 echo "==> pushing $BRANCH ($SHA) -> $REPO"
 git remote remove origin >/dev/null 2>&1 || true
-if ! git push --force "$URL" "$SHA":refs/heads/"$BRANCH"; then
+if ! git push --force "$URL" "$SHA":refs/heads/"$BRANCH" 2>&1 \
+  | sed -E "s#(https://)[^@/]*@#\1***@#g; s#(x-access-token|x-oauth2|gh[pousr]_)[:@]?[^ @]*#\1***#g"; then
   echo "!! push failed. From an interactive shell you can also just run:"
   echo "     git push --force https://github.com/$REPO.git $BRANCH   (GitHub will prompt for auth)"
   exit 1

@@ -1,0 +1,111 @@
+{
+  "platform": "clover",
+  "id": "clover.bulk-item-import",
+  "category": "import",
+  "risk": "medium",
+  "title": "Bulk item import via the Clover workbook (tabs, not a CSV upload)",
+  "summary": "Items > Item list > Download template. Clover takes an .xls/.xlsx workbook with one tab per object type and reports validation by sheet and row; the engine stages the equivalent clover-csv, audits it, and hands the operator the association + popup-flag checklist.",
+  "inputs": [
+    {
+      "name": "file",
+      "type": "string",
+      "required": true,
+      "example": "clover-items.csv",
+      "description": "the exported inventory workbook flattened to CSV; a file under data/imports/ (fixtures resolve as a fallback)"
+    }
+  ],
+  "steps": [
+    {
+      "id": "s-workbook",
+      "kind": "manual",
+      "title": "Build the workbook - Clover will not take a CSV",
+      "instructions": "Items > Item list > Download template gives inventory-template.xls with an Instructions tab and an Items tab; the same affordance exists on Categories, Modifier Groups and Printer Labels. The file must be .xls/.xlsx and 5 MB or smaller.",
+      "citations": [
+        {
+          "doc": "clover.manual",
+          "section": "import-mechanism"
+        },
+        {
+          "doc": "clover.manual",
+          "section": "template-tabs"
+        }
+      ]
+    },
+    {
+      "id": "s-import",
+      "kind": "auto",
+      "title": "Stage the change set from the MenuFlow review file",
+      "skill": "io.import.menu",
+      "args": {
+        "file": "{file}",
+        "format": "clover-csv",
+        "mode": "modify"
+      },
+      "citations": [
+        {
+          "doc": "clover.manual",
+          "section": "menuflow-format"
+        }
+      ]
+    },
+    {
+      "id": "s-audit",
+      "kind": "auto",
+      "title": "Audit the staged workbench",
+      "skill": "audit.full",
+      "args": {},
+      "fatal": false,
+      "checks": [
+        {
+          "check": "no-empty-modifier-groups"
+        }
+      ]
+    },
+    {
+      "id": "s-empty",
+      "kind": "auto",
+      "title": "Drop modifier groups that would import with no options",
+      "skill": "menu.modifier.remove_empty",
+      "args": {},
+      "fatal": false
+    },
+    {
+      "id": "s-attach",
+      "kind": "manual",
+      "title": "Attach every group to its items - orphans import cleanly and stay invisible",
+      "instructions": "A group with no item association is valid data that never appears at order entry. Check the association count, not just the group count.",
+      "citations": [
+        {
+          "doc": "clover.manual",
+          "section": "item-association"
+        }
+      ]
+    },
+    {
+      "id": "s-confirm",
+      "kind": "gate",
+      "title": "Read the per-tab counts on the To be added to inventory page, then Continue",
+      "instructions": "Nothing is written until Continue, so this is the last free exit. Compare the counts to the workbook rows and resolve any Review Error by sheet and row first."
+    },
+    {
+      "id": "s-sync",
+      "kind": "manual",
+      "title": "Force Sync with Clover, then verify on the customer-facing device",
+      "instructions": "Price and availability land within about 10 minutes; structural changes (new items, new or edited modifier groups) can take up to 4 hours. Force the sync from the integration panel rather than waiting.",
+      "citations": [
+        {
+          "doc": "clover.manual",
+          "section": "sync-timing"
+        },
+        {
+          "doc": "clover.manual",
+          "section": "review-error-by-sheet-row"
+        },
+        {
+          "doc": "signalF.csv-matrix",
+          "section": "menuflow-divergence"
+        }
+      ]
+    }
+  ]
+}
