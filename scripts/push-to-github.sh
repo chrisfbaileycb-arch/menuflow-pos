@@ -11,11 +11,11 @@
 
 set -euo pipefail
 
-REPO="${REPO:-chrisfbaileycb-arch/menuflow-pos}"
-BRANCH="${BRANCH:-main}"
 API="https://api.github.com"
-cd "$(dirname "$0")/.."
+cd "$(dirname "$0")/.."          # run from the repo root before resolving anything
 ROOT="$(pwd)"
+REPO="${REPO:-chrisfbaileycb-arch/menuflow-pos}"
+BRANCH="${BRANCH:-$(git rev-parse --abbrev-ref HEAD)}"
 
 echo "==> repo     : $REPO"
 echo "==> branch   : $BRANCH"
@@ -75,10 +75,20 @@ else
   exit 2
 fi
 
+# push straight to the URL — the token never lands in .git/config, so there is
+# nothing to scrub even if the push is interrupted
 echo "==> pushing $BRANCH -> $REPO"
 git remote remove origin >/dev/null 2>&1 || true
-git remote add origin "$URL"
-git push -u --force origin "$BRANCH"
-git remote remove origin >/dev/null 2>&1 || true   # leave no token behind
+if ! git push --force "$URL" "refs/heads/$BRANCH":refs/heads/$BRANCH; then
+  echo "!! push failed. If the repo is private and empty you can also just run:"
+  echo "     git push --force https://github.com/$REPO.git main   (GitHub will prompt for auth)"
+  exit 1
+fi
+# leave a credential-free origin behind so later pushes are a plain `git push`
+git remote add origin "https://github.com/$REPO.git" 2>/dev/null || true
+git fetch -q origin "$BRANCH" 2>/dev/null || true
+git update-ref "refs/remotes/origin/$BRANCH" "$(git rev-parse HEAD)" 2>/dev/null || true
+git config "branch.$BRANCH.remote" origin 2>/dev/null || true
+git config "branch.$BRANCH.merge" "refs/heads/$BRANCH" 2>/dev/null || true
 
 echo "==> done: https://github.com/$REPO/tree/$BRANCH"
