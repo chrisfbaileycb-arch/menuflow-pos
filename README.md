@@ -101,6 +101,8 @@ RUN_TESTS=1 GH_TOKEN=... ./scripts/push-to-github.sh         # also gate on the 
 ./scripts/push-to-github.sh https://github.com/chrisfbaileycb-arch/menuflow-pos.git # will prompt for auth
 ```
 
+`npm run push` is the same script via `bash`, so it still works if the executable bit is lost in a zip copy or a Windows checkout.
+
 Preflight runs `node server/verify-cli.js` and requires `RESULT: PASS` (schema-valid workflows, resolvable citations, clean dry-runs) before anything is committed or pushed; `data/` is gitignored so no run state leaves the machine. The token is passed straight to `git push` as a URL and is never written into `.git/config`, a credential helper, or the commit — the origin left behind is credential-free. Needs only *Administration* + *Contents* read/write on the single repo (fine-grained). The branch is `main`.
 
 ## Maintained by

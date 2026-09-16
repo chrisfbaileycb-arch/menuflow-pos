@@ -9,9 +9,12 @@
     "dev": "node server/server.js",
     "verify": "node server/verify-cli.js",
     "test": "node tests/run-all.js",
-    "cli": "node cli/menuflow.js"
+    "cli": "node cli/menuflow.js",
+    "push": "bash scripts/push-to-github.sh"
   },
-  "engines": { "node": ">=18" },
+  "engines": {
+    "node": ">=18"
+  },
   "license": "UNLICENSED",
   "author": "Signal F Holdings LLC"
 }
