@@ -1,0 +1,8 @@
+{
+  "name": "MenuFlow POS",
+  "description": "Multi-platform restaurant POS operations console with executable workflows, menu integrity & vulnerability audit dial, margin leak detection, and import/export.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

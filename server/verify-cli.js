@@ -66,7 +66,7 @@ function main() {
   console.log('MENUFLOW WORKFLOW VERIFICATION REPORT');
   console.log('═'.repeat(64));
   console.log(`Workflows found        : ${report.totals.workflows}`);
-  console.log(`Static schema errors   : ${report.totals.errors}`);
+  console.log(`Static schema status   : ${report.totals.errors === 0 ? 'valid (0 issues)' : `${report.totals.errors} issues`}`);
   console.log(`Steps (auto/manual/gate): ${report.totals.auto}/${report.totals.manual}/${report.totals.gates}`);
   console.log(`Owner's-manual citations: ${report.totals.citations} (all resolved: ${report.totals.errors === 0})`);
   console.log(`Post-step checks       : ${report.totals.checks}`);

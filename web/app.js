@@ -31,13 +31,24 @@ async function boot() {
     $$('#tabs button').forEach(x => x.classList.remove('active')); b.classList.add('active');
     $$('.view').forEach(v => v.classList.remove('active'));
     $(`#view-${b.dataset.tab}`).classList.add('active');
-    ({ workflows: loadWorkflows, menu: loadMenu, audit: loadAudit, io: loadFiles, runs: loadRuns, docs: loadDocs, skills: loadSkills }[b.dataset.tab] || (() => { }))();
+    ({
+      workflows: () => { loadWorkflows(); loadAuditOverview(); },
+      menu: loadMenu,
+      audit: loadAudit,
+      io: loadFiles,
+      runs: loadRuns,
+      docs: loadDocs,
+      skills: loadSkills,
+    }[b.dataset.tab] || (() => { }))();
   });
   $('#platformSelect').onchange = (e) => { state.platform = e.target.value; state.selected = null; state.catFilter = null; loadWorkflows(); };
-  $('#locationSelect').onchange = (e) => { state.location = e.target.value; state.approvals = {}; loadWorkflows(); loadMenu(); };
+  $('#locationSelect').onchange = (e) => { state.location = e.target.value; state.approvals = {}; loadWorkflows(); loadMenu(); loadAuditOverview(); };
   $('#modeChip').onclick = toggleMode;
   $('#verifyAllBtn').onclick = refreshVerify;
+  const expAuditBtn = $('#exportAuditBtn');
+  if (expAuditBtn) expAuditBtn.onclick = exportAuditReport;
   await loadWorkflows();
+  await loadAuditOverview();
 }
 
 function renderPlatformSelect() {
@@ -343,10 +354,282 @@ $('#discardBtn').onclick = async () => {
   toast('Staging discarded.', 'good'); loadMenu();
 };
 
-/* ───────────────── audit ───────────────── */
-async function loadAudit() {
-  const { report, source, markdown } = await api(`/api/audit?location=${state.location}`);
-  $('#auditMeta').textContent = `source: ${source} · ${report.scanned.total_items} items · ${report.summary.total_findings} findings (HIGH ${report.summary.high} / MED ${report.summary.medium} / LOW ${report.summary.low})`;
+/* ───────────────── audit & menu integrity gauge ───────────────── */
+let currentAuditReport = null;
+let currentVulnFilter = 'all';
+
+function getGaugeColor(score) {
+  if (score < 60) return '#ff5c5c'; // Red (<60)
+  if (score < 85) return '#ffb454'; // Amber (60–84)
+  return '#41e0a0';                 // Green (85–100)
+}
+
+function renderGaugeSvg(score, size = 150, stroke = 11) {
+  const r = (size / 2) - (stroke / 2);
+  const c = 2 * Math.PI * r;
+  const clamped = Math.max(0, Math.min(100, Math.round(score || 0)));
+  const offset = c * (1 - clamped / 100);
+  const color = getGaugeColor(clamped);
+  return `
+    <div class="gauge-wrap" style="width:${size}px; height:${size}px">
+      <svg class="gauge-svg" viewBox="0 0 ${size} ${size}" style="width:${size}px; height:${size}px">
+        <circle class="gauge-track" cx="${size / 2}" cy="${size / 2}" r="${r}" stroke-width="${stroke}" />
+        <circle class="gauge-fill" cx="${size / 2}" cy="${size / 2}" r="${r}"
+          stroke="${color}" stroke-width="${stroke}"
+          stroke-dasharray="${c.toFixed(2)}"
+          stroke-dashoffset="${offset.toFixed(2)}"
+          style="stroke-dashoffset:${offset.toFixed(2)}; stroke:${color};" />
+      </svg>
+      <div class="gauge-center">
+        <span class="gauge-score" style="color:${color}">${clamped}</span>
+        <span class="gauge-score-sub">Score</span>
+      </div>
+    </div>`;
+}
+
+function renderMiniDial(score) {
+  const size = 56, stroke = 5;
+  const r = (size / 2) - (stroke / 2);
+  const c = 2 * Math.PI * r;
+  const clamped = Math.max(0, Math.min(100, Math.round(score || 0)));
+  const offset = c * (1 - clamped / 100);
+  const color = getGaugeColor(clamped);
+  return `
+    <div class="overview-mini-dial">
+      <svg viewBox="0 0 ${size} ${size}">
+        <circle fill="none" stroke="#1b2432" stroke-width="${stroke}" cx="${size / 2}" cy="${size / 2}" r="${r}" />
+        <circle fill="none" stroke="${color}" stroke-width="${stroke}" stroke-linecap="round" cx="${size / 2}" cy="${size / 2}" r="${r}"
+          stroke-dasharray="${c.toFixed(2)}"
+          stroke-dashoffset="${offset.toFixed(2)}"
+          style="stroke-dashoffset:${offset.toFixed(2)}; stroke:${color};" />
+      </svg>
+      <span class="overview-mini-score" style="color:${color}">${clamped}</span>
+    </div>`;
+}
+
+function renderVulnCard(v, idx) {
+  const sev = (v.severity || 'MEDIUM').toLowerCase();
+  const patch = v.patch;
+  const bleedCents = v.marginBleedCents || 0;
+  const leakBadge = bleedCents > 0 ? `<span class="vuln-leak">-$${(bleedCents / 100).toFixed(2)} margin bleed</span>` : '';
+  const patchId = `patch_btn_${idx}`;
+
+  return `
+    <div class="vuln-card ${sev}">
+      <div class="vuln-head">
+        <span class="badge ${sev === 'critical' ? 'fail' : sev === 'high' ? 'medium' : 'ok'}">${esc(v.severity || 'MEDIUM')}</span>
+        <span class="vuln-title">${esc(v.name || v.item || v.title || v.type)}</span>
+        <span class="tag">${esc((v.type || 'vulnerability').replace(/_/g, ' '))}</span>
+        ${leakBadge}
+      </div>
+      <div class="vuln-body">
+        ${esc(v.explanation || v.detail || '')}
+      </div>
+      ${v.recommendation ? `
+        <div class="vuln-rec">
+          <span style="color:#7ae6b5">💡 <b>Recommended Fix:</b></span>
+          <span>${esc(v.recommendation)}</span>
+        </div>
+      ` : ''}
+      <div class="vuln-action-row">
+        <div class="mini muted">
+          ${v.category ? `Category: <b>${esc(v.category)}</b> · ` : ''}
+          ${v.group ? `Modifier Group: <b>${esc(v.group)}</b>` : ''}
+        </div>
+        ${patch ? `
+          <button class="patch-btn" id="${patchId}" onclick="applySinglePatch(${idx})">
+            ⚡ Apply Recommended Price/Rule Patch
+          </button>
+        ` : `<span class="mini muted">Manual review recommended</span>`}
+      </div>
+    </div>
+  `;
+}
+
+function renderIntegrityDashboard(report) {
+  currentAuditReport = report;
+  const int = report.integrity_score || { score: 100, rating: 'GREEN', label: 'Protected Margins' };
+  const vulns = report.vulnerabilities || { critical: [], high: [], medium: [], total: 0, items: [] };
+  const allItems = vulns.items || [];
+  const filtered = currentVulnFilter === 'all' ? allItems : allItems.filter(v => (v.severity || '').toLowerCase() === currentVulnFilter);
+
+  const container = $('#integrityGaugeSection');
+  if (!container) return;
+
+  const totalBleedCents = allItems.reduce((acc, v) => acc + (v.marginBleedCents || 0), 0);
+  const bleedDisplay = totalBleedCents > 0 ? `$${(totalBleedCents / 100).toFixed(2)}/order` : '$0.00';
+
+  container.innerHTML = `
+    <div class="card" style="margin-bottom:20px; padding:24px">
+      <div class="integrity-dashboard">
+        ${renderGaugeSvg(int.score)}
+        <div class="integrity-info">
+          <div class="integrity-title">
+            <span>Menu Integrity &amp; Vulnerability Score</span>
+            <span class="badge ${int.rating === 'RED' ? 'fail' : int.rating === 'AMBER' ? 'medium' : 'ok'}">${esc(int.label)}</span>
+          </div>
+          <div class="integrity-desc">
+            Rule-based vulnerability scanning detects price collisions (identical base prices on items with different underlying costs), side-car reconstruction loopholes (modifiers/sides reconstructing signature items at a discount), and unrestricted protein modifier swaps causing margin bleed.
+          </div>
+          <div class="integrity-stats">
+            <span class="vuln-stat-pill critical"><b>${vulns.critical?.length || 0}</b> Critical</span>
+            <span class="vuln-stat-pill high"><b>${vulns.high?.length || 0}</b> High</span>
+            <span class="vuln-stat-pill medium"><b>${vulns.medium?.length || 0}</b> Medium</span>
+            <span class="vuln-stat-pill bleed">Est. Margin Bleed: <b>${bleedDisplay}</b></span>
+          </div>
+          ${allItems.filter(v => v.patch).length > 0 ? `
+            <div style="margin-top:6px; display:flex; justify-content:center">
+              <button class="patch-btn" id="applyAllSafePatchesBtn">
+                ⚡ Apply All ${allItems.filter(v => v.patch).length} Recommended Patches
+              </button>
+            </div>
+          ` : ''}
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:20px">
+      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:14px; margin-bottom:16px">
+        <div>
+          <h3 style="margin:0">Active Margin Leaks &amp; Rule Vulnerabilities <span class="muted">— ${allItems.length} detected</span></h3>
+          <div class="mini muted" style="margin-top:3px">One-click patches stage safe corrections directly into your staging workbench without interrupting live sales.</div>
+        </div>
+        <div class="vuln-filter-row" style="margin-bottom:0">
+          <button class="btn ${currentVulnFilter === 'all' ? 'primary' : 'ghost'} small" onclick="setVulnFilter('all')">All (${allItems.length})</button>
+          <button class="btn ${currentVulnFilter === 'critical' ? 'primary' : 'ghost'} small" onclick="setVulnFilter('critical')">Critical (${vulns.critical?.length || 0})</button>
+          <button class="btn ${currentVulnFilter === 'high' ? 'primary' : 'ghost'} small" onclick="setVulnFilter('high')">High (${vulns.high?.length || 0})</button>
+          <button class="btn ${currentVulnFilter === 'medium' ? 'primary' : 'ghost'} small" onclick="setVulnFilter('medium')">Medium (${vulns.medium?.length || 0})</button>
+        </div>
+      </div>
+
+      <div class="vuln-list-container">
+        ${filtered.length ? filtered.map((v, idx) => renderVulnCard(v, idx)).join('') : `
+          <div class="empty" style="padding:24px">
+            <b>No active vulnerabilities in this category.</b><br>
+            <span class="mini muted">Menu integrity rules are fully satisfied for current items.</span>
+          </div>
+        `}
+      </div>
+    </div>
+  `;
+
+  const applyAllBtn = $('#applyAllSafePatchesBtn');
+  if (applyAllBtn) {
+    applyAllBtn.onclick = () => applyAllPatches(allItems.filter(v => v.patch));
+  }
+}
+
+function setVulnFilter(filter) {
+  currentVulnFilter = filter;
+  if (currentAuditReport) {
+    renderIntegrityDashboard(currentAuditReport);
+  }
+}
+window.setVulnFilter = setVulnFilter;
+
+async function applySinglePatch(idx) {
+  if (!currentAuditReport || !currentAuditReport.vulnerabilities) return;
+  const allItems = currentAuditReport.vulnerabilities.items || [];
+  const item = allItems[idx];
+  if (!item || !item.patch) return;
+
+  const btn = $(`#patch_btn_${idx}`);
+  if (btn) { btn.disabled = true; btn.textContent = 'Applying patch…'; }
+
+  try {
+    const res = await api('/api/audit/patch', {
+      body: {
+        location: state.location,
+        patch: item.patch,
+      }
+    });
+
+    toast(res.message || 'Patch applied to staging workbench', 'good');
+    currentAuditReport = res.report;
+    renderIntegrityDashboard(res.report);
+    renderAuditMetaAndSections(res.report, res.source, res.markdown);
+    renderOverviewIntegrityBanner(res.report);
+    loadMenu();
+  } catch (e) {
+    toast('Failed to apply patch: ' + e.message, 'bad');
+    if (btn) { btn.disabled = false; btn.textContent = '⚡ Apply Recommended Price/Rule Patch'; }
+  }
+}
+window.applySinglePatch = applySinglePatch;
+
+async function applyAllPatches(itemsWithPatch) {
+  if (!itemsWithPatch.length) return;
+  const btn = $('#applyAllSafePatchesBtn');
+  if (btn) { btn.disabled = true; btn.textContent = 'Applying all patches…'; }
+
+  let applied = 0;
+  for (const item of itemsWithPatch) {
+    try {
+      const res = await api('/api/audit/patch', {
+        body: {
+          location: state.location,
+          patch: item.patch,
+        }
+      });
+      applied++;
+      currentAuditReport = res.report;
+    } catch (e) {
+      console.warn('Failed patching item', item, e);
+    }
+  }
+
+  toast(`Applied ${applied} recommended patch(es) to staging workbench`, 'good');
+  if (currentAuditReport) {
+    renderIntegrityDashboard(currentAuditReport);
+    renderAuditMetaAndSections(currentAuditReport, 'staging');
+    renderOverviewIntegrityBanner(currentAuditReport);
+  }
+  loadMenu();
+}
+
+function renderOverviewIntegrityBanner(report) {
+  const el = $('#overviewIntegrityBanner');
+  if (!el) return;
+  if (!report || !report.integrity_score) {
+    el.style.display = 'none';
+    return;
+  }
+  el.style.display = 'flex';
+  const int = report.integrity_score;
+  const vulns = report.vulnerabilities || { critical: [], high: [], medium: [], total: 0, items: [] };
+  const totalBleedCents = (vulns.items || []).reduce((acc, v) => acc + (v.marginBleedCents || 0), 0);
+  const bleedDisplay = totalBleedCents > 0 ? `$${(totalBleedCents / 100).toFixed(2)}/order` : '$0.00';
+
+  el.innerHTML = `
+    <div class="overview-integrity-left">
+      ${renderMiniDial(int.score)}
+      <div>
+        <div style="font-weight:700; font-size:14px; display:flex; align-items:center; gap:8px">
+          <span>Menu Integrity &amp; Vulnerability Score: ${int.score}/100</span>
+          <span class="badge ${int.rating === 'RED' ? 'fail' : int.rating === 'AMBER' ? 'medium' : 'ok'}">${esc(int.label)}</span>
+        </div>
+        <div class="mini muted" style="margin-top:2px">
+          ${vulns.total > 0 ? `${vulns.critical?.length || 0} critical, ${vulns.high?.length || 0} high, ${vulns.medium?.length || 0} medium vulnerabilities · Est. bleed: ${bleedDisplay}` : 'All margins protected · Zero rule vulnerabilities detected.'}
+        </div>
+      </div>
+    </div>
+    <div style="display:flex; align-items:center; gap:10px">
+      <button class="btn small primary" id="overviewToAuditBtn">Inspect &amp; Remediate in Audit View →</button>
+    </div>
+  `;
+
+  const toAuditBtn = $('#overviewToAuditBtn');
+  if (toAuditBtn) {
+    toAuditBtn.onclick = () => {
+      const auditTabBtn = $('#tabs button[data-tab=audit]');
+      if (auditTabBtn) auditTabBtn.click();
+    };
+  }
+}
+
+function renderAuditMetaAndSections(report, source, markdown) {
+  const int = report.integrity_score;
+  $('#auditMeta').textContent = `source: ${source || 'staging'} · ${report.scanned.total_items} items · Score: ${int?.score || 100}/100 (${int?.label || 'Clean'}) · ${report.summary.total_findings} findings (HIGH ${report.summary.high} / MED ${report.summary.medium} / LOW ${report.summary.low})`;
   $('#auditBody').innerHTML = `
     <div class="result-box" style="margin-bottom:12px"><b>Protocol:</b> ${esc(report.protocol)}</div>
     ${report.sections.map(s => `
@@ -359,11 +642,42 @@ async function loadAudit() {
           ${f.recommendation ? `<div class="mini muted">→ ${esc(f.recommendation)}</div>` : ''}
           ${f.categories_affected ? `<div class="mini">categories: ${f.categories_affected.map(esc).join(', ')}</div>` : ''}</div>`).join('') : '<span class="mini muted">No findings — clean.</span>'}
       </div>`).join('')}
-    <div class="field-row"><button class="btn" onclick="navigator.clipboard.writeText(reportMd).then(()=>toast('report copied','good'))">Copy markdown report</button>
+    <div class="field-row"><button class="btn" onclick="navigator.clipboard.writeText(window.reportMd || '').then(()=>toast('report copied','good'))">Copy markdown report</button>
     <span class="mini muted" style="align-self:center">also written to data/reports/ by the audit workflow</span></div>`;
-  window.reportMd = markdown;
+  if (markdown) window.reportMd = markdown;
 }
-async function loadAuditLight() { /* placeholder for future hooks */ }
+
+async function loadAudit() {
+  const { report, source, markdown } = await api(`/api/audit?location=${state.location}`);
+  renderIntegrityDashboard(report);
+  renderAuditMetaAndSections(report, source, markdown);
+  renderOverviewIntegrityBanner(report);
+}
+
+async function loadAuditOverview() {
+  try {
+    const { report } = await api(`/api/audit?location=${state.location}`);
+    renderOverviewIntegrityBanner(report);
+  } catch (e) {
+    console.warn('loadAuditOverview error:', e);
+  }
+}
+
+async function exportAuditReport() {
+  try {
+    const btn = $('#exportAuditBtn');
+    if (btn) { btn.disabled = true; btn.textContent = 'Exporting…'; }
+    const r = await api('/api/export', { body: { location: state.location, scope: 'audit-report' } });
+    toast(`Audit report exported to data/reports/ (${r.filename})`, 'good');
+    loadFiles();
+    if (btn) { btn.disabled = false; btn.textContent = 'Export Audit Report'; }
+  } catch (e) {
+    toast('Failed to export audit report: ' + e.message, 'bad');
+    const btn = $('#exportAuditBtn');
+    if (btn) { btn.disabled = false; btn.textContent = 'Export Audit Report'; }
+  }
+}
+
 $('#runAuditBtn').onclick = loadAudit;
 
 /* ───────────────── import/export ───────────────── */
@@ -400,9 +714,11 @@ $('#doImport').onclick = async () => {
 };
 $('#doExport').onclick = async () => {
   try {
-    const r = await api('/api/export', { body: { location: state.location, scope: $('#expScope').value, format: $('#expFormat').value } });
-    $('#exportResult').innerHTML = `<div class="result-box"><b>Exported</b> <a href="/api/download?file=${encodeURIComponent(r.filename)}" download class="mono">${esc(r.filename)}</a> · ${(r.bytes / 1024).toFixed(1)} KB ${r.verified !== undefined ? '· workflows verified: ' + (r.verified ? '✓' : '✗') : ''}</div>`;
-    toast('Export written to data/exports/', 'good');
+    const scope = $('#expScope').value;
+    const r = await api('/api/export', { body: { location: state.location, scope, format: $('#expFormat').value } });
+    const dir = scope === 'audit-report' || scope === 'audit' ? 'reports' : 'exports';
+    $('#exportResult').innerHTML = `<div class="result-box"><b>Exported ${scope}</b> <a href="/api/download?dir=${dir}&file=${encodeURIComponent(r.filename)}" download class="mono">${esc(r.filename)}</a> · ${(r.bytes / 1024).toFixed(1)} KB ${r.integrity_score ? `· Integrity Score: ${r.integrity_score.score}/100 (${r.integrity_score.label})` : ''} ${r.verified !== undefined ? '· workflows verified: ' + (r.verified ? '✓' : '✗') : ''}</div>`;
+    toast('Export written to ' + (dir === 'reports' ? 'data/reports/' : 'data/exports/'), 'good');
     loadFiles();
   } catch (e) { toast('Export failed: ' + e.message, 'bad'); }
 };

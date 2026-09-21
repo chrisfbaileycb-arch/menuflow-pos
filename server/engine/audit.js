@@ -386,6 +386,335 @@ function coursingIssues(menu) {
   return out;
 }
 
+/**
+ * 1. Price Collisions: Identical base prices on items with disparate underlying food costs.
+ */
+function priceCollisions(menu) {
+  const out = [];
+  const activeItems = (menu.items || []).filter(i => !i.archived);
+
+  const getCostTier = (item) => {
+    const text = `${item.name} ${item.description || ''}`.toLowerCase();
+    if (/steak|ribeye|tenderloin|filet|salmon|seafood|shrimp|meat lovers|bbq chicken|buffalo chicken|prosciutto|veal|lamb/i.test(text)) {
+      return { tier: 3, label: 'Premium Protein Tier', score: 3 };
+    }
+    if (/chicken|sausage|pepperoni|meatball|ham|bacon|pork|beef|calzone|stromboli/i.test(text)) {
+      return { tier: 2, label: 'Standard Protein Tier', score: 2 };
+    }
+    return { tier: 1, label: 'Base / Vegetarian Tier', score: 1 };
+  };
+
+  const byPrice = new Map();
+  for (const item of activeItems) {
+    if (item.price == null || item.price === 0) continue;
+    if (!byPrice.has(item.price)) byPrice.set(item.price, []);
+    byPrice.get(item.price).push(item);
+  }
+
+  for (const [price, items] of byPrice) {
+    if (items.length < 2) continue;
+    // Pairwise comparison to find disparate food-cost items with identical price
+    const seenHigher = new Set();
+    for (let i = 0; i < items.length; i++) {
+      for (let j = i + 1; j < items.length; j++) {
+        const a = items[i], b = items[j];
+        const costA = getCostTier(a), costB = getCostTier(b);
+        const diff = Math.abs(costA.score - costB.score);
+        if (diff >= 1) {
+          const higher = costA.score > costB.score ? a : b;
+          const lower = costA.score > costB.score ? b : a;
+          const higherTier = costA.score > costB.score ? costA : costB;
+          const lowerTier = costA.score > costB.score ? costB : costA;
+
+          if (seenHigher.has(higher.id)) continue;
+          seenHigher.add(higher.id);
+
+          const recommendedPrice = price + (diff * 150);
+          out.push({
+            type: 'PRICE_COLLISION',
+            severity: diff >= 2 ? 'CRITICAL' : 'HIGH',
+            item: higher.name,
+            itemId: higher.id,
+            colliding_with: lower.name,
+            collidingItemId: lower.id,
+            category: higher.category,
+            price,
+            recommended_price: recommendedPrice,
+            margin_bleed_cents: diff * 150,
+            margin_leak: `$${((diff * 150) / 100).toFixed(2)} unit margin compression`,
+            cost_differential: `${higher.name} (${higherTier.label}) vs ${lower.name} (${lowerTier.label})`,
+            explanation: `Identical base price ($${(price / 100).toFixed(2)}) for items with disparate underlying food costs: '${higher.name}' incurs higher protein/recipe costs than '${lower.name}', compressing gross margin.`,
+            recommendation: `Increase '${higher.name}' to $${(recommendedPrice / 100).toFixed(2)} to maintain margin target parity.`,
+            patch: {
+              action: 'set_item_price',
+              itemId: higher.id,
+              itemName: higher.name,
+              currentPrice: price,
+              recommendedPrice,
+              value: recommendedPrice,
+              summary: `Increase '${higher.name}' price from $${(price / 100).toFixed(2)} → $${(recommendedPrice / 100).toFixed(2)}`
+            }
+          });
+        }
+      }
+    }
+  }
+  return out;
+}
+
+/**
+ * 2. Side-Car Reconstruction: Adding modifiers/sides reconstructs a signature or standalone item for less than the menu price.
+ */
+function sideCarReconstruction(menu) {
+  const out = [];
+  const activeItems = (menu.items || []).filter(i => !i.archived);
+  const groups = menu.modifierGroups || [];
+  const groupsMap = new Map(groups.map(g => [g.id, g]));
+
+  // Check A: Standalone menu items available as discounted side-car modifiers
+  for (const item of activeItems) {
+    const itemNameNorm = M.normName(item.name);
+    for (const group of groups) {
+      for (const opt of group.options || []) {
+        const optNameNorm = M.normName(opt.name);
+        const matches = optNameNorm === itemNameNorm ||
+          (optNameNorm.includes('knot') && itemNameNorm.includes('knot')) ||
+          (optNameNorm.includes('wing') && itemNameNorm.includes('wing')) ||
+          (optNameNorm.includes('salad') && itemNameNorm.includes('salad'));
+
+        if (matches) {
+          const sidePrice = Math.max(0, opt.priceDelta || 0);
+          const effectiveSidePrice = group.included > 0 ? 0 : sidePrice;
+          if (item.price > effectiveSidePrice) {
+            const marginLeak = item.price - effectiveSidePrice;
+            if (marginLeak >= 150) {
+              const recommendedDelta = item.price;
+              out.push({
+                type: 'SIDE_CAR_RECONSTRUCTION',
+                severity: marginLeak >= 250 ? 'CRITICAL' : 'HIGH',
+                item: item.name,
+                itemId: item.id,
+                group: group.name,
+                groupId: group.id,
+                option: opt.name,
+                optionId: opt.id,
+                menu_price: item.price,
+                reconstructed_price: effectiveSidePrice,
+                margin_bleed_cents: marginLeak,
+                margin_leak: `$${(marginLeak / 100).toFixed(2)} leak per side-car order`,
+                explanation: `'${opt.name}' is available in modifier group '${group.name}' for $${(effectiveSidePrice / 100).toFixed(2)}${group.included > 0 ? ' (included free)' : ''}, while standalone menu item '${item.name}' is priced at $${(item.price / 100).toFixed(2)}. Guests can reconstruct the full dish as a side-car for a substantial discount.`,
+                recommendation: `Align '${opt.name}' price delta in '${group.name}' to +$${(recommendedDelta / 100).toFixed(2)} to eliminate side-car arbitrage.`,
+                patch: {
+                  action: 'adjust_modifier_delta',
+                  groupId: group.id,
+                  groupName: group.name,
+                  optionId: opt.id,
+                  optionName: opt.name,
+                  currentDelta: opt.priceDelta || 0,
+                  recommendedDelta,
+                  value: recommendedDelta,
+                  summary: `Set '${opt.name}' in group '${group.name}' delta to +$${(recommendedDelta / 100).toFixed(2)}`
+                }
+              });
+            }
+          }
+        }
+      }
+    }
+  }
+
+  // Check B: Base Item + Modifier Reconstructing Signature Item for less than menu price
+  for (const baseItem of activeItems) {
+    for (const gid of baseItem.modifierGroups || []) {
+      const g = groupsMap.get(gid);
+      if (!g) continue;
+      for (const opt of g.options || []) {
+        const optNorm = M.normName(opt.name);
+        for (const sigItem of activeItems) {
+          if (sigItem.id === baseItem.id) continue;
+          const sigNorm = M.normName(sigItem.name);
+          const isReconstruction = sigNorm.includes(optNorm) &&
+            (sigNorm.includes(M.normName(baseItem.category)) ||
+             baseItem.name.split(' ').some(w => w.length > 3 && sigNorm.includes(M.normName(w))));
+
+          if (isReconstruction) {
+            const reconstructedPrice = baseItem.price + (opt.priceDelta || 0);
+            if (reconstructedPrice < sigItem.price) {
+              const leak = sigItem.price - reconstructedPrice;
+              if (leak >= 100) {
+                const neededDelta = sigItem.price - baseItem.price;
+                out.push({
+                  type: 'SIDE_CAR_RECONSTRUCTION',
+                  severity: leak >= 250 ? 'CRITICAL' : 'HIGH',
+                  signature_item: sigItem.name,
+                  signatureItemId: sigItem.id,
+                  base_item: baseItem.name,
+                  baseItemId: baseItem.id,
+                  modifier: opt.name,
+                  group: g.name,
+                  groupId: g.id,
+                  optionId: opt.id,
+                  menu_price: sigItem.price,
+                  reconstructed_price: reconstructedPrice,
+                  margin_bleed_cents: leak,
+                  margin_leak: `$${(leak / 100).toFixed(2)} discount loophole`,
+                  explanation: `Adding '${opt.name}' (+$${((opt.priceDelta || 0) / 100).toFixed(2)}) to '${baseItem.name}' ($${(baseItem.price / 100).toFixed(2)}) reconstructs signature '${sigItem.name}' for $${(reconstructedPrice / 100).toFixed(2)}, which is $${(leak / 100).toFixed(2)} cheaper than menu price ($${(sigItem.price / 100).toFixed(2)}).`,
+                  recommendation: `Increase '${opt.name}' modifier delta to +$${(neededDelta / 100).toFixed(2)} on '${baseItem.name}'.`,
+                  patch: {
+                    action: 'adjust_modifier_delta',
+                    groupId: g.id,
+                    groupName: g.name,
+                    optionId: opt.id,
+                    optionName: opt.name,
+                    currentDelta: opt.priceDelta || 0,
+                    recommendedDelta: neededDelta,
+                    value: neededDelta,
+                    summary: `Increase '${opt.name}' delta in '${g.name}' to +$${(neededDelta / 100).toFixed(2)}`
+                  }
+                });
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  return out;
+}
+
+/**
+ * 3. Unrestricted Protein / Premium Modifier Swaps: Unconstrained or free substitutions causing margin bleed.
+ */
+function unrestrictedProteinSwaps(menu) {
+  const out = [];
+  const groups = menu.modifierGroups || [];
+  const premiumProteinRegex = /grilled chicken|chicken|steak|ribeye|shrimp|salmon|bacon|prosciutto|sausage|meatball/i;
+
+  for (const g of groups) {
+    const isProteinGroup = /protein|meat|topping|extra/i.test(g.name);
+
+    // Free included choices on high-cost protein options
+    if (g.included > 0) {
+      for (const opt of g.options || []) {
+        if (premiumProteinRegex.test(opt.name)) {
+          const bleed = opt.priceDelta > 0 ? opt.priceDelta : 300;
+          out.push({
+            type: 'UNRESTRICTED_PROTEIN_SWAP',
+            severity: 'CRITICAL',
+            group: g.name,
+            groupId: g.id,
+            option: opt.name,
+            optionId: opt.id,
+            margin_bleed_cents: bleed,
+            margin_leak: `$${(bleed / 100).toFixed(2)} free protein bleed`,
+            explanation: `Modifier group '${g.name}' allows ${g.included} free included choice(s) without excluding high-cost protein '${opt.name}'. Guests can swap or select premium proteins with zero incremental margin coverage.`,
+            recommendation: `Set included=0 on '${g.name}' or mandate an upcharge of +$${(bleed / 100).toFixed(2)} for '${opt.name}'.`,
+            patch: {
+              action: 'set_group_included',
+              groupId: g.id,
+              groupName: g.name,
+              currentIncluded: g.included,
+              recommendedIncluded: 0,
+              value: 0,
+              summary: `Set included=0 on '${g.name}' to close free protein swap loophole`
+            }
+          });
+        }
+      }
+    }
+
+    // Protein group with zero price delta on premium proteins
+    if (isProteinGroup) {
+      for (const opt of g.options || []) {
+        if (premiumProteinRegex.test(opt.name) && (opt.priceDelta == null || opt.priceDelta === 0)) {
+          out.push({
+            type: 'UNRESTRICTED_PROTEIN_SWAP',
+            severity: 'HIGH',
+            group: g.name,
+            groupId: g.id,
+            option: opt.name,
+            optionId: opt.id,
+            margin_bleed_cents: 300,
+            margin_leak: '$3.00 uncharged margin bleed',
+            explanation: `Premium protein '${opt.name}' in group '${g.name}' has a $0.00 price delta. Unrestricted additions/swaps cause direct food cost bleed.`,
+            recommendation: `Establish a minimum surcharge of +$3.00 for '${opt.name}' in '${g.name}'.`,
+            patch: {
+              action: 'adjust_modifier_delta',
+              groupId: g.id,
+              groupName: g.name,
+              optionId: opt.id,
+              optionName: opt.name,
+              currentDelta: 0,
+              recommendedDelta: 300,
+              value: 300,
+              summary: `Set '${opt.name}' price delta to +$3.00 in '${g.name}'`
+            }
+          });
+        }
+      }
+    }
+
+    // Excessive / unbounded protein choices
+    if (isProteinGroup && (g.maxChoices === 0 || g.maxChoices > 4)) {
+      const hasPremium = (g.options || []).some(o => premiumProteinRegex.test(o.name));
+      if (hasPremium) {
+        out.push({
+          type: 'UNRESTRICTED_PROTEIN_SWAP',
+          severity: 'MEDIUM',
+          group: g.name,
+          groupId: g.id,
+          margin_bleed_cents: 200,
+          margin_leak: 'Unbounded portion leakage',
+          explanation: `Modifier group '${g.name}' has unconstrained maxChoices (${g.maxChoices === 0 ? 'unlimited' : g.maxChoices}) on high-cost proteins, exposing orders to ingredient stacking without portion caps.`,
+          recommendation: `Cap maxChoices to 2 or 3 to enforce portion control and kitchen pacing.`,
+          patch: {
+            action: 'set_group_max_choices',
+            groupId: g.id,
+            groupName: g.name,
+            currentMaxChoices: g.maxChoices,
+            recommendedMaxChoices: 2,
+            value: 2,
+            summary: `Cap maxChoices on '${g.name}' to 2`
+          }
+        });
+      }
+    }
+  }
+
+  return out;
+}
+
+/**
+ * 4. Compute Menu Integrity Score (1–100 radial score dial).
+ * Red for < 60, Amber for 60–84, Green for 85–100.
+ */
+function computeMenuIntegrity(menu, allFindings) {
+  let score = 100;
+  for (const f of allFindings) {
+    if (f.severity === 'CRITICAL') score -= 12;
+    else if (f.severity === 'HIGH') score -= 6;
+    else if (f.severity === 'MEDIUM') score -= 2;
+    else if (f.severity === 'LOW') score -= 1;
+  }
+  score = Math.max(1, Math.min(100, Math.round(score)));
+
+  const rating = score < 60 ? 'CRITICAL' : score < 85 ? 'AMBER' : 'GREEN';
+  const color = score < 60 ? '#ff5c5c' : score < 85 ? '#ffb454' : '#41e0a0';
+  const label = score < 60
+    ? 'Critical Vulnerabilities'
+    : score < 85
+      ? 'Moderate Integrity'
+      : 'Optimal Integrity';
+
+  return {
+    score,
+    rating,
+    color,
+    label,
+  };
+}
+
 /** Isolation check (post-fix verifier): does `modifierName` still touch >1 category? */
 function isolationCheck(menu, modifierName) {
   // Record-level: does any SINGLE modifier record containing the named option
@@ -419,7 +748,13 @@ function fullAudit(menu) {
   const coursing = coursingIssues(menu);
   const redundancy10 = redundantModifiers(menu);
 
+  const pCollisions = priceCollisions(menu);
+  const sideCar = sideCarReconstruction(menu);
+  const proteinSwaps = unrestrictedProteinSwaps(menu);
+  const detectedVulns = [...pCollisions, ...sideCar, ...proteinSwaps];
+
   const sections = [
+    { key: 'vulnerabilities_margin_leaks', title: 'Active Margin Leaks & Rule Vulnerabilities (Collisions, Side-Car, Protein Swaps)', findings: detectedVulns },
     { key: 'cross_contamination', title: 'Modifier Cross-Contamination (the pepperoni problem — name scan)', findings: cross },
     { key: 'isolation', title: 'Isolation Rule (per-record spans; blocks publish at HIGH)', findings: iso },
     { key: 'maintenance_redundancy', title: 'Redundant Modifier Maintenance Risk', findings: maint },
@@ -431,8 +766,22 @@ function fullAudit(menu) {
     { key: 'coursing', title: 'Coursing Issues', findings: coursing },
   ];
   const all = sections.flatMap(s => s.findings.map(f => ({ ...f, section: s.title })));
-  const counts = { HIGH: 0, MEDIUM: 0, LOW: 0 };
+  const counts = { CRITICAL: 0, HIGH: 0, MEDIUM: 0, LOW: 0 };
   for (const f of all) { counts[f.severity || 'LOW'] = (counts[f.severity || 'LOW'] || 0) + 1; }
+
+  const integrity = computeMenuIntegrity(menu, all);
+
+  const critVulns = detectedVulns.filter(v => v.severity === 'CRITICAL');
+  const highVulns = detectedVulns.filter(v => v.severity === 'HIGH');
+  const medVulns = detectedVulns.filter(v => v.severity === 'MEDIUM');
+
+  const vulnerabilities = {
+    critical: critVulns,
+    high: highVulns,
+    medium: medVulns,
+    total: detectedVulns.length,
+    items: detectedVulns,
+  };
 
   return {
     report_type: 'MenuFlow Full Menu Audit',
@@ -441,10 +790,18 @@ function fullAudit(menu) {
     scanned: { total_items: menu.items.length, categories: menu.categories.length, modifier_groups: menu.modifierGroups.length },
     summary: {
       total_findings: all.length,
-      high: counts.HIGH, medium: counts.MEDIUM, low: counts.LOW,
-      action_required: (counts.HIGH + counts.MEDIUM) > 0,
+      critical: counts.CRITICAL,
+      high: counts.HIGH,
+      medium: counts.MEDIUM,
+      low: counts.LOW,
+      integrity_score: integrity.score,
+      integrity_rating: integrity.rating,
+      vulnerabilities_count: detectedVulns.length,
+      action_required: (counts.HIGH + counts.MEDIUM + counts.CRITICAL) > 0,
       isolation_violations: iso.length,
     },
+    integrity_score: integrity,
+    vulnerabilities,
     protocol: 'Audit before action. Present this report to the client, obtain written approval, then shadow-build; never modify the live system directly.',
     sections,
     legacy_redundancy_gt10: redundancy10,
@@ -458,11 +815,35 @@ function renderAuditMarkdown(report) {
   L.push('');
   L.push(`*Generated ${new Date().toISOString()} — MenuFlow POS audit engine (Signal F Holdings)*`);
   L.push('');
-  L.push(`**Items scanned:** ${report.scanned.total_items} · **Findings:** ${report.summary.total_findings} ` +
-    `(HIGH ${report.summary.high} / MEDIUM ${report.summary.medium} / LOW ${report.summary.low})`);
+  if (report.integrity_score) {
+    L.push(`## Menu Integrity Score: ${report.integrity_score.score}/100 [${report.integrity_score.rating}]`);
+    L.push(`- **Integrity Status:** ${report.integrity_score.label}`);
+    if (report.vulnerabilities) {
+      L.push(`- **Active Margin Leaks:** ${report.vulnerabilities.total} detected (CRITICAL ${report.vulnerabilities.critical.length} / HIGH ${report.vulnerabilities.high.length} / MEDIUM ${report.vulnerabilities.medium.length})`);
+    }
+    L.push('');
+  }
+  L.push(`**Items scanned:** ${report.scanned.total_items} · **Total Findings:** ${report.summary.total_findings} ` +
+    `(CRITICAL ${report.summary.critical || 0} / HIGH ${report.summary.high} / MEDIUM ${report.summary.medium} / LOW ${report.summary.low})`);
   L.push('');
   L.push(`> ${report.protocol}`);
   L.push('');
+
+  if (report.vulnerabilities && report.vulnerabilities.items && report.vulnerabilities.items.length) {
+    L.push('## Active Margin Leaks & Detected Vulnerabilities');
+    L.push('');
+    for (const v of report.vulnerabilities.items) {
+      L.push(`### [${v.severity}] ${v.type.replace(/_/g, ' ')} — ${v.item || v.signature_item || v.group || ''}`);
+      if (v.margin_leak) L.push(`- **Margin Bleed Impact:** ${v.margin_leak}`);
+      L.push(`- **Issue:** ${v.explanation}`);
+      L.push(`- **Recommendation:** ${v.recommendation}`);
+      if (v.patch) {
+        L.push(`- **Recommended Patch:** ${v.patch.summary || JSON.stringify(v.patch)}`);
+      }
+      L.push('');
+    }
+  }
+
   for (const s of report.sections) {
     L.push(`## ${s.title}`);
     L.push('');
@@ -487,4 +868,5 @@ module.exports = {
   optionRows, modifierCrossContamination, isolationViolations, redundantModifiers, modifierMaintenanceRisk,
   duplicateItemNames, midnightViolations, cascadeRisk86, pricingRuleConflicts,
   emptyModifierGroups, coursingIssues, isolationCheck, fullAudit, renderAuditMarkdown,
+  priceCollisions, sideCarReconstruction, unrestrictedProteinSwaps, computeMenuIntegrity,
 };

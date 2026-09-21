@@ -196,6 +196,68 @@ async function handle(req, res, url) {
     return json(res, 200, { report, source: entry.staging ? 'staging' : 'live', markdown: Audit.renderAuditMarkdown(report) });
   }
 
+  if (p === '/api/audit/patch' && req.method === 'POST') {
+    const body = await readBody(req);
+    const locId = body.location || s.locations[0].id;
+    const entry = store.liveMenu(locId);
+    const workbench = entry.staging ? store.clone(entry.staging) : store.clone(entry.live);
+    try {
+      const patch = body.patch;
+      if (!patch || !patch.action) return json(res, 400, { error: 'Invalid patch specification' });
+
+      let summary = patch.summary || '';
+      let applied = false;
+      if (patch.action === 'set_item_price') {
+        const item = (workbench.items || []).find(i => i.id === patch.itemId || (patch.itemName && M.normName(i.name) === M.normName(patch.itemName)));
+        if (!item) return json(res, 404, { error: `Item not found for patch: ${patch.itemId || patch.itemName}` });
+        const oldPrice = item.price;
+        item.price = Number(patch.value ?? patch.recommendedPrice);
+        applied = true;
+        summary = summary || `Updated '${item.name}' price from $${(oldPrice / 100).toFixed(2)} to $${(item.price / 100).toFixed(2)}`;
+      } else if (patch.action === 'adjust_modifier_delta' || patch.action === 'set_modifier_delta') {
+        const g = (workbench.modifierGroups || []).find(g => g.id === patch.groupId || (patch.groupName && M.normName(g.name) === M.normName(patch.groupName)));
+        if (!g) return json(res, 404, { error: `Modifier group not found for patch: ${patch.groupId || patch.groupName}` });
+        const opt = (g.options || []).find(o => o.id === patch.optionId || (patch.optionName && M.normName(o.name) === M.normName(patch.optionName)));
+        if (!opt) return json(res, 404, { error: `Modifier option not found for patch: ${patch.optionId || patch.optionName}` });
+        const oldDelta = opt.priceDelta || 0;
+        opt.priceDelta = Number(patch.value ?? patch.recommendedDelta);
+        applied = true;
+        summary = summary || `Updated '${opt.name}' delta in '${g.name}' from +$${(oldDelta / 100).toFixed(2)} to +$${(opt.priceDelta / 100).toFixed(2)}`;
+      } else if (patch.action === 'set_group_included') {
+        const g = (workbench.modifierGroups || []).find(g => g.id === patch.groupId || (patch.groupName && M.normName(g.name) === M.normName(patch.groupName)));
+        if (!g) return json(res, 404, { error: `Modifier group not found for patch: ${patch.groupId || patch.groupName}` });
+        g.included = Number(patch.value ?? patch.recommendedIncluded);
+        applied = true;
+        summary = summary || `Set included count to ${g.included} on '${g.name}'`;
+      } else if (patch.action === 'set_group_max_choices') {
+        const g = (workbench.modifierGroups || []).find(g => g.id === patch.groupId || (patch.groupName && M.normName(g.name) === M.normName(patch.groupName)));
+        if (!g) return json(res, 404, { error: `Modifier group not found for patch: ${patch.groupId || patch.groupName}` });
+        g.maxChoices = Number(patch.value ?? patch.recommendedMaxChoices);
+        applied = true;
+        summary = summary || `Capped maxChoices to ${g.maxChoices} on '${g.name}'`;
+      } else {
+        return json(res, 400, { error: `Unsupported patch action: ${patch.action}` });
+      }
+
+      entry.staging = workbench;
+      entry.stagingNote = `Patch: ${summary || patch.action}`;
+      store.flush();
+
+      const report = Audit.fullAudit(workbench);
+      return json(res, 200, {
+        ok: true,
+        message: `Patch applied: ${summary}`,
+        summary,
+        applied,
+        report,
+        source: 'staging',
+        markdown: Audit.renderAuditMarkdown(report),
+        integrity_score: report.integrity_score,
+        vulnerabilities: report.vulnerabilities,
+      });
+    } catch (e) { return json(res, 400, { error: e.message }); }
+  }
+
   // ── import / export ──
   if (p === '/api/import' && req.method === 'POST') {
     const body = await readBody(req);
@@ -239,6 +301,18 @@ async function handle(req, res, url) {
       if (body.scope === 'project') {
         const out = IE.exportProject();
         return json(res, 200, { ok: true, ...out });
+      }
+      if (body.scope === 'audit' || body.scope === 'audit-report') {
+        const menu = body.source === 'staging' && entry.staging ? entry.staging : (entry.staging || entry.live);
+        const report = Audit.fullAudit(menu);
+        const md = Audit.renderAuditMarkdown(report);
+        const reportsDir = path.join(store.DATA_DIR, 'reports');
+        fs.mkdirSync(reportsDir, { recursive: true });
+        const stamp = new Date().toISOString().replace(/[:.]/g, '-');
+        const filename = `audit-integrity-report-${stamp}.md`;
+        const file = path.join(reportsDir, filename);
+        fs.writeFileSync(file, md);
+        return json(res, 200, { ok: true, filename, path: file, bytes: Buffer.byteLength(md), format: 'markdown', report, integrity_score: report.integrity_score });
       }
       const menu = body.scope === 'staging' && entry.staging ? entry.staging : entry.live;
       const out = IE.exportMenu(menu, body.format || 'canonical-json', location.platform || 'heartland');

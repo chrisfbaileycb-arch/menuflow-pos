@@ -10,7 +10,10 @@ let server;
 
 function start() {
   return new Promise((resolve, reject) => {
-    server = spawn(process.execPath, [path.join(__dirname, '..', 'server', 'server.js'), String(PORT)], { stdio: ['ignore', 'pipe', 'pipe'] });
+    server = spawn(process.execPath, [path.join(__dirname, '..', 'server', 'server.js'), String(PORT)], {
+      stdio: ['ignore', 'pipe', 'pipe'],
+      env: { ...process.env, PORT: String(PORT) },
+    });
     let err = '';
     server.stderr.on('data', d => { err += d; });
     const tryConnect = (tries) => fetch(`${BASE}/api/health`).then(r => r.json()).then(() => resolve()).catch(() => {
@@ -118,8 +121,18 @@ async function j(p, opts) {
     const { body } = await j('/api/audit?location=loc_marios');
     ok(body.report.sections.length >= 8);
     ok(body.markdown.includes('# Menu Audit Report'));
+    ok(body.report.integrity_score, 'integrity_score on report');
+    ok(body.report.vulnerabilities, 'vulnerabilities on report');
     const cc = body.report.sections.find(s => s.key === 'cross_contamination');
     ok(cc.findings.some(f => /pepperoni/i.test(f.modifier)), 'pepperoni problem surfaced via API');
+
+    const vWithPatch = body.report.vulnerabilities.items.find(i => i.patch);
+    if (vWithPatch) {
+      const patchRes = await j('/api/audit/patch', { body: { location: 'loc_marios', patch: vWithPatch.patch } });
+      eq(patchRes.status, 200);
+      ok(patchRes.body.ok, 'patch executed successfully');
+      ok(patchRes.body.integrity_score, 'updated integrity score returned');
+    }
   });
 
   await async_test('new location: create → run workflow → stage → publish (empty→first item)', async () => {

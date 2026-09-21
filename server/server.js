@@ -8,7 +8,7 @@ const path = require('path');
 const { handle } = require('./api');
 const store = require('./store');
 
-const PORT = process.env.PORT || parseInt(process.argv[2] || '3000', 10);
+const PORT = parseInt(process.argv[2] || process.env.PORT || '3000', 10);
 const WEB = path.join(__dirname, '..', 'web');
 const MIME = {
   '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8',

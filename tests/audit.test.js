@@ -126,6 +126,17 @@ test('extended scans fire on seeded patterns (empty groups, dead force, rush+hol
   ok(A.coursingIssues(menu).filter(f => f.type === 'COURSE_UNASSIGNED').length >= 5, 'course-0 items detected');
   ok(A.isolationViolations(menu).length >= 2, 'record-level isolation violations detected');
   ok(A.midnightViolations(menu).length >= 3, 'midnight violations (schedules+rules+legacy ranges) detected');
+  const full = A.fullAudit(menu);
+  ok(full.integrity_score, 'integrity_score present');
+  ok(typeof full.integrity_score.score === 'number' && full.integrity_score.score >= 0 && full.integrity_score.score <= 100, 'numeric integrity score in [0, 100]');
+  ok(full.vulnerabilities, 'vulnerabilities present');
+  ok(Array.isArray(full.vulnerabilities.items), 'vulnerabilities items array');
+  const priceCollisions = A.priceCollisions(menu);
+  ok(Array.isArray(priceCollisions), 'price collisions array');
+  const sidecar = A.sideCarReconstruction(menu);
+  ok(Array.isArray(sidecar), 'sidecar reconstruction array');
+  const swaps = A.unrestrictedProteinSwaps(menu);
+  ok(Array.isArray(swaps), 'protein swaps array');
 });
 
 fs.rmSync(tmp, { recursive: true, force: true });

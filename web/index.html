@@ -4,6 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>MenuFlow POS — Multi-Platform Operations Console</title>
+<meta name="description" content="Multi-platform restaurant POS operations console with executable workflows, menu integrity & vulnerability audit dial, margin leak detection, and import/export.">
+<meta property="og:title" content="MenuFlow POS — Multi-Platform Operations Console">
+<meta property="og:description" content="Multi-platform restaurant POS operations console with executable workflows, menu integrity & vulnerability audit dial, margin leak detection, and import/export.">
 <link rel="stylesheet" href="styles.css">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%23101418'/><path d='M7 22V10l9 7 9-7v12' stroke='%2341e0a0' stroke-width='2.6' fill='none' stroke-linecap='round' stroke-linejoin='round'/></svg>">
 </head>
@@ -42,6 +45,7 @@
 
 <main>
   <section id="view-workflows" class="view active">
+    <div id="overviewIntegrityBanner" class="overview-integrity-card"></div>
     <div class="wf-layout">
       <aside class="wf-list-pane">
         <div class="wf-filter">
@@ -75,7 +79,9 @@
       <div id="auditMeta" class="muted"></div>
       <div class="grow"></div>
       <button class="btn primary" id="runAuditBtn">Run full audit</button>
+      <button class="btn blue" id="exportAuditBtn">Export Audit Report</button>
     </div>
+    <div id="integrityGaugeSection"></div>
     <div id="auditBody"></div>
   </section>
 
@@ -120,6 +126,7 @@
           <label>Scope <select id="expScope">
             <option value="live">live menu</option>
             <option value="staging">staged workbench</option>
+            <option value="audit-report">audit integrity &amp; vulnerability report</option>
             <option value="workflows">workflow bundle (verified)</option>
             <option value="project">full project backup</option>
           </select></label>
