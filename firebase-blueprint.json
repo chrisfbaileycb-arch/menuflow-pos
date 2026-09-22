@@ -1,0 +1,124 @@
+{
+  "entities": {
+    "User": {
+      "title": "User Profile",
+      "description": "Authenticated user profile and role assignment",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "maxLength": 128 },
+        "email": { "type": "string", "maxLength": 256 },
+        "displayName": { "type": "string", "maxLength": 128 },
+        "role": { "type": "string", "enum": ["admin", "manager", "operator", "viewer"] },
+        "createdAt": { "type": "string", "maxLength": 64 }
+      },
+      "required": ["uid", "email", "role", "createdAt"]
+    },
+    "Location": {
+      "title": "Location",
+      "description": "Store location configuration and POS platform target",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 64 },
+        "orgId": { "type": "string", "maxLength": 64 },
+        "name": { "type": "string", "maxLength": 128 },
+        "platform": { "type": "string", "enum": ["toast", "square", "clover", "lightspeed", "heartland", "revel", "spoton", "shift4", "aloha"] },
+        "timezone": { "type": "string", "maxLength": 64 },
+        "createdAt": { "type": "string", "maxLength": 64 }
+      },
+      "required": ["id", "name", "platform", "createdAt"]
+    },
+    "MenuRecord": {
+      "title": "Menu Record",
+      "description": "Live and staged menu snapshot for a location",
+      "type": "object",
+      "properties": {
+        "locationId": { "type": "string", "maxLength": 64 },
+        "version": { "type": "integer" },
+        "live": { "type": "object" },
+        "staging": { "type": "object" },
+        "stagingNote": { "type": "string", "maxLength": 512 },
+        "updatedAt": { "type": "string", "maxLength": 64 }
+      },
+      "required": ["locationId", "version", "updatedAt"]
+    },
+    "WorkflowRun": {
+      "title": "Workflow Run",
+      "description": "Audit and execution run history for POS operations",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 64 },
+        "workflowId": { "type": "string", "maxLength": 128 },
+        "platform": { "type": "string", "maxLength": 64 },
+        "locationId": { "type": "string", "maxLength": 64 },
+        "mode": { "type": "string", "enum": ["dry", "apply"] },
+        "status": { "type": "string", "enum": ["pending", "running", "success", "failed", "blocked"] },
+        "summary": { "type": "string", "maxLength": 1024 },
+        "actor": { "type": "string", "maxLength": 128 },
+        "startedAt": { "type": "string", "maxLength": 64 },
+        "finishedAt": { "type": "string", "maxLength": 64 },
+        "steps": { "type": "array" }
+      },
+      "required": ["id", "workflowId", "platform", "locationId", "mode", "status", "startedAt"]
+    },
+    "Approval": {
+      "title": "Approval",
+      "description": "Gate approval authorization for live menu staging promotions",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 64 },
+        "runId": { "type": "string", "maxLength": 64 },
+        "stepId": { "type": "string", "maxLength": 64 },
+        "approved": { "type": "boolean" },
+        "actor": { "type": "string", "maxLength": 128 },
+        "note": { "type": "string", "maxLength": 512 },
+        "at": { "type": "string", "maxLength": 64 }
+      },
+      "required": ["id", "runId", "stepId", "approved", "actor", "at"]
+    },
+    "AuditReport": {
+      "title": "Audit Report",
+      "description": "Menu integrity and margin leak evaluation",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 64 },
+        "locationId": { "type": "string", "maxLength": 64 },
+        "score": { "type": "integer" },
+        "summary": { "type": "object" },
+        "vulnerabilities": { "type": "object" },
+        "timestamp": { "type": "string", "maxLength": 64 },
+        "source": { "type": "string", "enum": ["live", "staging"] }
+      },
+      "required": ["id", "locationId", "score", "timestamp"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": { "$ref": "#/entities/User" },
+      "description": "User profiles and RBAC role assignments"
+    },
+    "/locations/{locationId}": {
+      "schema": { "$ref": "#/entities/Location" },
+      "description": "Store locations managed within the POS console"
+    },
+    "/menus/{locationId}": {
+      "schema": { "$ref": "#/entities/MenuRecord" },
+      "description": "Live and staging menu trees indexed by locationId"
+    },
+    "/runs/{runId}": {
+      "schema": { "$ref": "#/entities/WorkflowRun" },
+      "description": "Execution run history and audit trails"
+    },
+    "/approvals/{approvalId}": {
+      "schema": { "$ref": "#/entities/Approval" },
+      "description": "Gate approvals recorded by authorized operators"
+    },
+    "/audits/{auditId}": {
+      "schema": { "$ref": "#/entities/AuditReport" },
+      "description": "Integrity score and vulnerability audit records"
+    },
+    "/test/{docId}": {
+      "schema": "test",
+      "description": "Connection test collection"
+    }
+  }
+}

@@ -30,6 +30,16 @@
       <select id="locationSelect"></select>
     </label>
     <button id="modeChip" class="chip mode" title="Toggle sandbox vs live-API mode"></button>
+    <div id="firebaseStatusChip" class="chip fb-chip" title="Firebase Cloud Firestore Backend Status">
+      <span class="dot fb-dot" id="fbDot"></span>
+      <span id="fbChipText">Firebase Connecting…</span>
+    </div>
+    <button id="fbAuthBtn" class="btn ghost btn-sm" title="Google Authentication">
+      <span id="fbAuthLabel">Sign In</span>
+    </button>
+    <button id="fbSyncBtn" class="btn ghost btn-sm" title="Sync state to Firestore">
+      <span>Cloud Sync</span>
+    </button>
   </div>
 </header>
 
@@ -39,6 +49,7 @@
   <button data-tab="audit">Audit</button>
   <button data-tab="io">Import / Export</button>
   <button data-tab="runs">Run History</button>
+  <button data-tab="firebase">Cloud Backend</button>
   <button data-tab="docs">Owner’s Manuals</button>
   <button data-tab="skills">Skills Engine</button>
 </nav>
@@ -152,6 +163,10 @@
     <div id="runsBody"></div>
   </section>
 
+  <section id="view-firebase" class="view">
+    <div id="firebaseBody" class="fb-dashboard"></div>
+  </section>
+
   <section id="view-docs" class="view">
     <div id="docsBody"></div>
   </section>
@@ -177,6 +192,7 @@
   </div>
 </div>
 
+<script type="module" src="firebase.js"></script>
 <script src="app.js"></script>
 </body>
 </html>

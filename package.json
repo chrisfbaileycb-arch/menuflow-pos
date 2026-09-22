@@ -1,13 +1,14 @@
 {
   "name": "menuflow-pos",
   "version": "1.2.0",
-  "description": "MenuFlow POS \u2014 multi-platform restaurant POS operations console. Executable, owner's-manual-verified workflows, menu audit/normalization, import/export. Zero runtime dependencies.",
+  "description": "MenuFlow POS — multi-platform restaurant POS operations console. Executable, owner's-manual-verified workflows, menu audit/normalization, import/export. Zero runtime dependencies.",
   "main": "server/server.js",
   "type": "commonjs",
   "scripts": {
     "start": "node server/server.js",
     "dev": "node server/server.js",
     "build": "node server/verify-cli.js",
+    "lint": "node server/verify-cli.js",
     "verify": "node server/verify-cli.js",
     "check:artifacts": "node fixtures/build-workflows.js --check && node fixtures/build-manual-sources.js --check",
     "test": "node tests/run-all.js",
@@ -18,5 +19,8 @@
     "node": ">=18"
   },
   "license": "UNLICENSED",
-  "author": "Signal F Holdings LLC"
+  "author": "Signal F Holdings LLC",
+  "dependencies": {
+    "firebase": "^12.19.0"
+  }
 }

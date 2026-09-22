@@ -24,6 +24,13 @@ const server = http.createServer(async (req, res) => {
     if (url.pathname.startsWith('/api/')) {
       return await handle(req, res, url);
     }
+    if (url.pathname === '/firebase-applet-config.json') {
+      const cfgPath = path.join(__dirname, '..', 'firebase-applet-config.json');
+      if (fs.existsSync(cfgPath)) {
+        res.writeHead(200, { 'Content-Type': 'application/json', 'Cache-Control': 'no-cache' });
+        return res.end(fs.readFileSync(cfgPath));
+      }
+    }
     // static
     let file = url.pathname === '/' ? '/index.html' : url.pathname;
     file = path.normalize(file).replace(/^(\.\.[\/\\])+/, '');

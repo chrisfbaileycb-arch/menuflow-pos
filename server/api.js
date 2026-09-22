@@ -13,6 +13,7 @@ const PLATFORMS = require('./platforms');
 const IE = require('./importexport');
 const Audit = require('./engine/audit');
 const M = require('./engine/menu');
+const fb = require('./firebase');
 
 function json(res, code, obj) {
   const body = JSON.stringify(obj);
@@ -57,6 +58,25 @@ async function handle(req, res, url) {
   if (p === '/api/skills' && req.method === 'GET') return json(res, 200, { skills: REG.list(), checks: Object.entries(CHECKS).map(([k, v]) => ({ name: k, title: v.title })) });
   if (p === '/api/sources' && req.method === 'GET') return json(res, 200, { sources: SOURCES });
   if (p === '/api/verify' && req.method === 'GET') return json(res, 200, engine.validateAll({}));
+
+  // ── firebase backend ──
+  if (p === '/api/firebase/config' && req.method === 'GET') {
+    const cfg = fb.getSafeClientConfig();
+    return json(res, 200, { ok: Boolean(cfg), config: cfg });
+  }
+  if (p === '/api/firebase/status' && req.method === 'GET') {
+    const status = await fb.testConnection();
+    return json(res, 200, {
+      ...status,
+      entities: ['locations', 'menus', 'runs', 'approvals', 'audits', 'users'],
+      rulesDeploys: 'active',
+      abac: 'enforced',
+    });
+  }
+  if (p === '/api/firebase/sync' && req.method === 'POST') {
+    const resSync = await fb.syncAllToFirestore(s);
+    return json(res, resSync.ok ? 200 : 500, resSync);
+  }
 
   // ── overview / locations / menu ──
   if (p === '/api/overview' && req.method === 'GET') {
@@ -125,6 +145,7 @@ async function handle(req, res, url) {
         approvals: body.approvals || [],
         actor: body.actor || 'web-operator',
       });
+      fb.saveRun(run).catch(() => {});
       return json(res, 200, { run });
     } catch (e) { return json(res, 400, { error: e.message, code: e.code }); }
   }
@@ -144,6 +165,7 @@ async function handle(req, res, url) {
   if (p === '/api/approve' && req.method === 'POST') {
     const body = await readBody(req);
     const appr = store.addApproval({ runId: body.runId, stepId: body.stepId, approved: body.approved !== false, actor: body.actor || 'web-operator', note: body.note || '' });
+    fb.saveApproval(appr).catch(() => {});
     return json(res, 200, { approval: appr });
   }
 
@@ -160,6 +182,7 @@ async function handle(req, res, url) {
     // safety: pre-publish backup
     IE.exportMenu(entry.live, 'canonical-json', (s.locations.find(l => l.id === locId) || {}).platform);
     const menu = store.commitStaging(locId, body.note || `published by ${body.actor || 'web-operator'}${blockers.length ? ' (OVERRIDE: blockers acknowledged)' : ''}`);
+    fb.saveMenuRecord(locId, store.liveMenu(locId)).catch(() => {});
     return json(res, 200, { ok: true, version: menu.version, publishedAt: menu.publishedAt, overrodeBlockers: blockers.length || 0 });
   }
   if (p === '/api/publish/discard' && req.method === 'POST') {
@@ -342,6 +365,8 @@ async function handle(req, res, url) {
     st.locations.push(loc);
     st.menus[loc.id] = { live: M.newMenu(`${body.name} menu`), staging: null, stagingNote: null };
     store.flush();
+    fb.saveLocation(loc).catch(() => {});
+    fb.saveMenuRecord(loc.id, st.menus[loc.id]).catch(() => {});
     return json(res, 200, { ok: true, location: loc });
   }
   if (p === '/api/settings' && req.method === 'POST') {

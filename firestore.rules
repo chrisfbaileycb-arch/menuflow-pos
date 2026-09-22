@@ -1,0 +1,75 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return isSignedIn() && (
+        (request.auth.token.email == 'chrisfbailey.CB@gmail.com' && request.auth.token.email_verified == true) ||
+        exists(/databases/$(database)/documents/admins/$(request.auth.uid))
+      );
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isAuthorizedSync() {
+      return isSignedIn() || (
+        request.resource.data.syncToken == 'menuflow-sync-21bf5099-cf9c-49be-8621-e53deee1c4b5'
+      );
+    }
+
+    // Connection validation endpoint
+    match /test/{docId} {
+      allow read, write: if true;
+    }
+
+    // User profiles
+    match /users/{userId} {
+      allow get: if isSignedIn() && (isOwner(userId) || isAdmin());
+      allow list: if isAdmin();
+      allow create: if isAuthorizedSync() || (isSignedIn() && isOwner(userId));
+      allow update: if isAuthorizedSync() || (isSignedIn() && (isAdmin() || isOwner(userId)));
+      allow delete: if isAdmin();
+    }
+
+    // Locations
+    match /locations/{locationId} {
+      allow read: if true;
+      allow create, update: if isAuthorizedSync();
+      allow delete: if isAdmin();
+    }
+
+    // Menus
+    match /menus/{locationId} {
+      allow read: if true;
+      allow create, update: if isAuthorizedSync();
+      allow delete: if isAdmin();
+    }
+
+    // Runs
+    match /runs/{runId} {
+      allow read: if true;
+      allow create, update: if isAuthorizedSync();
+      allow delete: if isAdmin();
+    }
+
+    // Approvals
+    match /approvals/{approvalId} {
+      allow read: if true;
+      allow create, update: if isAuthorizedSync();
+      allow delete: if isAdmin();
+    }
+
+    // Audits
+    match /audits/{auditId} {
+      allow read: if true;
+      allow create, update: if isAuthorizedSync();
+      allow delete: if isAdmin();
+    }
+  }
+}

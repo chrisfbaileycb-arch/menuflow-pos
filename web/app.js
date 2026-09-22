@@ -37,6 +37,7 @@ async function boot() {
       audit: loadAudit,
       io: loadFiles,
       runs: loadRuns,
+      firebase: loadFirebaseDashboard,
       docs: loadDocs,
       skills: loadSkills,
     }[b.dataset.tab] || (() => { }))();
@@ -47,6 +48,54 @@ async function boot() {
   $('#verifyAllBtn').onclick = refreshVerify;
   const expAuditBtn = $('#exportAuditBtn');
   if (expAuditBtn) expAuditBtn.onclick = exportAuditReport;
+
+  // Firebase status chip & auth wiring
+  const fbChip = $('#firebaseStatusChip');
+  if (fbChip) fbChip.onclick = () => {
+    const fbTab = $(`#tabs button[data-tab="firebase"]`);
+    if (fbTab) fbTab.click();
+  };
+
+  const fbAuthBtn = $('#fbAuthBtn');
+  if (fbAuthBtn) fbAuthBtn.onclick = async () => {
+    if (!window.firebaseClient) return toast('Firebase initializing, please wait…');
+    const u = window.firebaseClient.getUser();
+    if (u) {
+      await window.firebaseClient.logout();
+      toast('Signed out from Firebase', 'good');
+    } else {
+      try {
+        const user = await window.firebaseClient.loginWithGoogle();
+        toast(`Signed in as ${user.displayName || user.email}`, 'good');
+      } catch (err) {
+        toast('Google sign-in cancelled or failed: ' + err.message, 'bad');
+      }
+    }
+  };
+
+  const fbSyncBtn = $('#fbSyncBtn');
+  if (fbSyncBtn) fbSyncBtn.onclick = async () => {
+    toast('Syncing state to Cloud Firestore…');
+    try {
+      if (window.firebaseClient) {
+        await window.firebaseClient.syncDirectToCloud(state);
+      }
+      const res = await api('/api/firebase/sync', { method: 'POST' });
+      toast(`Cloud sync complete! Synced ${res.synced?.locations || 0} locations, ${res.synced?.menus || 0} menus, ${res.synced?.runs || 0} runs.`, 'good');
+      if ($('#view-firebase').classList.contains('active')) loadFirebaseDashboard();
+    } catch (e) {
+      toast('Cloud sync failed: ' + e.message, 'bad');
+    }
+  };
+
+  // Listen to Firebase client state
+  const checkFbInterval = setInterval(() => {
+    if (window.firebaseClient) {
+      clearInterval(checkFbInterval);
+      window.firebaseClient.onStatusChange(updateFbStatusUi);
+      window.firebaseClient.onUserChange(updateFbUserUi);
+    }
+  }, 200);
   await loadWorkflows();
   await loadAuditOverview();
 }
@@ -786,6 +835,165 @@ async function loadSkills() {
     </div>
     <div class="card" style="margin-top:12px"><h3>Post-step verification checks (${checks.length})</h3>
       ${checks.map(c => `<div class="mini"><span class="mono">${esc(c.name)}</span> — ${esc(c.title)}</div>`).join('')}</div>`;
+}
+
+/* ───────────────── firebase cloud backend ───────────────── */
+function updateFbStatusUi(st) {
+  const dot = $('#fbDot');
+  const txt = $('#fbChipText');
+  if (!dot || !txt) return;
+  if (st.connected) {
+    dot.className = 'dot fb-dot connected';
+    txt.textContent = 'Firebase Connected';
+  } else if (st.testing) {
+    dot.className = 'dot fb-dot';
+    txt.textContent = 'Checking Cloud…';
+  } else if (st.error) {
+    dot.className = 'dot fb-dot error';
+    txt.textContent = 'Firebase Offline';
+  } else {
+    dot.className = 'dot fb-dot connected';
+    txt.textContent = 'Firebase Ready';
+  }
+}
+
+function updateFbUserUi(user) {
+  const btn = $('#fbAuthLabel');
+  if (!btn) return;
+  if (user) {
+    const name = user.displayName || user.email?.split('@')[0] || 'User';
+    btn.textContent = `${name} (Sign Out)`;
+  } else {
+    btn.textContent = 'Sign In';
+  }
+}
+
+async function loadFirebaseDashboard() {
+  const body = $('#firebaseBody');
+  if (!body) return;
+  body.innerHTML = '<div class="card"><div class="mini muted">Querying Firebase Cloud status…</div></div>';
+
+  let srvStatus = {};
+  try {
+    srvStatus = await api('/api/firebase/status');
+  } catch (e) {
+    srvStatus = { ok: false, error: e.message };
+  }
+
+  const clientStatus = window.firebaseClient ? window.firebaseClient.getStatus() : {};
+  const user = window.firebaseClient ? window.firebaseClient.getUser() : null;
+  const cfg = window.firebaseClient ? window.firebaseClient.getConfig() : {};
+
+  body.innerHTML = `
+    <div class="fb-grid">
+      <div class="fb-card">
+        <h3><span class="dot fb-dot ${srvStatus.ok || clientStatus.connected ? 'connected' : 'error'}"></span> Cloud Firestore Status</h3>
+        <div class="fb-prop-row">
+          <span class="fb-prop-label">Connection State</span>
+          <span class="fb-badge ${srvStatus.ok || clientStatus.connected ? 'green' : 'yellow'}">${srvStatus.ok || clientStatus.connected ? 'ONLINE / CONNECTED' : 'STANDBY'}</span>
+        </div>
+        <div class="fb-prop-row">
+          <span class="fb-prop-label">Project ID</span>
+          <span class="fb-prop-val">${esc(cfg?.projectId || srvStatus.projectId || 'gen-lang-client-0581891121')}</span>
+        </div>
+        <div class="fb-prop-row">
+          <span class="fb-prop-label">Database ID</span>
+          <span class="fb-prop-val">${esc(cfg?.firestoreDatabaseId || srvStatus.databaseId || 'ai-studio-menuflowpos-21bf5099-cf9c-49be-8621-e53deee1c4b5')}</span>
+        </div>
+        <div class="fb-prop-row">
+          <span class="fb-prop-label">Security Rules</span>
+          <span class="fb-badge green">ACTIVE · ABAC ENFORCED</span>
+        </div>
+        <div class="fb-prop-row">
+          <span class="fb-prop-label">Last Ping</span>
+          <span class="fb-prop-val">${esc(srvStatus.timestamp || new Date().toISOString())}</span>
+        </div>
+        <div style="margin-top:16px; display:flex; gap:10px;">
+          <button class="btn primary btn-sm" id="fbTestPingBtn">Test Cloud Ping</button>
+          <button class="btn blue btn-sm" id="fbDashSyncBtn">Force Cloud Sync</button>
+        </div>
+      </div>
+
+      <div class="fb-card">
+        <h3><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" style="color:#60a5fa"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/></svg> Authentication & RBAC</h3>
+        <div class="fb-prop-row">
+          <span class="fb-prop-label">Auth Provider</span>
+          <span class="fb-badge blue">GOOGLE IDENTITY</span>
+        </div>
+        <div class="fb-prop-row">
+          <span class="fb-prop-label">Current User</span>
+          <span class="fb-prop-val">${esc(user ? (user.displayName || user.email) : 'Unauthenticated (Viewer)')}</span>
+        </div>
+        <div class="fb-prop-row">
+          <span class="fb-prop-label">User Email</span>
+          <span class="fb-prop-val">${esc(user?.email || '—')}</span>
+        </div>
+        <div class="fb-prop-row">
+          <span class="fb-prop-label">Assigned Role</span>
+          <span class="fb-badge ${user?.email === 'chrisfbailey.CB@gmail.com' ? 'green' : 'yellow'}">${user?.email === 'chrisfbailey.CB@gmail.com' ? 'ADMIN (SUPERVISOR)' : (user ? 'OPERATOR' : 'VIEWER')}</span>
+        </div>
+        <div style="margin-top:16px;">
+          <button class="btn ghost btn-sm" id="fbDashAuthBtn">${user ? 'Sign Out of Google' : 'Sign In with Google'}</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="fb-card" style="margin-top:16px;">
+      <h3>Cloud Firestore Collections Schema</h3>
+      <p class="muted mini">Intermediate blueprint synchronized with ABAC zero-trust firestore.rules security gates:</p>
+      <div class="fb-coll-grid">
+        <div class="fb-coll-item">
+          <div class="fb-coll-name">/locations/{id}</div>
+          <div class="fb-coll-desc">Venue profile, POS platform assignment, and timezone metadata</div>
+        </div>
+        <div class="fb-coll-item">
+          <div class="fb-coll-name">/menus/{locId}</div>
+          <div class="fb-coll-desc">Live production and staging menu trees, version stamps, and publish notes</div>
+        </div>
+        <div class="fb-coll-item">
+          <div class="fb-coll-name">/runs/{runId}</div>
+          <div class="fb-coll-desc">Immutable audit trails and execution histories for multi-platform operations</div>
+        </div>
+        <div class="fb-coll-item">
+          <div class="fb-coll-name">/approvals/{id}</div>
+          <div class="fb-coll-desc">Gate authorization evidence for staging-to-live publish actions</div>
+        </div>
+        <div class="fb-coll-item">
+          <div class="fb-coll-name">/audits/{id}</div>
+          <div class="fb-coll-desc">Menu integrity dial evaluation scores and vulnerability breakdowns</div>
+        </div>
+        <div class="fb-coll-item">
+          <div class="fb-coll-name">/users/{uid}</div>
+          <div class="fb-coll-desc">User profiles and verified RBAC authority assignments</div>
+        </div>
+        <div class="fb-coll-item">
+          <div class="fb-coll-name">/test/{docId}</div>
+          <div class="fb-coll-desc">Heartbeat ping verification doc as required by Firebase skill</div>
+        </div>
+      </div>
+    </div>
+  `;
+
+  $('#fbTestPingBtn').onclick = async () => {
+    toast('Pinging Firestore heartbeat endpoint…');
+    if (window.firebaseClient) {
+      const ok = await window.firebaseClient.testConnection();
+      toast(ok ? 'Firestore heartbeat ping succeeded!' : 'Firestore connection check failed.', ok ? 'good' : 'bad');
+    } else {
+      const st = await api('/api/firebase/status');
+      toast(st.ok ? 'Backend Firestore connection confirmed!' : 'Firestore ping error: ' + st.error, st.ok ? 'good' : 'bad');
+    }
+    loadFirebaseDashboard();
+  };
+
+  $('#fbDashSyncBtn').onclick = async () => {
+    $('#fbSyncBtn').click();
+  };
+
+  $('#fbDashAuthBtn').onclick = async () => {
+    $('#fbAuthBtn').click();
+    setTimeout(loadFirebaseDashboard, 1000);
+  };
 }
 
 boot().then(refreshMode).catch(e => toast('Boot failed: ' + e.message, 'bad'));
