@@ -53,6 +53,9 @@ function handleFirestoreError(error, operationType, docPath) {
 
 function initFirebase() {
   if (db) return { app, db, config };
+  // Hosted deploys switch the legacy AI Studio project off until a project
+  // owned by the operator is configured.
+  if (process.env.MENUFLOW_FIREBASE === 'off') return { app: null, db: null, config: null };
   if (!fs.existsSync(CONFIG_PATH)) {
     console.warn('[Firebase] Config file not found at', CONFIG_PATH);
     return { app: null, db: null, config: null };

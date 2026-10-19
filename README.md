@@ -38,6 +38,17 @@ node cli/menuflow.js --help      # same engine, headless
 
 Zero dependencies (Node ≥ 18). State lives in `data/state.json`; reset with `rm -rf data` (reseeds from `fixtures/sample-menu.json`).
 
+## Deploy (Railway, private single-owner)
+
+MenuFlow is a private console: every route except `/api/health` sits behind an owner login.
+
+1. Create a Railway service from this repo (`railway.json` sets the start command and health check).
+2. Attach a **volume** mounted at `/data`.
+3. Set service variables (see `.env.example`): `OWNER_PASSWORD` (required — the server refuses to boot without it on a hosted deploy), `MENUFLOW_DATA_DIR=/data`, `MENUFLOW_FIREBASE=off`.
+4. Generate a domain and sign in at `/login`.
+
+Local dev and tests run with the gate open when `OWNER_PASSWORD` is unset.
+
 ## The three promises, and how they're enforced
 
 ### 1. "Not just a pretty front end"
