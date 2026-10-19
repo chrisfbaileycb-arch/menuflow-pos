@@ -7,6 +7,7 @@ const fs = require('fs');
 const path = require('path');
 const { handle } = require('./api');
 const store = require('./store');
+const auth = require('./auth');
 
 const PORT = parseInt(process.argv[2] || process.env.PORT || '3000', 10);
 const WEB = path.join(__dirname, '..', 'web');
@@ -16,15 +17,21 @@ const MIME = {
   '.png': 'image/png', '.ico': 'image/x-icon', '.woff2': 'font/woff2', '.map': 'application/json',
 };
 
+auth.assertConfigured(); // hosted deploys must not start without OWNER_PASSWORD
 store.load(); // initializes seeded state
 
 const server = http.createServer(async (req, res) => {
   const url = new URL(req.url, `http://${req.headers.host || 'localhost'}`);
   try {
+    if (await auth.gate(req, res, url)) return;
     if (url.pathname.startsWith('/api/')) {
       return await handle(req, res, url);
     }
     if (url.pathname === '/firebase-applet-config.json') {
+      if (process.env.MENUFLOW_FIREBASE === 'off') {
+        res.writeHead(404, { 'Content-Type': 'application/json' });
+        return res.end(JSON.stringify({ error: 'firebase disabled' }));
+      }
       const cfgPath = path.join(__dirname, '..', 'firebase-applet-config.json');
       if (fs.existsSync(cfgPath)) {
         res.writeHead(200, { 'Content-Type': 'application/json', 'Cache-Control': 'no-cache' });
@@ -54,4 +61,5 @@ server.listen(PORT, '0.0.0.0', () => {
   const st = store.get();
   console.log(`MenuFlow POS console → http://0.0.0.0:${PORT}`);
   console.log(`  mode: ${st.settings.mode} · locations: ${st.locations.length} · runs: ${st.runs.length}`);
+  console.log(`  owner gate: ${auth.enabled() ? 'on' : 'OFF (local dev only)'}`);
 });

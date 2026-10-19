@@ -1,7 +1,8 @@
 name: verify
 
 # The repo's own contract: nothing merges unless every workflow is certified and
-# every suite passes. Zero dependencies, so there is nothing to install and nothing to cache.
+# every suite passes. The engine itself has no dependencies; the optional Firebase sync adapter
+# needs the `firebase` package, so runtime dependencies are installed before anything runs.
 
 on:
   push:
@@ -26,6 +27,9 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node }}
+
+      - name: Install runtime dependencies
+        run: npm install --omit=dev --no-audit --no-fund
 
       - name: Certification — every workflow schema-valid, citations resolve, dry-runs execute
         run: npm run verify
